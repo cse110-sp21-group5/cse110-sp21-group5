@@ -32,9 +32,9 @@ Concept for theme:
 - Possibly add dark theme later too
 
 Roles:
-Front-end/Design - Jessi, Nico, Matthew
-Back-end/Infrastructure - Nico, Aasem, James, Evan
-Testing - Rotation of people
+- Front-end/Design - Jessi, Nico, Matthew
+- Back-end/Infrastructure - Nico, Aasem, James, Evan
+- Testing - Rotation of people
 
 Review of Group Contract that we have so far and suggestions on it:
 - Everyone agrees with what we have so far
