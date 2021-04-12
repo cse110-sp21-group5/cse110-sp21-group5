@@ -1,4 +1,4 @@
-##Video Format
+## Video Format
 
 1) Your name
 2) Major and year at UCSD
