@@ -23,7 +23,11 @@ Matthew's Introduction here
 
 -----------------
 
-Jessi's Introduction here
+Hi, I'm Jiaxin Zhang and prefer by **Jessi**, major in **Computer Engineering at ERC** college and plan to graduate in Fall 21. An incoming **SDE Intern at Facebook** this summer. I also love to play mobile games, watch animes, and painting.
+
+Me and my kitten, Qiqi -
+
+![Jessi's photo](./../pictures/jessi-picture.jpeg)
 
 -----------------
 
