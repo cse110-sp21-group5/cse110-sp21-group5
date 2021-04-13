@@ -3,27 +3,27 @@
 - Held on Zoom
 
 Things to address:
-Choose group theme/name
-Roles in the group
-Expectations of the group
-Stuff for the group MD page (Style, introduction paragraphs, pictures)
-Group contract (everyone needs to sign)
-Ask about values important to the team then document them for the page later
-Can build MD page later, just need group members to submit introduction, or if they want can reuse previous introduction they submitted in the slack channel
-Can make group video out of previous introductions, or maybe do another introduction video so we all can make it professional?
+1. Choose group theme/name
+2. Roles in the group
+3. Expectations of the group
+4. Stuff for the group MD page (Style, introduction paragraphs, pictures)
+5. Group contract (everyone needs to sign)
+6. Ask about values important to the team then document them for the page later
+7. Can build MD page later, just need group members to submit introduction, or if they want can reuse previous introduction they submitted in the slack channel
+8. Can make group video out of previous introductions, or maybe do another introduction video so we all can make it professional?
 
 Time started: 1:00 P.M.
 
 In attendance:
-Nico Tahernia
-Matthew Larkins
-Jessi Zhang
-Aasem Fituri
-James Chung
-Evan Chen
+- Nico Tahernia
+- Matthew Larkins
+- Jessi Zhang
+- Aasem Fituri
+- James Chung
+- Evan Chen
 
 Not in attendance:
-Ben Lonc
+- Ben Lonc
 
 Jessi - Design experience, will make logo
 
