@@ -34,6 +34,7 @@ Aasem's Introduction here
 Hi! I'm Ben Lonc, a second-year Computer Science major. This project will be my first experience in software engineering, and I'm really excited to take it on! I've worked a bit in software QA and IT at NetApp, and I'll be an SDE Intern at Amazon this summer. I play guitar, practise kendo, longboard, and play video games in my downtime. I'm also a Campus-Wide Senator in the Associated Students at UCSD. 
 
 Me and my sister, Bella - 
+
 ![Ben's Picture](./../pictures/benlonc.jpg)
 
 -----------------
