@@ -45,6 +45,7 @@ Me and my sister, Bella -
 
 Hello! I'm **Evan Chen**, a **third-year Computer Engineering major**. This is my first time working on a software engineering project so, I am looking forward to experiencing the development process! Some of my hobbies include working out, listening to music (primarily hiphop), and occasionally gaming.
 
+
 ![Evan's picture](./../pictures/evanchen.JPG)
 
 -----------------
