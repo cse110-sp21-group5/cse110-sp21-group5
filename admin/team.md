@@ -59,4 +59,4 @@ Hi, I'm James Chung, a second-year Computer Science major. I haven't really had 
 
 Hey! I'm **Matthew Larkins**, a fourth year computer engineering major. I like to surf, run, skate, rock climb, and build robots/drones in my free time. My job on the team is as one of the leaders as well as a designer. Check out some of my projects here: https://khankhuu.github.io/matthew-larkins.
 
-![Matt's Photo](./../pictures/matthew-picture.PNG)
+![Matt's Photo](./../pictures/matthew-picture.png)
