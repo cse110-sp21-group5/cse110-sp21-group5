@@ -1,5 +1,8 @@
 # Penpals Team Page
 
+
+![Team logo](./../pictures/group_logo.png)
+
 Team Values
 -----------------
 - Collaboration: We believe in strong collaboration between all members.
