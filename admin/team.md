@@ -36,7 +36,8 @@ Me and my kitten, Qiqi -
 
 -----------------
 
-Aasem's Introduction here
+Hello, my name is Aasem Fituri and I'm a second year who will hopefully be switching into the CS major soon. Some things that I enjoy doing are playing basketball, surfing, and playing video games. Most of my CS/programming experience consists of school assignments/projects. [My GitHub Page](https://aasemfituri.github.io/)  
+![Aasem's picture](./../pictures/aasem-picture.jpg)
 
 -----------------
 
