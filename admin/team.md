@@ -22,7 +22,9 @@ Engineer Intern at [Amazon](https://www.amazon.com/) as well this summer in Seat
 
 -----------------
 
-Matthew's Introduction here
+Hey! I'm **Matthew Larkins**, a fourth year computer engineering major. I like to surf, run, skate, rock climb, and build robots/drones in my free time. My job on the team is as one of the leaders as well as a designer. Check out some of my projects here: https://khankhuu.github.io/matthew-larkins.
+
+![Matt's Photo](./../pictures/matthew-picture.png)
 
 -----------------
 
@@ -56,7 +58,3 @@ Hello! I'm **Evan Chen**, a **third-year Computer Engineering major**. This is m
 Hi, I'm James Chung, a second-year Computer Science major. I haven't really had any experience in sofware engineering yet, so I look forward to my first time working in a team setting in CS! I've had some basic experience with cybersecurity through [AFA's CyberPatriots](https://www.uscyberpatriot.org/home) program. I enjoy playing tennis (although it's been a while since I've played), playing video games, and watching anime. [Personal page](https://jchung01.github.io/)
 
 ![James's Photo](./../pictures/james-picture.jpeg)
-
-Hey! I'm **Matthew Larkins**, a fourth year computer engineering major. I like to surf, run, skate, rock climb, and build robots/drones in my free time. My job on the team is as one of the leaders as well as a designer. Check out some of my projects here: https://khankhuu.github.io/matthew-larkins.
-
-![Matt's Photo](./../pictures/matthew-picture.png)
