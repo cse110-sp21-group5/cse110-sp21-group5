@@ -10,7 +10,7 @@ Things to address:
 4. Plans for design aspect of Project Pitch (system diagrams, wireframes, etc.)
    
 Attendance:
-- [] Nico
+- [ ] Nico
 - [X] Matthew
 - [X] Jessi 
 - [X] Aasem
@@ -31,10 +31,13 @@ Attendance:
   - make it desirable-useful-functional (DUF)
 - Everyone created and uploaded a unique user persona according to a template
 - We discussed the personas
+
+# Statement of Purpose
 - Ideas for Statement of Purpose
   - a
   - b
   - c
   - etc.
   
-- **Another meeting this week** to work on system diagrams and wireframes on *Thursday 2p-3p*
+# Concluding Remarks
+- **Another meeting this week** to work on system diagrams and wireframes on **Thursday 2p-3p**
