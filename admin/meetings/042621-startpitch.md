@@ -33,11 +33,17 @@ Attendance:
 - We discussed the personas
 
 # Statement of Purpose
-- Ideas for Statement of Purpose
+## Ideas for Statement of Purpose
+- Underlying Problems for our Users:
   - a
   - b
-  - c
   - etc.
-  
+- What we will do to solve the problems:
+  - a
+  - b
+  - etc.
+- Impact we will attempt to have:
+  - (impact)
+  - 
 # Concluding Remarks
 - **Another meeting this week** to work on system diagrams and wireframes on **Thursday 2p-3p**
