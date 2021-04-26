@@ -47,3 +47,4 @@ Attendance:
   - 
 # Concluding Remarks
 - **Another meeting this week** to work on system diagrams and wireframes on **Thursday 2p-3p**
+- Ended at 2:45p
