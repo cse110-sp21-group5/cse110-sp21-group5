@@ -20,7 +20,7 @@ Attendance:
 
 # Notes:
 - Decision: PDF(8 pages) or Slide Show(16 slides)?
-  - *Slideshow(5)* majority rule
+  - **Slideshow(5)** majority rule
   - PDF()
 
 # User Stories
@@ -37,4 +37,4 @@ Attendance:
   - c
   - etc.
   
-- *Another meeting this week* to work on system diagrams and wireframes on *Thursday 2p-3p*
+- **Another meeting this week** to work on system diagrams and wireframes on *Thursday 2p-3p*
