@@ -6,7 +6,9 @@
 Things to address:
 1. Project Pitch
 2. User Stories/Use Cases
-
+3. Statement of Purpose
+4. Plans for design aspect of Project Pitch (system diagrams, wireframes, etc.)
+   
 Attendance:
 - [] Nico
 - [X] Matthew
@@ -23,21 +25,15 @@ Attendance:
 
 # User Stories
 - Personality
-  - How will our software fit his personality/lifestyle?
-  - How will it solve his problem
+  - How will our software fit his/her personality/lifestyle?
+  - How will it solve his/her problem
   - alleviate fear-uncertainty-doubt (FUD)
   - make it desirable-useful-functional (DUF)
-
-- Aasem - Samer Middle-Eastern international student in US, devout Muslim, goes to mosque, early 20s
-- Ben
-- James
-- Evan
-- Matt - Mongolian Male, mid 30's, Father
-- Jessi - 
-
-## Batbayar
-- Bio - Lives in Mongolia. His apartment is in downtown UB, but the WiFi is spotty. He is a gamer. Bat likes to run, but in the winter it gets too cold so he mostly does calisthenics at home. Loves coffee and green tea. Bat's 9yo daughter likes anime and always tries to get him to watch it with her during his work hours, since he gets his best work done in the evening when . He expects to continue working from home after 
-- Goals/Interests
-- Pain Points/Concerns
-- Skills
-- Hobbies
+- Everyone created and uploaded a unique user persona according to a template
+- We discussed the personas
+- Ideas for Statement of Purpose
+  - a
+  - b
+  - c
+  - etc.
+Another meeting this week to work on system diagrams and wireframes
