@@ -36,4 +36,5 @@ Attendance:
   - b
   - c
   - etc.
-Another meeting this week to work on system diagrams and wireframes
+  
+- *Another meeting this week* to work on system diagrams and wireframes on *Thursday 2p-3p*
