@@ -10,10 +10,10 @@
    
 ## Attendance:
 - [X] Nico
-- [] Matthew
+- [ ] Matthew
 - [X] Jessi 
 - [X] Aasem
-- [] Ben
+- [ ] Ben
 - [X] Evan
 - [X] James
 
