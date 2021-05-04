@@ -6,7 +6,6 @@ This log lists the architectural decisions for [project name].
 
 * [ADR-0000](0000-use-markdown-architectural-decision-records.md) - Use Markdown Architectural Decision Records
 * [ADR-0001](0001-single-page-view.md) - Use a Single Scrolling Page to Contain the entire App
-* [ADR-1](template.md) - [short title of solved problem and solution]
 
 <!-- adrlogstop -->
 
