@@ -1,5 +1,6 @@
 /**
 * This is a test
+* @function
 */
 function something ()
 {
