@@ -44,6 +44,10 @@
 - Evan:
 - James:
 
+# Use Story Pointing to measure tasks to implement
+
+[Use the user stories and point to different aspects of them for measuring functionality and what we have left to implement with higher priorities being focused.]
+
 # Assign tasks and agree on a reasonable goal to reach for this sprint
 
 [Walk through stories and decide what tasks need to be done, assign them reasonably, and then get verbal commitment from everyone in relation to their tasks.]
