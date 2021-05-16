@@ -1,0 +1,1 @@
+This folder is meant to hold any supplemental files that we may include in other administrative tasks. Examples are the video clips for intro/progress videos and pictures used in our "team.md".

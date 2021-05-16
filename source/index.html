@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bullet Journal</title>
+    <meta name="description" content="Penpals Bullet Journal Website">
+    <meta name="author" content="Group 5 - PenPals">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Abel" />
+    
+    </head>
+
+    <body>
+        <nav class="nav">
+            <select name="filter" id="filtermenu">
+                <option value="date">Date (Default)</option>
+                <option value="tag1">Tag1</option>
+                <option value="tag2">Tag 2</option>
+                <option value="...">...</option>
+            </select>
+            <a class="active" href="#daily">Daily</a>
+            <a href="#future">Future</a>
+            <a href="#recap">Recap</a>
+            <a href="#custom">Custom</a>
+        </nav>
+    </body>
+    <main>
+        <h1> Penpals </h1>
+        <button class="addEntry" type="button">New Entry</button>
+        <script src="scripts.js"></script>
+        <script src="journal-entry.js" type="module"></script>
+        <!-- test spacer for nav flex -->
+        <!-- <p style="margin-bottom:20cm;"></p> -->
+    </main>
+
+    
+
+    <template>
+        <article class="log">
+            <h2 class="title"></h2>
+            <p class="date"></p>
+            <p class="content"></p>
+            <p class="tags"></p>
+            <input type="checkbox" value="Important?">
+            <input type="button" value="edit">
+        </article>
+    </template>
+</html>
