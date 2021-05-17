@@ -22,7 +22,7 @@ jobs:
           front_page: ./README.md
           
       - run: |
-          git add out
+          git add doc_test
           git config --global user.name aasemfituri
           git commit -m "Generate Docs"
           git push https://github.com/cse110-sp21-group5/cse110-sp21-group5
