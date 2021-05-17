@@ -15,14 +15,14 @@ jobs:
       - name: Build
         uses: andstor/jsdoc-action@v1
         with:
-          source_dir: ./CI_CD_Demo
-          output_dir: doc_test
+          source_dir: ./source
+          output_dir: docs
           template: minami
           recurse: false
           front_page: ./README.md
           
       - run: |
-          git add doc_test
+          git add docs
           git config --global user.name aasemfituri
           git commit -m "Generate Docs"
           git push https://github.com/cse110-sp21-group5/cse110-sp21-group5
