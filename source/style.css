@@ -1,6 +1,6 @@
 /* Main page stylesheet */
 body {
-    margin: 0;
+    margin-left: 0;
     font-family: Abel;
 }
   
@@ -73,5 +73,13 @@ li {
 }
 
 h3 {
+    margin-left: 20px;
+}
+
+textarea {
+    margin-left: 20px;
+}
+
+[class=addEntry] {
     margin-left: 20px;
 }
