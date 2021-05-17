@@ -19,6 +19,7 @@ jobs:
           output_dir: out
           template: minami
           recurse: false
+          front_page: ./README.md
           
       - run: |
           git add out
