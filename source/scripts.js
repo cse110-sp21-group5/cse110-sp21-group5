@@ -72,3 +72,19 @@ document.addEventListener('DOMContentLoaded', () => {
      
   });
 
+    fetch(url)
+      .then(entries => entries.json())
+      .then(entries => {
+        entries.forEach((entry) => {
+          console.log(entry);
+          let newPost;  
+
+          newPost = document.createElement('journal-entry');
+          newPost.entry = entry;
+      })
+    })
+    .catch(error => {
+      console.log(`%cresult of fetch is an error: \n"${error}"`, 'color: red');
+    });    
+     
+
