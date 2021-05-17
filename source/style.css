@@ -66,3 +66,12 @@ body {
     background-color: rgb(61, 79, 236);
     color: white;
 }
+
+li {
+    margin-left: 20px;
+    font-size: 20px;
+}
+
+h3 {
+    margin-left: 20px;
+}

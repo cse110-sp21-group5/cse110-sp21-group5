@@ -68,8 +68,7 @@ class JournalEntry extends HTMLElement {
    * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/set
    */
   set entry(entry) {
-
-    console.log()
+    console.log();
     this.shadowRoot.querySelector('.entry-title').innerHTML = entry.title;
     this.shadowRoot.querySelector('.entry-date').innerHTML = entry.date;
     this.shadowRoot.querySelector('.entry-content').innerHTML = entry.content;
@@ -77,14 +76,13 @@ class JournalEntry extends HTMLElement {
     this.setAttribute('entry', entry);
     document.body.appendChild(this);
   }
-
 }
 
 /*
  * Define a custom element for the JournalEntry web component, 
  * where 'journal-entry' is the string that represents this element.
  * https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements
- */ 
+ */
 customElements.define('journal-entry', JournalEntry);
 
 /**
