@@ -1,5 +1,5 @@
-Start Time: 1p
-Team Status:
+- Start Time: 1p
+# Team Status:
 - What we have so far
     - Decided on framework/apis/etc for build pipeline
     - Initial foundations for BuJo UI, (show in video)
@@ -28,13 +28,13 @@ Challenges
     - clicking tabs applies appropriate scrolling/filtering
     
 
-UI framework with tabs, new entry creation, etc.
-Code workflow with github issues, assign to ourselves and branch etc.
-Build pipeline decisions made, currently integrating into repository
-90% vaccination rate
-Learning/integrating tools is slowing our workflow
+- UI framework with tabs, new entry creation, etc.
+- Code workflow with github issues, assign to ourselves and branch etc.
+- Build pipeline decisions made, currently integrating into repository
+- 90% vaccination rate
+- Learning/integrating tools is slowing our workflow
 
-Next sprint
+# Next sprint
     - Build pipeline working/automatic
     - Text entry mode also has date entry, tag selector
     - Entries added to the IndexedDB
