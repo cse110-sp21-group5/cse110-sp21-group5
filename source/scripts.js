@@ -5,11 +5,13 @@ let dispBar = document.querySelectorAll(".nav a");
 let newEntry = document.querySelector('[class=addEntry]');
 let form = document.createElement('form');
 let textArea = document.createElement('textarea');
-let submit = document.createElement('input');
-submit.setAttribute('type','button');
-form.append(submit);
+
+// Remove submit button when creating entry
+//let submit = document.createElement('input');
+//submit.setAttribute('type','button');
+//form.append(submit);
 form.append(textArea);
-textArea.setAttribute('rows', 30);
+textArea.setAttribute('rows', 5);
 textArea.setAttribute('cols', 50);
 
 /**
@@ -39,12 +41,12 @@ newEntry.addEventListener('click', () => {
   document.querySelector('main').append(form);
 });
 
-submit.addEventListener('click', addEntry);
+//submit.addEventListener('click', addEntry);
 
 // Make a new bullet when enter is pressed (rather than newline)
 textArea.addEventListener('keyup', function (event) {
   if (event.keyCode === 13) {
-    submit.click();
+    addEntry();
   }
 });
 
