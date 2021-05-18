@@ -12,7 +12,7 @@ Our build pipeline starts with us writing some code. Within our ide (VS Code), t
   - Explicitly define functions so we can add documentation, no on-the-fly closures
 
 - Unit Testing (Jest)
-  - set up by running some npm commands that setup the .github/workflows yml file,
+  - set up by running some npm commands that setup the .github/workflows yml file
   - works now automatically when we commit to main
   - settings in the /source/package.json file
   - can be run locally as well
