@@ -1,7 +1,7 @@
 # CI/CD Pipeline Phase 1
 
 ## Build Pipeline Diagram
-![diagram](/admin/cipipeline/phase1.drawio.png.png)
+![diagram](/admin/cipipeline/phase1.drawio.png)
 
 JSDocs, pushes to /docs directory as html files
     - start with /** */ over top of functions and constructors, uses @param, @returns, like JavaDocs
