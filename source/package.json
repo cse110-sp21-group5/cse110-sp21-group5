@@ -1,0 +1,10 @@
+{
+    "scripts": {
+        "test": "jest"
+    },
+
+    "name": "CSE110-SP21-GROUP5",
+    "jest": {
+        "collectCoverage": true
+    }
+}
