@@ -12,14 +12,11 @@ form.append(textArea);
 textArea.setAttribute('rows',30);
 textArea.setAttribute('cols',100);
 
-
 /**
  * Clears the active <a> tag
  */
 function clrActive() {
-
     for (let i = 0; i < dispBar.length; i++) {
-
         dispBar[i].classList.remove("active");
     }
 }
@@ -50,27 +47,21 @@ submit.addEventListener('click',() => {
 });
 
 /**
- * Loads entries and renders them to index.html  
- */ 
+ * Loads entries and renders them to index.html
+ */
 document.addEventListener('DOMContentLoaded', () => {
-    let url = "./sample-entries.json"  // SET URL 
-  
-    fetch(url)
-      .then(entries => entries.json())
-      .then(entries => {
-        entries.forEach((entry) => {
-          console.log(entry);
-          let newPost;  
+  const url = './sample-entries.json'; // SET URL
 
-          newPost = document.createElement('journal-entry');
-          newPost.entry = entry;
-      })
+  fetch(url)
+    .then(entries => entries.json())
+    .then(entries => {
+      entries.forEach((entry) => {
+        console.log(entry);
+        const newPost = document.createElement('journal-entry');
+        newPost.entry = entry;
+      });
     })
     .catch(error => {
       console.log(`%cresult of fetch is an error: \n"${error}"`, 'color: red');
-    });    
-     
-  });
-
-     
-
+    });
+});
