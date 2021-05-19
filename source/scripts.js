@@ -74,6 +74,19 @@ let month = date.getMonth();
 
 for (let i = 0; i < 12; i++) {
   let textMonth = document.createElement('p');
+  
+  textMonth.addEventListener('click', event => {
+    console.log('Clicked' + textMonth.innerText);
+    let entries = document.querySelectorAll('journal-entry');
+
+    /*for (let idx = 0; idx < entries.length; idx++) {
+      if ( entries[idx].shadowRoot.entry.date == textMonth) {
+
+        break;
+      }
+    }*/
+  });
+
   textMonth.innerText = allMonths[month];
   document.querySelector('aside').appendChild(textMonth);
   
