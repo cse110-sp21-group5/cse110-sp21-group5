@@ -66,3 +66,9 @@ body {
     background-color: rgb(61, 79, 236);
     color: white;
 }
+
+hr {
+    border: 1px solid #85c4ff;
+    width: 50%;
+    float: left;
+}
