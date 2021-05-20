@@ -66,3 +66,44 @@ body {
     background-color: rgb(61, 79, 236);
     color: white;
 }
+
+.tl {
+    position: absolute;
+    right: 150px;  
+    width: 200px;
+    height: 120px;
+    color: #2C2C2C;
+}
+
+ul.timeline {
+    list-style-type: none;
+    position: relative;
+    font-size: 20px;
+}
+ul.timeline:before {
+    content: ' ';
+    background: rgb(119, 183, 255);
+    display: inline-block;
+    position: absolute;
+    left: 29px;
+    width: 2px;
+    height: 100%;
+    z-index: 400;
+}
+ul.timeline > li {
+    margin: 30px 0;
+    padding-left: 10px;
+}
+ul.timeline > li:before {
+    content: ' ';
+    background: rgb(119, 183, 255);
+    display: inline-block;
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid white;
+    left: 23px;
+    width: 10px;
+    height: 10px;
+    z-index: 400;
+}
+
