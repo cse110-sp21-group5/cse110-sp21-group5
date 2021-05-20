@@ -13,7 +13,7 @@ textArea.setAttribute('rows',30);
 textArea.setAttribute('cols',100);
 
 /**
- * Clears the active <a> tag
+ * Clears the active <a> tag in the top navigation bar 
  */
 function clrActive() {
     for (let i = 0; i < dispBar.length; i++) {
@@ -59,6 +59,11 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log(entry);
         const newPost = document.createElement('journal-entry');
         newPost.entry = entry;
+        
+        if (entry != entries[0]) {
+          const hLine = document.createElement('hr');
+          document.querySelector('body').insertBefore(hLine, newPost);
+        }
       });
     })
     .catch(error => {
