@@ -72,23 +72,58 @@ let date = new Date();
 
 let month = date.getMonth();
 
-for (let i = 0; i < 12; i++) {
-  let textMonth = document.createElement('p');
-  
-  textMonth.addEventListener('click', event => {
-    console.log('Clicked' + textMonth.innerText);
-    let entries = document.querySelectorAll('journal-entry');
+// Get timeline template
+let timeTemp = document.getElementById('timeline');
+let timeClone = timeTemp.content.firstElementChild.cloneNode(true);
 
-    /*for (let idx = 0; idx < entries.length; idx++) {
-      if ( entries[idx].shadowRoot.entry.date == textMonth) {
+// Set Year Header
+let timeYear = timeClone.querySelector('h4');
+timeYear.innerText = date.getFullYear();
 
-        break;
-      }
-    }*/
-  });
+// Get month template
+let monthTemp = document.getElementById('month');
 
-  textMonth.innerText = allMonths[month];
-  document.querySelector('aside').appendChild(textMonth);
-  
+
+// Append month template to the timeline
+let idx = 12;
+while ( idx > 0 ) {
+  let monthClone = monthTemp.content.firstElementChild.cloneNode(true);
+  monthClone.firstElementChild.innerText = allMonths[month];
+
+  timeClone.querySelector('ul').prepend(monthClone);
   month = (month + 1) % 12;
+  idx = idx - 1;
 }
+
+document.querySelector('aside').appendChild(timeClone);
+
+
+// Test code for dropdown
+/*
+// Get month template
+let monthTemp = document.getElementById('testMonth');
+
+// Append month template to the timeline
+let idx = 12;
+while ( idx > 0 ) {
+  let monthClone = monthTemp.content.firstElementChild.cloneNode(true);
+  monthClone.querySelector('button').innerText = allMonths[month];
+
+  // Add the days dropdown
+  // Get total days in the current month
+  let daysInMonth = new Date(date.getFullYear(), (month + 1) % 12, 0).getDate();
+  
+  // List out the days in the current month
+  for(let i = 0; i < daysInMonth; i++) {
+    let listItem = document.createElement('a');
+    listItem.innerText = i + 1;
+    console.log(monthClone.querySelector('.dropdown-content'));
+    monthClone.querySelector('.dropdown-content').appendChild(listItem);
+  }
+
+  timeClone.querySelector('ul').prepend(monthClone);
+  month = (month + 1) % 12;
+  idx = idx - 1;
+}
+
+document.querySelector('aside').appendChild(timeClone);*/
