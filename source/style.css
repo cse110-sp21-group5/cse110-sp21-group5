@@ -83,3 +83,39 @@ textarea {
 [class=addEntry] {
     margin-left: 20px;
 }
+
+div > button  {
+    position: relative;
+    top: 22px;
+    right: 10px;
+    cursor:pointer;
+    background-color: transparent;
+    outline: none;
+    border: none;
+}
+
+.delete:before {
+    content: '\2716';
+    font-size: 15px;
+    color: red;
+}
+
+button.addEntry:before {
+    content:'\002B';
+    font-size: 20px;
+    color: blue;
+    cursor: pointer;
+
+}
+
+main {
+    margin-left: 20px;
+}
+
+div > textarea {
+    position: relative;
+    top: 40px;
+    font-family: Abel;
+    font-size: 20px;
+}
+
