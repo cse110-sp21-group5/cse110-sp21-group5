@@ -1,8 +1,10 @@
 // This is where we will write our JS
+// Checked out from branch "filter" on 5/23 8:40 PM PST
 
 // select the <a> tags used for navigation at the top of the page
 const dispBar = document.querySelectorAll('.nav a');
 const newEntry = document.querySelector('[class=addEntry]');
+let currentEntries;
 const form = document.createElement('form');
 const textArea = document.createElement('textarea');
 const submit = document.createElement('input');
@@ -110,6 +112,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
     })
+    .then(() => {
+      addFlags();
+    })
     .catch(error => {
       console.log(`%cresult of fetch is an error: \n"${error}"`, 'color: red');
     });
@@ -120,4 +125,19 @@ document.addEventListener('DOMContentLoaded', () => {
  */
 function capitalizeFirstLetter (str) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+/**
+ * Function to add flag button to each entry
+ *
+ * Currently does not work for added entries, only loaded ones.
+ */
+function addFlags () {
+  currentEntries = document.querySelectorAll('journal-entry');
+  currentEntries.forEach((entry) => {
+    const flag = entry.flag;
+    flag.addEventListener('click', () => {
+      // add tag "Important" to entry tags or journal property?
+    });
+  });
 }
