@@ -1,7 +1,7 @@
 [
     {
         "date": "4/29/2021",
-        "time": "1621809215489",
+        "time": "1621809235489",
         "log": "daily",
         "title": "finish drone build",
         "content": "mount new flight controller and tune rates",
@@ -18,8 +18,16 @@
         "tags": ["important", "school"]
     },
     {
+        "date": "4/26/2021",
+        "time": "1621809225487",
+        "title": "complete homework 5",
+        "log": "daily",
+        "content": "do hw5 by thursday",
+        "tags": ["important", "school"]
+    },
+    {
         "date": "5/8/2021",
-        "time": "1621809235489",
+        "time": "1621809235499",
         "log": "daily",
         "title": "send Mother's Day gift",
         "content": "spa gift card for Mom",

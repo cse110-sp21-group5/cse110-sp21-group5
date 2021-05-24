@@ -116,6 +116,7 @@ function updateLogView() {
           let newDate = document.createElement('h2');
           newDate.innerText = entry.date;
           newDate.classList = 'dateLine'
+          currDate = entry.date;
           document.querySelector('body').appendChild(newDate);
         }
         
