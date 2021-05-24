@@ -1,6 +1,8 @@
 [
     {
         "date": "4/29/2021",
+        "time": "1621809215489",
+        "log": "daily",
         "title": "finish drone build",
         "content": "mount new flight controller and tune rates",
         "tags": {
@@ -9,7 +11,9 @@
     },
     {
         "date": "4/26/2021",
+        "time": "1621809225489",
         "title": "complete lab 7",
+        "log": "daily",
         "content": "do lab 7 by thursday to get the participation points",
         "tags": {
         "tag1": "important",
@@ -18,8 +22,30 @@
     },
     {
         "date": "5/8/2021",
+        "time": "1621809235489",
+        "log": "daily",
         "title": "send Mother's Day gift",
         "content": "spa gift card for Mom",
+        "tags": {
+            "tag1": "family"
+        }
+    },
+    {
+        "date": "6/12/2021",
+        "time": "1623539481697",
+        "log": "future",
+        "title": "Mom's birthday",
+        "content": "get a gift for Mom",
+        "tags": {
+            "tag1": "family"
+        }
+    },
+    {
+        "date": "6/15/2021",
+        "time": "1623798681697",
+        "log": "future",
+        "title": "Move",
+        "content": "Pack and arrange logistics",
         "tags": {
             "tag1": "family"
         }

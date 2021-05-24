@@ -6,6 +6,7 @@ let newEntry = document.querySelector('[class=addEntry]');
 let form = document.createElement('form');
 let textArea = document.createElement('textarea');
 let submit = document.createElement('input');
+
 submit.setAttribute('type','submit');
 form.append(submit);
 form.append(textArea);
@@ -22,6 +23,116 @@ function clrActive() {
 }
 
 /**
+ * Updates the log the user is viewing (daily, future, recap custom)
+ */
+function updateLogView() {
+
+  //grab the string corresponding to the 'href' atribute of the selected nav bar link 
+  const newView = document.querySelector('.nav .active').attributes['href'].value;
+
+  //clear all the elements off of the page to be replaced
+  document.querySelectorAll('journal-entry').forEach(elem => elem.remove());
+  document.querySelectorAll('.dateLine').forEach(elem => elem.remove());
+  
+  //set the URL to fetch from 
+  const url = './sample-entries.json'; 
+
+  //store the posts as HTML elements 
+  //let posts = [];
+
+  fetch(url)
+    .then(entries => entries.json())
+    .then(entries => {
+
+      let logType = "";
+
+      //decide which view to render to 
+      switch (newView) {
+        case '#daily':
+
+          logType = 'daily';
+
+          //sort entries by time, most recent first 
+          entries.sort(function(a, b) {
+
+            return b.time - a.time;
+          });
+          
+          break;
+
+        case '#future':
+
+          logType = 'future';
+
+          //sort entries by time, most recent last 
+          entries.sort(function(a, b) {
+
+            return a.time - b.time;
+          });
+
+          break;
+        case '#recap':
+
+          logType = 'recap';
+
+          //sort entries by time, most recent first 
+          entries.sort(function(a, b) {
+
+            return b.time - a.time;
+          });
+
+          break;
+
+        case '#custom':
+          
+          logType = 'custom';
+
+          //sort entries by time, most recent first 
+          entries.sort(function(a, b) {
+
+            return b.time - a.time;
+          });
+
+          break;
+
+        default:
+          console.log("error in updateLogView: active menu item is " + newView);
+      }
+
+      let currDate = "";
+
+      entries.forEach((entry) => {
+
+        //ignore all but the "daily" log items
+        if (entry.log != logType) {
+          
+          //note: I wanted to use continue here, but that causes an error. The internet recommended this and it works.
+          return;
+        }
+
+        //if we run into a new date, render a header for it 
+        if (entry.date != currDate) {
+          
+          let newDate = document.createElement('h2');
+          newDate.innerText = entry.date;
+          newDate.classList = 'dateLine'
+          document.querySelector('body').appendChild(newDate);
+        }
+        
+        //render the entry
+        const newPost = document.createElement('journal-entry');
+        newPost.entry = entry;
+        //remove the date 
+        newPost.shadowRoot.querySelector('.entry-date').remove()
+      });
+
+    })
+    .catch(error => {
+      console.log(`%cresult of fetch is an error: \n"${error}"`, 'color: red');
+    });
+}
+
+/**
  * Adds event listeners to all elements of the navigation bar selected in dispBar
  */
 for (let i = 0; i < dispBar.length; i++) {
@@ -31,6 +142,8 @@ for (let i = 0; i < dispBar.length; i++) {
         clrActive();
         
         dispBar[i].classList.add("active");
+
+        updateLogView();
     });
 }
 
@@ -49,7 +162,7 @@ submit.addEventListener('click',() => {
 /**
  * Loads entries and renders them to index.html
  */
-document.addEventListener('DOMContentLoaded', () => {
+/*document.addEventListener('DOMContentLoaded', () => {
   const url = './sample-entries.json'; // SET URL
 
   fetch(url)
@@ -64,4 +177,6 @@ document.addEventListener('DOMContentLoaded', () => {
     .catch(error => {
       console.log(`%cresult of fetch is an error: \n"${error}"`, 'color: red');
     });
-});
+});*/
+
+updateLogView();
