@@ -104,21 +104,21 @@ while ( idx > 0 ) {
 
   console.log(monthClone.querySelector('p').innerText);
   monthClone.querySelector('p').addEventListener('click', event => {
-    monthClone.querySelector('div').style.display ='block';
+    monthClone.querySelector('div').style.display ='inline-block';
   });
 // end of demo
 
 
   console.log(timeClone.querySelector('ul'));
   timeClone.querySelector('ul').appendChild(monthClone);
-  // Case of a new year
-  if (month === 0) {
-    date.setFullYear(date.getFullYear() + 1);
-  }
+  
   //month = (month + 1) % 12;
   month = month - 1;
+
+  // Case of rolling back to last December
   if( month == -1 ) {
     month = 11;
+    date.setFullYear(date.getFullYear() - 1);
   }
   idx = idx - 1;
 }
