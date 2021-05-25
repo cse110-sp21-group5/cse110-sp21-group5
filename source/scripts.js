@@ -27,6 +27,21 @@ function clrActive() {
 let submitButton = document.querySelector('.addEntry');
 
 /**
+ * Get the string form of the current date 
+ */
+function stringDate() {
+
+  //get the current day, month, and year
+  d = new Date();
+  let currDay = d.getDate();
+  let currMonth = d.getMonth() + 1;
+  let currYear = d.getFullYear();
+
+  //stringify the date 
+  return currMonth + '/' + currDay + '/' + currYear;
+}
+
+/**
  * place the button that submits a new entry to the correct place 
  * The correct place is the bottom of the section for today's bullets, or the top of the page if there are no entries today
  */
@@ -37,15 +52,6 @@ function moveSubmitButton() {
     document.querySelector('.addEntry').remove();
   }
 
-  //get the current day, month, and year
-  d = new Date();
-  let currDay = d.getDate();
-  let currMonth = d.getMonth() + 1;
-  let currYear = d.getFullYear();
-
-  //stringify the date 
-  let currDate = currMonth + '/' + currDay + '/' + currYear;
-
   //create an array of strings representing the dates for which we have entries 
   let dates = [];
   let dateElems = document.querySelectorAll('.dateLine');
@@ -54,6 +60,8 @@ function moveSubmitButton() {
 
     dates.push(elem.innerText);
   });
+
+  let currDate = stringDate();
 
   //check where we should put the "submit" button
   if (dates.indexOf(currDate) != -1) {
@@ -225,30 +233,5 @@ newEntry.addEventListener('click', () => {
 submit.addEventListener('click',() => {
 
 });
-
-/**
- * Loads entries and renders them to index.html
- */
-/*document.addEventListener('DOMContentLoaded', () => {
-  const url = './sample-entries.json'; // SET URL
-
-  fetch(url)
-    .then(entries => entries.json())
-    .then(entries => {
-      entries.forEach((entry) => {
-        console.log(entry);
-        const newPost = document.createElement('journal-entry');
-        newPost.entry = entry;
-        
-        if (entry != entries[0]) {
-          const hLine = document.createElement('hr');
-          document.querySelector('body').insertBefore(hLine, newPost);
-        }
-      });
-    })
-    .catch(error => {
-      console.log(`%cresult of fetch is an error: \n"${error}"`, 'color: red');
-    });
-});*/
 
 updateLogView();
