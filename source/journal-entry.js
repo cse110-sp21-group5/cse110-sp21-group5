@@ -75,7 +75,7 @@ class JournalEntry extends HTMLElement {
     this.shadowRoot.querySelector('.entry-content').innerHTML = entry.content;
 
     this.setAttribute('entry', entry);
-    document.body.appendChild(this);
+    document.querySelector('#entryArea').appendChild(this);
   }
 
 }
