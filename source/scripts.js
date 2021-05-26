@@ -44,34 +44,40 @@ submit.addEventListener('click', () => {
 });
 
 /**
- * Changes the value of the filter based on the option selected
  * Changes the journal entries displayed based on the filter selection
  */
 filter.addEventListener('change', () => {
   const url = './sample-entries.json';
   document.querySelectorAll('journal-entry').forEach(e => e.remove());
+  // clearing old entries from the page
   fetch(url)
     .then(entries => entries.json())
     .then(entries => {
       entries.sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
+      // sorting entries before displaying
       if (filter.value !== 'date') {
+        // checks that the current value in the filter isn't date
         const filtered = entries.filter(function (entry) {
           for (let i = 0; i < entry.tags.length; i++) {
             if (entry.tags[i] === filter.value) {
               return entry;
+              // checks the current entry, if it has a tag that matches
+              // the current filter value, adds it to the filtered array
             }
           }
           return null;
+          // if tag doesn't match, returns nothing
         });
         filtered.forEach((entry) => {
-          console.log(entry);
           const newPost = document.createElement('journal-entry');
+          // goes through the filtered array, adding new elements for each entry
           newPost.entry = entry;
         });
       } else {
+        // if the filter value actually is date
         entries.forEach((entry) => {
-          console.log(entry);
           const newPost = document.createElement('journal-entry');
+          // just adds all of the entries in the entries object, no need to filter
           newPost.entry = entry;
         });
       }
@@ -86,26 +92,31 @@ filter.addEventListener('change', () => {
  */
 document.addEventListener('DOMContentLoaded', () => {
   const url = './sample-entries.json'; // SET URL
-
+  const existingOptions = new Set();
+  // creating a set to keep track of options we already have in filter dropdown
   fetch(url)
     .then(entries => entries.json())
     .then(entries => {
       entries.sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
+      // sorting entries on arrival to page by date
       entries.forEach((entry) => {
         console.log(entry);
         const newPost = document.createElement('journal-entry');
         newPost.entry = entry;
         const tags = entry.tags;
-        const existingOptions = [];
-        for (const option of filter.options) {
-          existingOptions.push(option.value);
-        }
+        // getting the tags array for a specific entry
         for (let i = 0; i < tags.length; i++) {
+          // loop through the tags array for specific entry
           const opt = document.createElement('option');
           opt.value = tags[i];
           opt.innerHTML = capitalizeFirstLetter(tags[i]);
-          if (!existingOptions.includes(opt.value)) {
+          // create a new option with the value of the tag, and set
+          // the innerHTML to display the tag capitalized
+          if (!existingOptions.has(opt.value)) {
             filter.appendChild(opt);
+            existingOptions.add(opt.value);
+            // if it doesn't exist in the existing set, add it to the filter
+            // then add it to the set after
           }
         }
       });
@@ -117,6 +128,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /**
  * Function to capitalize first letter in a string (for tags)
+ * @Param String to capitalize.
+ * @return Capitlized string.
  */
 function capitalizeFirstLetter (str) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
