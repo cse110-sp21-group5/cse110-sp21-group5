@@ -3,8 +3,6 @@
 * Status: Accepted
 * Deciders: Entire group
 
-Technical Story: [description | ticket/issue URL] <!-- optional -->
-
 ## Context and Problem Statement
 
 How should we implement the multiple different journals while keeping the single page style? Should we just have one long running journal? How can we keep single page integrity with a multi-page design?
