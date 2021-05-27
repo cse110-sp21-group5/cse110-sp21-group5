@@ -97,14 +97,19 @@ div > button  {
 .delete:before {
     content: '\2716';
     font-size: 15px;
-    color: red;
+    color: gray;
 }
 
+.addEntry {
+    background-color: transparent;
+    border:none;
+}
 button.addEntry:before {
     content:'\002B';
     font-size: 20px;
     color: blue;
     cursor: pointer;
+    font-size: 30px;
 
 }
 
@@ -114,8 +119,34 @@ main {
 
 div > textarea {
     position: relative;
-    top: 40px;
+    bottom: 15px;
     font-family: Abel;
     font-size: 20px;
 }
 
+.delete {
+    display: none;
+}
+
+div:hover > .delete {
+    position: relative;
+    display: inline;
+    vertical-align: top;
+    top: 4px;
+}
+
+div:hover > li {
+    position: relative;
+    bottom: 22px;
+}
+
+div {
+    position:relative;
+    height: 40px;
+    left: 10px;
+}
+
+section {
+    width: 500px;
+    background-color: white;
+}
