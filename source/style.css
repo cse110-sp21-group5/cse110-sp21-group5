@@ -15,7 +15,7 @@ main {
     margin-bottom: 30px;
     max-width: 700px;
     padding: 20px;
-    width: 80%;
+    width: 70%;
     margin: 20px auto;
     /* opacity: 0.5; */
 }
@@ -88,9 +88,9 @@ main {
 
 .tl {
     position: absolute;
-    right: 150px;  
-    width: 200px;
-    height: 120px;
+    right: 12%;  
+    width: 10%;
+    height: 10%;
     color: white;
 }
 
@@ -124,6 +124,26 @@ ul.timeline > li:before {
     width: 10px;
     height: 10px;
     z-index: 400;
+}
+
+ul.timeline > li:hover:before {
+    background: rgb(61, 79, 236);
+}
+
+ul li:hover {
+    font-weight: bold;
+    text-shadow: 1px 1px rgba(0, 0, 0, 0.8);
+}
+
+ul li ul li:hover {
+    color:rgb(61, 79, 236);
+    text-decoration: underline;
+    text-shadow: 1px 1px rgba(0, 0, 0, 0.8);
+}
+
+ul.days {
+    font-size: 15px;
+    padding-left: 10px;
 }
 
 h4.title {
