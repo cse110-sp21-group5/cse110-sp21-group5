@@ -125,8 +125,6 @@ ul.timeline > li:before {
     height: 10px;
     z-index: 400;
 }
-<<<<<<< HEAD
-=======
 
 ul.timeline > li:hover:before {  /* blue cicle */
     background: rgb(61, 79, 236);
@@ -152,4 +150,3 @@ h4.title {
     font-size: 25px;
     margin: 40px 30px;
 }
->>>>>>> 0553ec8601c20b9a87b53ce8ed987c446a5be395
