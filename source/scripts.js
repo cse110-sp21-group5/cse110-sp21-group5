@@ -5,6 +5,7 @@ const dispBar = document.querySelectorAll('.nav a');
 const newEntry = document.querySelector('[class=addEntry]');
 const form = document.createElement('form');
 const textArea = document.createElement('textarea');
+textArea.focus();
 let existingEntry = false;
 form.append(textArea);
 textArea.setAttribute('rows', 3);
@@ -66,10 +67,17 @@ for (let i = 0; i < dispBar.length; i++) {
 newEntry.addEventListener('click', () => {
   if (document.querySelector('section') === null) {
     document.querySelector('main').append(form);
+    textArea.focus();
+    document.querySelector('.addEntry').remove();
+    document.querySelector('main').append(newEntry);
   } else {
     document.querySelector('section').append(form);
+    textArea.focus();
+    document.querySelector('.addEntry').remove();
+    document.querySelector('main').append(newEntry);
   }
 });
+
 
 /**
  * @function
@@ -114,7 +122,6 @@ function addEntry () {
     textArea.value = '';
     return;
   }
-  // let date1 = new Date('2021', '5', '25');
   const date = new Date().toLocaleDateString();
   const entryDiv = document.createElement('div');
   entryDiv.className = date;
@@ -137,13 +144,19 @@ function addEntry () {
   if (sectionExists === false) {
     section = document.createElement('section');
     section.className = date;
+    const sec = document.querySelector('section');
+    if (sec === null) {
+      document.querySelector('main').append(section);
+    } else {
+      document.querySelector('main').insertBefore(section, sec);
+    }
   }
   // Adds date on the first entry of the day
   if (document.querySelector('h3') === null) {
     const newEntryTitle = document.createElement('h3');
     newEntryTitle.innerText = date;
     section.append(newEntryTitle);
-    document.querySelector('main').append(section);
+    //document.querySelector('main').append(section);
     addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText);
   } else {
     const h3List = document.querySelectorAll('h3');
@@ -156,7 +169,7 @@ function addEntry () {
       const newEntryTitle = document.createElement('h3');
       newEntryTitle.innerText = date;
       section.append(newEntryTitle);
-      document.querySelector('main').append(section);
+      //document.querySelector('main').append(section);
       addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText);
     }
   }
@@ -304,6 +317,8 @@ document.addEventListener('click', function (event) {
       textBox.innerText = divElement.querySelector('li').innerText;
       divElement.querySelector('li').remove();
       divElement.append(textBox);
+      textBox.focus();
+      textBox.setSelectionRange(textBox.value.length, textBox.value.length);
     }
     const editedEntry = document.createElement('li');
     textBox.addEventListener('keyup', function (event) {
