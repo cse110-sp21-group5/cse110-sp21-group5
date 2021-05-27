@@ -126,16 +126,16 @@ ul.timeline > li:before {
     z-index: 400;
 }
 
-ul.timeline > li:hover:before {
+ul.timeline > li:hover:before {  /* blue cicle */
     background: rgb(61, 79, 236);
 }
 
-ul li:hover {
+ul li:hover { /* month */
     font-weight: bold;
     text-shadow: 1px 1px rgba(0, 0, 0, 0.8);
 }
 
-ul li ul li:hover {
+ul li ul li:hover { /* days */
     color:rgb(61, 79, 236);
     text-decoration: underline;
     text-shadow: 1px 1px rgba(0, 0, 0, 0.8);
