@@ -68,35 +68,34 @@ document.addEventListener('DOMContentLoaded', () => {
  */
 const allMonths = { 0: 'Jan', 1: 'Feb', 2: 'Mar', 3: 'Apr', 4: 'May', 5: 'Jun', 6: 'Jul', 7: 'Aug', 8: 'Sep', 9: 'Oct', 10: 'Nov', 11: 'Dec' };
 
-let date = new Date();
+const date = new Date();
 
 let month = date.getMonth();
 
 // Get timeline template
-let timeTemp = document.getElementById('timeline');
-let timeClone = timeTemp.content.firstElementChild.cloneNode(true);
+const timeTemp = document.getElementById('timeline');
+const timeClone = timeTemp.content.firstElementChild.cloneNode(true);
 
 // Set Year Header
-let timeYear = timeClone.querySelector('h4');
+const timeYear = timeClone.querySelector('h4');
 timeYear.innerText = date.getFullYear();
 
 // Get month template
-let monthTemp = document.getElementById('month');
-
+const monthTemp = document.getElementById('month');
 
 // Append month template to the timeline
 let idx = 12;
-while ( idx > 0 ) {
-  let monthClone = monthTemp.content.firstElementChild.cloneNode(true);
+while (idx > 0) {
+  const monthClone = monthTemp.content.firstElementChild.cloneNode(true);
   monthClone.firstElementChild.innerText = allMonths[month];
   console.log(allMonths[month]);
   // Demo of applying months
   // Get total days in the current month
-  let daysInMonth = new Date(date.getFullYear(), (month + 1) % 12, 0).getDate();
-  
+  const daysInMonth = new Date(date.getFullYear(), (month + 1) % 12, 0).getDate();
+
   // List out the days in the current month
-  for(let i = 0; i < daysInMonth; i++) {
-    let listItem = document.createElement('li');
+  for (let i = 0; i < daysInMonth; i++) {
+    const listItem = document.createElement('li');
 
     listItem.innerText = i + 1;
     monthClone.querySelector('ul').appendChild(listItem);
@@ -104,19 +103,22 @@ while ( idx > 0 ) {
 
   console.log(monthClone.querySelector('p').innerText);
   monthClone.querySelector('p').addEventListener('click', event => {
-    monthClone.querySelector('div').style.display ='inline-block';
+    if (monthClone.querySelector('div').style.display === 'none') {
+      monthClone.querySelector('div').style.display = 'inline-block';
+    } else {
+      monthClone.querySelector('div').style.display = 'none';
+    }
   });
-// end of demo
-
+  // end of demo
 
   console.log(timeClone.querySelector('ul'));
   timeClone.querySelector('ul').appendChild(monthClone);
-  
-  //month = (month + 1) % 12;
+
+  // month = (month + 1) % 12;
   month = month - 1;
 
   // Case of rolling back to last December
-  if( month == -1 ) {
+  if (month === -1) {
     month = 11;
     date.setFullYear(date.getFullYear() - 1);
   }
@@ -124,3 +126,16 @@ while ( idx > 0 ) {
 }
 
 document.querySelector('aside').appendChild(timeClone);
+
+// Clicking outside the timeline will close all dropdowns - possible feature
+const timeline = document.querySelector('.timeline');
+document.addEventListener('click', event => {
+  console.log(event.target);
+  const isClickInside = timeline.contains(event.target);
+  const content = document.querySelectorAll('.dropdown-content');
+  if (!isClickInside) {
+    for (let i = 0; i < content.length; i++) {
+      content[i].style.display = 'none';
+    }
+  }
+});
