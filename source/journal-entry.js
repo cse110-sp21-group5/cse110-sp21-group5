@@ -16,6 +16,8 @@ class JournalEntry extends HTMLElement {
                 max-width: 700px;
                 padding: 20px;
                 width: 80%;
+                margin: 20px auto;
+                box-shadow: 0 2px 2px -2px rgba(0, 0, 0, 0.8);
             }
             .entry-audio {
                 margin: 10px 0;
