@@ -109,9 +109,10 @@ while (idx > 0) {
       console.log(checkDate);
       for (let index = 0; index < entries.length; index++) {
         if (entries[index].shadowRoot.querySelector('.entry-date').innerText === checkDate) {
-          entries[index].scrollIntoView({behavior: 'smooth'});
-          console.log('nav');
+          entries[index].scrollIntoView({ behavior: 'smooth' });
+          break;
         }
+        console.log('nav');
       }
     });
 
