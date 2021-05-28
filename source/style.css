@@ -150,3 +150,8 @@ h4.title {
     font-size: 25px;
     margin: 40px 30px;
 }
+
+/*For aligning the journal entry when navigating to certain day (header covers if not done)*/
+journal-entry {
+    scroll-margin-top: 70px;
+}

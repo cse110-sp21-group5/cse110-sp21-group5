@@ -98,6 +98,25 @@ while (idx > 0) {
     const listItem = document.createElement('li');
 
     listItem.innerText = i + 1;
+
+    // Copy over values due to block scope
+    const checkMonth = month + 1;
+    const checkYear = date.getFullYear().toString();
+    // Event listener for navigating to certain day
+    listItem.addEventListener('click', event => {
+      const entries = document.querySelectorAll('journal-entry');
+      const checkDate = checkMonth + '/' + listItem.innerText + '/' + checkYear;
+      console.log(checkDate);
+      for (let index = 0; index < entries.length; index++) {
+        if (entries[index].shadowRoot.querySelector('.entry-date').innerText === checkDate) {
+          entries[index].scrollIntoView({behavior: 'smooth'});
+          console.log('nav');
+        }
+      }
+    });
+
+    // End navigating to certain day function
+
     monthClone.querySelector('ul').appendChild(listItem);
   }
 
