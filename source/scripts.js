@@ -5,6 +5,8 @@ const dispBar = document.querySelectorAll('.nav a');
 const newEntry = document.querySelector('[class=addEntry]');
 const form = document.createElement('form');
 const textArea = document.createElement('textarea');
+const filter = document.querySelector('[name="filter"]');
+const existingOptions = new Set();
 textArea.focus();
 let existingEntry = false;
 form.append(textArea);
@@ -19,7 +21,7 @@ request.onerror = function (event) {
 
 request.onsuccess = function (event) {
   db = event.target.result;
-  getAndShowEntries(db);
+  getAndShowEntries(db, filter.value);
 };
 
 request.onerror = function (event) {
@@ -39,7 +41,6 @@ request.onupgradeneeded = function (event) {
   const entries = db.createObjectStore('entries', { autoIncrement: true });
 };
 
-const filter = document.querySelector('[name="filter"]');
 /**
  * Clears the active <a> tag
  */
@@ -79,8 +80,6 @@ newEntry.addEventListener('click', () => {
   }
 });
 
-
-
 /**
  * @function
  * Make a new bullet when enter is pressed (rather than newline)
@@ -95,44 +94,9 @@ textArea.addEventListener('keyup', function (event) {
  * Changes the journal entries displayed based on the filter selection
  */
 filter.addEventListener('change', () => {
-  const url = './sample-entries.json';
-  document.querySelectorAll('journal-entry').forEach(e => e.remove());
+  document.querySelectorAll('section').forEach(e => e.remove());
   // clearing old entries from the page
-  fetch(url)
-    .then(entries => entries.json())
-    .then(entries => {
-      entries.sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
-      // sorting entries before displaying
-      if (filter.value !== 'date') {
-        // checks that the current value in the filter isn't date
-        const filtered = entries.filter(function (entry) {
-          for (let i = 0; i < entry.tags.length; i++) {
-            if (entry.tags[i] === filter.value) {
-              return entry;
-              // checks the current entry, if it has a tag that matches
-              // the current filter value, adds it to the filtered array
-            }
-          }
-          return null;
-          // if tag doesn't match, returns nothing
-        });
-        filtered.forEach((entry) => {
-          const newPost = document.createElement('journal-entry');
-          // goes through the filtered array, adding new elements for each entry
-          newPost.entry = entry;
-        });
-      } else {
-        // if the filter value actually is date
-        entries.forEach((entry) => {
-          const newPost = document.createElement('journal-entry');
-          // just adds all of the entries in the entries object, no need to filter
-          newPost.entry = entry;
-        });
-      }
-    })
-    .catch(error => {
-      console.log(`%cresult of fetch is an error: \n"${error}"`, 'color: red');
-    });
+  getAndShowEntries(db, filter.value);
 });
 
 /**
@@ -145,6 +109,8 @@ function addEntry () {
     textArea.value = '';
     return;
   }
+  const listedTags = tagGet(textArea.value);
+  filterPopulate(listedTags);
   const date = new Date().toLocaleDateString();
   const entryDiv = document.createElement('div');
   entryDiv.className = date;
@@ -179,8 +145,8 @@ function addEntry () {
     const newEntryTitle = document.createElement('h3');
     newEntryTitle.innerText = date;
     section.append(newEntryTitle);
-    //document.querySelector('main').append(section);
-    addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText);
+    // document.querySelector('main').append(section);
+    addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText, listedTags);
   } else {
     const h3List = document.querySelectorAll('h3');
     h3List.forEach(h3 => {
@@ -192,8 +158,8 @@ function addEntry () {
       const newEntryTitle = document.createElement('h3');
       newEntryTitle.innerText = date;
       section.append(newEntryTitle);
-      //document.querySelector('main').append(section);
-      addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText);
+      // document.querySelector('main').append(section);
+      addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText, listedTags);
     }
   }
   // Adds bullets, reset text area and delete the form
@@ -202,14 +168,15 @@ function addEntry () {
   section.append(entryDiv);
   document.querySelector('form').remove();
   textArea.value = '';
-  addEntrytoDB(db, entryDiv, date);
+  addEntrytoDB(db, entryDiv, date, listedTags);
 }
 
 /**
  * Retrieves the entries of the database and shows the entries on the screen
  * @param  database The database that will be used to display entries
+ * @param  tag The string tag associated with the entries to get from the DB
  */
-function getAndShowEntries (database) {
+function getAndShowEntries (database, tag) {
   const transaction = database.transaction(['entries'], 'readonly');
   const objStore = transaction.objectStore('entries');
   const request1 = objStore.openCursor();
@@ -217,9 +184,21 @@ function getAndShowEntries (database) {
   request1.onsuccess = function (event) {
     const cursor = event.target.result;
     if (cursor !== null) {
-      console.log(cursor.value);
-      entries.push(cursor.value);
-      console.log(entries.length);
+      if (cursor.value.content !== cursor.value.date) {
+        filterPopulate(cursor.value.tags);
+      }
+      if (tag === 'date') {
+        entries.push(cursor.value);
+      } else {
+        if (cursor.value.content === cursor.value.date) {
+          entries.push(cursor.value);
+        }
+        for (let i = 0; i < cursor.value.tags.length; i++) {
+          if ((cursor.value.tags[i] === tag) && (cursor.value.content !== cursor.value.date)) {
+            entries.push(cursor.value);
+          }
+        }
+      }
       cursor.continue();
     } else {
       showEntries(entries);
@@ -232,12 +211,13 @@ function getAndShowEntries (database) {
  * @param  database The database that entries will be added to
  * @param {Object} entry The entry that will be added to the database
  * @param {string} day The day the entry was made
+ * @param {Array} tagList List of tags associated with the entry
  */
-function addEntrytoDB (database, entry, day) {
+function addEntrytoDB (database, entry, day, tagList) {
   const transaction = database.transaction(['entries'], 'readwrite');
   const objStore = transaction.objectStore('entries');
   const entryText = entry.innerText;
-  const entryObject = { content: entryText, date: day };
+  const entryObject = { content: entryText, date: day, tags: tagList };
   objStore.add(entryObject);
   transaction.oncomplete = function () {
     console.log('Data entered into database');
@@ -347,11 +327,12 @@ document.addEventListener('click', function (event) {
     textBox.addEventListener('keyup', function (event) {
       if (event.keyCode === 13) {
         editedEntry.innerText = textBox.value;
+        const editedTags = tagGet(editedEntry.innerText);
         textBox.remove();
         divElement.append(editedEntry);
         existingEntry = false;
         // Update appropriate entry in DB
-        updateDB(editedEntry.innerText, oldContent, day);
+        updateDB(editedEntry.innerText, oldContent, day, editedTags);
       }
     });
   }
@@ -362,13 +343,14 @@ document.addEventListener('click', function (event) {
  * @param {string} entry The new content of the entry
  * @param {string} oldContent The old content of the entry that will be replaced by "entry"
  * @param {string} day The date of the entry
+ * @param {array} tagList List of tags for the entry.
  */
-function updateDB (entry, oldContent, day) {
+function updateDB (entry, oldContent, day, tagList) {
   const bullet = entry;
   const transaction = db.transaction(['entries'], 'readwrite');
   const objStore = transaction.objectStore('entries');
   const request1 = objStore.openCursor();
-  const newContent = { content: bullet, date: day };
+  const newContent = { content: bullet, date: day, tags: tagList };
   request1.onsuccess = function (event) {
     const cursor = event.target.result;
     if (cursor === null) {
@@ -425,9 +407,42 @@ function updateDB (entry, oldContent, day) {
 
 /**
  * Function to capitalize first letter in a string (for tags)
- * @Param String to capitalize.
+ * @param {string} str String to capitalize.
  * @return Capitlized string.
  */
 function capitalizeFirstLetter (str) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
+
+/**
+ * Function to get tags
+ * @param {string} str String to get tags from
+ */
+function tagGet (str) {
+  const separatedString = str.split('#')[1];
+  const removedSpaces = separatedString.split(' ').join('');
+  const removedEnter = removedSpaces.split('\n').join('');
+  const listedTags = removedEnter.split(',');
+  return listedTags;
+}
+
+/**
+ * Function to fill filter with new tags
+ * @param {array} tags List of tags to populate filter.
+ */
+function filterPopulate (tags) {
+  for (let i = 0; i < tags.length; i++) {
+    // loop through the tags array for specific entry
+    const opt = document.createElement('option');
+    opt.value = tags[i];
+    opt.innerHTML = capitalizeFirstLetter(tags[i]);
+    // create a new option with the value of the tag, and set
+    // the innerHTML to display the tag capitalized
+    if (!existingOptions.has(opt.value)) {
+      filter.appendChild(opt);
+      existingOptions.add(opt.value);
+      // if it doesn't exist in the existing set, add it to the filter
+      // then add it to the set after
+    }
   }
+}
