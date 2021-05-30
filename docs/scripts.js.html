@@ -82,6 +82,20 @@ request.onupgradeneeded = function (event) {
   const entries = db.createObjectStore('entries', { autoIncrement: true });
 };
 
+request.onupgradeneeded = function (event) {
+  db = event.target.result;
+  /*
+  if (document.querySelector('h3') !== null) {
+    let date = document.querySelector('h3').innerHTML;
+    if(!db.objectStoreNames.contains(date)) {
+      db.createObjectStore(date, { autoIncrement: true});
+    }
+  }
+  */
+  const entries = db.createObjectStore('entries', { autoIncrement: true });
+};
+
+const filter = document.querySelector('[name="filter"]');
 /**
  * Clears the active &lt;a> tag
  */
