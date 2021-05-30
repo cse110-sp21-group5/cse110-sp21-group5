@@ -80,9 +80,6 @@ newEntry.addEventListener('click', () => {
 });
 
 
-  document.querySelector('main').append(form);
-});
-
 
 /**
  * @function
@@ -137,7 +134,6 @@ filter.addEventListener('change', () => {
       console.log(`%cresult of fetch is an error: \n"${error}"`, 'color: red');
     });
 });
-*/
 
 /**
  * Adds a new bullet to the current date and stores the data in the database (IndexedDB)
@@ -384,6 +380,7 @@ function updateDB (entry, oldContent, day) {
     }
     cursor.continue();
   };
+}
 
 /**
  * Loads entries and renders them to index.html
@@ -433,4 +430,4 @@ function updateDB (entry, oldContent, day) {
  */
 function capitalizeFirstLetter (str) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-}
+  }
