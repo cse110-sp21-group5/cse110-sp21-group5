@@ -1,6 +1,6 @@
 /* Main page stylesheet */
 body {
-    margin: 0;
+    margin-left: 0;
     font-family: Abel;
 }
   
@@ -65,4 +65,88 @@ body {
 .nav a.active {
     background-color: rgb(61, 79, 236);
     color: white;
+}
+
+li {
+    margin-left: 20px;
+    font-size: 20px;
+}
+
+h3 {
+    margin-left: 20px;
+}
+
+textarea {
+    margin-left: 20px;
+}
+
+[class=addEntry] {
+    margin-left: 20px;
+}
+
+div > button  {
+    position: relative;
+    top: 22px;
+    right: 10px;
+    cursor:pointer;
+    background-color: transparent;
+    outline: none;
+    border: none;
+}
+
+.delete:before {
+    content: '\2716';
+    font-size: 15px;
+    color: gray;
+}
+
+.addEntry {
+    background-color: transparent;
+    border:none;
+}
+button.addEntry:before {
+    content:'\002B';
+    font-size: 20px;
+    color: blue;
+    cursor: pointer;
+    font-size: 30px;
+
+}
+
+main {
+    margin-left: 20px;
+}
+
+div > textarea {
+    position: relative;
+    bottom: 15px;
+    font-family: Abel;
+    font-size: 20px;
+}
+
+.delete {
+    display: none;
+}
+
+div:hover > .delete {
+    position: relative;
+    display: inline;
+    vertical-align: top;
+    top: 4px;
+}
+
+div:hover > li {
+    position: relative;
+    bottom: 22px;
+}
+
+div {
+    position:relative;
+    height: 40px;
+    left: 10px;
+}
+
+section {
+    width: 500px;
+    background-color: white;
 }
