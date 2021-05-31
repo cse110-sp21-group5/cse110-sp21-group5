@@ -173,15 +173,15 @@ div:hover > li {
 
 div {
     display: flex;
-    flex-flow: row wrap;
+    flex-flow: row nowrap;
     align-content: flex-start;
     align-items: baseline;
-    position:relative;
-    height: 40px;
+    position: relative;
+    /* height: 40px; */
     left: -20px;
 }
 
 section {
-    width: 500px;
+    /* width: 500px; */
     background-color: white;
 }
