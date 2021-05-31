@@ -193,9 +193,11 @@ function getAndShowEntries (database, tag) {
         if (cursor.value.content === cursor.value.date) {
           entries.push(cursor.value);
         }
-        for (let i = 0; i < cursor.value.tags.length; i++) {
-          if ((cursor.value.tags[i] === tag) && (cursor.value.content !== cursor.value.date)) {
-            entries.push(cursor.value);
+        if (cursor.value.tags) {
+          for (let i = 0; i < cursor.value.tags.length; i++) {
+            if ((cursor.value.tags[i] === tag) && (cursor.value.content !== cursor.value.date)) {
+              entries.push(cursor.value);
+            }
           }
         }
       }
@@ -419,10 +421,10 @@ function capitalizeFirstLetter (str) {
  * @param {string} str String to get tags from
  */
 function tagGet (str) {
-  if (str.length === 0) {
+  const separatedString = str.split('#')[1];
+  if (separatedString === undefined) {
     return null;
   }
-  const separatedString = str.split('#')[1];
   const removedSpaces = separatedString.split(' ').join('');
   const removedEnter = removedSpaces.split('\n').join('');
   const listedTags = removedEnter.split(',');
@@ -434,6 +436,9 @@ function tagGet (str) {
  * @param {array} tags List of tags to populate filter.
  */
 function filterPopulate (tags) {
+  if (tags === null) {
+    return;
+  }
   for (let i = 0; i < tags.length; i++) {
     // loop through the tags array for specific entry
     const opt = document.createElement('option');
