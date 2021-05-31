@@ -394,6 +394,7 @@ document.addEventListener('click', function (event) {
       if (cursor.value.content === content &amp;&amp; cursor.value.date === date) {
         objStore.delete(cursor.key); // Delete appropriate element from DB
         divElement.remove(); // Delete div element from page
+        location.reload();
         return;
       }
       cursor.continue();
