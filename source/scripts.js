@@ -120,10 +120,9 @@ function addEntry () {
   deleteButton.className = 'delete';
   entryDiv.append(deleteButton);
   // create flag button
-  const flagButton = document.createElement('button');
+  const flagButton = document.createElement('input');
   flagButton.type = 'checkbox';
   flagButton.className = 'flag';
-  flagButton.setAttribute('state', 0);
   entryDiv.append(flagButton);
   let dateExists = false;
   const sectionList = document.querySelectorAll('section');
@@ -221,12 +220,13 @@ function getAndShowEntries (database, tag) {
  * @param {Object} entry The entry that will be added to the database
  * @param {string} day The day the entry was made
  * @param {Array} tagList List of tags associated with the entry
+ * @param {boolean} flag The flag to add the entry to the "Important" log
  */
-function addEntrytoDB (database, entry, day, tagList) {
+function addEntrytoDB (database, entry, day, tagList, flag = false) {
   const transaction = database.transaction(['entries'], 'readwrite');
   const objStore = transaction.objectStore('entries');
   const entryText = entry.innerText;
-  const entryObject = { content: entryText, date: day, tags: tagList };
+  const entryObject = { content: entryText, date: day, tags: tagList, flagged: flag };
   objStore.add(entryObject);
   transaction.oncomplete = function () {
     console.log('Data entered into database');
@@ -258,7 +258,10 @@ function showEntries (entries) {
     const flagButton = document.createElement('input');
     flagButton.type = 'checkbox';
     flagButton.className = 'flag';
-    flagButton.setAttribute('state', 0);
+    // remember flagged status
+    if (entry.flagged) {
+      flagButton.checked = true;
+    }
     entryDiv.append(flagButton);
     const newEntry = document.createElement('li');
     const sectionList = document.querySelectorAll('section');
@@ -296,6 +299,25 @@ function showEntries (entries) {
   });
 }
 
+// must update the entry to add it to important log, and save it to the DB
+function updateFlag(event, content) {
+  const divElement = event.target.parentNode;
+  const day = divElement.className;
+  // update flag in DB
+  let flag = false;
+  if (event.target.checked) {
+    flag = true;
+    console.log('mark as important!');
+  }
+  else {
+    console.log('remove important flag');
+  }
+  const tagList = tagGet(event.target.parentNode.innerText);
+  updateDB(content, content, day, tagList, flag);
+  // add entry to important log
+  // ... to-do
+}
+
 /**
  * Checks to see if delete button clicked. If so, removes appropriate entry.
  * Otherwise checks to see if an entry was clicked. If so allows editing entry.
@@ -330,8 +352,7 @@ document.addEventListener('click', function (event) {
       cursor.continue();
     };
   } else if (event.target.className === 'flag') {
-    // handle flagging entry as important
-    console.log('mark as important!');
+    updateFlag(event, oldContent);
   } else if (divElement.tagName === 'DIV' && existingEntry === false) {
     existingEntry = true;
     const textBox = document.createElement('textarea');
@@ -364,12 +385,12 @@ document.addEventListener('click', function (event) {
  * @param {string} day The date of the entry
  * @param {array} tagList List of tags for the entry.
  */
-function updateDB (entry, oldContent, day, tagList) {
+function updateDB (entry, oldContent, day, tagList, flag) {
   const bullet = entry;
   const transaction = db.transaction(['entries'], 'readwrite');
   const objStore = transaction.objectStore('entries');
   const request1 = objStore.openCursor();
-  const newContent = { content: bullet, date: day, tags: tagList };
+  const newContent = { content: bullet, date: day, tags: tagList, flagged: flag };
   request1.onsuccess = function (event) {
     const cursor = event.target.result;
     if (cursor === null) {
