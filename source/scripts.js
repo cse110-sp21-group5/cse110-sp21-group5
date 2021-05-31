@@ -115,9 +115,16 @@ function addEntry () {
   const entryDiv = document.createElement('div');
   entryDiv.className = date;
   const newEntry = document.createElement('li');
+  // create delete button
   const deleteButton = document.createElement('button');
   deleteButton.className = 'delete';
   entryDiv.append(deleteButton);
+  // create flag button
+  const flagButton = document.createElement('button');
+  flagButton.type = 'checkbox';
+  flagButton.className = 'flag';
+  flagButton.setAttribute('state', 0);
+  entryDiv.append(flagButton);
   let dateExists = false;
   const sectionList = document.querySelectorAll('section');
   let sectionExists = false;
@@ -242,10 +249,17 @@ function showEntries (entries) {
       return;
     }
     const entryDiv = document.createElement('div');
+    // create delete button
     const deleteButton = document.createElement('button');
     deleteButton.className = 'delete';
     entryDiv.className = entry.date;
     entryDiv.append(deleteButton);
+    // create flag button
+    const flagButton = document.createElement('input');
+    flagButton.type = 'checkbox';
+    flagButton.className = 'flag';
+    flagButton.setAttribute('state', 0);
+    entryDiv.append(flagButton);
     const newEntry = document.createElement('li');
     const sectionList = document.querySelectorAll('section');
     let section;
@@ -315,6 +329,9 @@ document.addEventListener('click', function (event) {
       }
       cursor.continue();
     };
+  } else if (event.target.className === 'flag') {
+    // handle flagging entry as important
+    console.log('mark as important!');
   } else if (divElement.tagName === 'DIV' && existingEntry === false) {
     existingEntry = true;
     const textBox = document.createElement('textarea');

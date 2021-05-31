@@ -87,7 +87,6 @@ textarea {
 div > button  {
     position: relative;
     top: 22px;
-    right: 10px;
     cursor:pointer;
     background-color: transparent;
     outline: none;
@@ -99,6 +98,18 @@ div > button  {
     font-size: 15px;
     color: gray;
 }
+
+/* text inside flag button */
+.flag:before {
+    content: '';
+    font-size: 17px;
+    color: red;
+}
+
+.flag:checked:before {
+    content: '!';
+}
+
 
 .addEntry {
     background-color: transparent;
@@ -132,12 +143,33 @@ div:hover > .delete {
     position: relative;
     display: inline;
     vertical-align: top;
-    top: 4px;
+    top: 8px;
+    right: 20px;
+}
+
+/* flag button box style */
+.flag {
+    display: none;
+    appearance: none;
+    background-color: #fafafa;
+	border: 1px solid #cacece;
+    padding: 0px 0px 0px 7px;
+    min-width: 22px;
+    min-height: 22px;
+}
+
+div:hover > .flag {
+    position: relative;
+    display: inline-block;
+    vertical-align: top;
+    top: 6px;
+    right: 20px;
 }
 
 div:hover > li {
     position: relative;
     bottom: 22px;
+    left: 20px;
 }
 
 div {
