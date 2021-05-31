@@ -47,6 +47,7 @@ class JournalEntry extends HTMLElement {
             <p class="entry-date"></p>
             <p class="entry-content"></p>
         </article>
+        <input type="checkbox" class="entryFlag"></input>
         `;
 
     // create a shadow root for this web component
@@ -61,6 +62,10 @@ class JournalEntry extends HTMLElement {
    */
   get entry () {
     return this.getAttribute('entry');
+  }
+
+  get flag () {
+    return this.shadowRoot.querySelector('.entryFlag');
   }
 
   /*

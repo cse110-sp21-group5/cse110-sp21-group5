@@ -87,7 +87,6 @@ textarea {
 div > button  {
     position: relative;
     top: 22px;
-    right: 10px;
     cursor:pointer;
     background-color: transparent;
     outline: none;
@@ -98,6 +97,18 @@ div > button  {
     content: '\2716';
     font-size: 15px;
     color: gray;
+}
+
+/* text inside flag button */
+.flag:before {
+    content: '';
+    font-size: 17px;
+    color: red;
+}
+
+.flag:checked:before {
+    content: '!';
+    align-self: flex-end;
 }
 
 .addEntry {
@@ -125,28 +136,51 @@ div > textarea {
 }
 
 .delete {
-    display: none;
+    visibility: hidden;
 }
 
 div:hover > .delete {
+    visibility: visible;
     position: relative;
     display: inline;
     vertical-align: top;
-    top: 4px;
+    top: 0px;
+}
+
+/* flag button box style */
+.flag {
+    visibility: hidden;
+    appearance: none;
+    background-color: #fafafa;
+	border: 1px solid #cacece;
+    padding: 0px 0px 0px 7px;
+    min-width: 22px;
+    min-height: 22px;
+}
+
+div:hover > .flag {
+    visibility: visible;
+    position: relative;
+    display: inline;
+    vertical-align: middle;
+    top: 6px;
 }
 
 div:hover > li {
     position: relative;
-    bottom: 22px;
 }
 
 div {
-    position:relative;
-    height: 40px;
-    left: 10px;
+    display: flex;
+    flex-flow: row nowrap;
+    align-content: flex-start;
+    align-items: baseline;
+    position: relative;
+    /* height: 40px; */
+    left: -20px;
 }
 
 section {
-    width: 500px;
+    /* width: 500px; */
     background-color: white;
 }
