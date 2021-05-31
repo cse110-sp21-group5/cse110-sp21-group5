@@ -299,7 +299,11 @@ function showEntries (entries) {
   });
 }
 
-// must update the entry to add it to important log, and save it to the DB
+/**
+ * Updates the flag of the entry in the DB. If flagged, adds entry to "Important" log.
+ * Otherwise, removes entry from "Important" log.
+ * @function
+ */
 function updateFlag(event, content) {
   const divElement = event.target.parentNode;
   const day = divElement.className;
@@ -307,15 +311,17 @@ function updateFlag(event, content) {
   let flag = false;
   if (event.target.checked) {
     flag = true;
+    // add entry to important log
+    // ... to-do
     console.log('mark as important!');
   }
   else {
+    // remove entry from important log
+    // ... to-do
     console.log('remove important flag');
   }
   const tagList = tagGet(event.target.parentNode.innerText);
   updateDB(content, content, day, tagList, flag);
-  // add entry to important log
-  // ... to-do
 }
 
 /**
@@ -384,6 +390,7 @@ document.addEventListener('click', function (event) {
  * @param {string} oldContent The old content of the entry that will be replaced by "entry"
  * @param {string} day The date of the entry
  * @param {array} tagList List of tags for the entry.
+ * @param {boolean} flag The flag to add the entry to the "Important" log
  */
 function updateDB (entry, oldContent, day, tagList, flag) {
   const bullet = entry;
