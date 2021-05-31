@@ -108,6 +108,7 @@ div > button  {
 
 .flag:checked:before {
     content: '!';
+    align-self: flex-end;
 }
 
 
@@ -136,20 +137,20 @@ div > textarea {
 }
 
 .delete {
-    display: none;
+    visibility: hidden;
 }
 
 div:hover > .delete {
+    visibility: visible;
     position: relative;
     display: inline;
     vertical-align: top;
-    top: 8px;
-    right: 20px;
+    top: 0px;
 }
 
 /* flag button box style */
 .flag {
-    display: none;
+    visibility: hidden;
     appearance: none;
     background-color: #fafafa;
 	border: 1px solid #cacece;
@@ -159,23 +160,25 @@ div:hover > .delete {
 }
 
 div:hover > .flag {
+    visibility: visible;
     position: relative;
-    display: inline-block;
-    vertical-align: top;
+    display: inline;
+    vertical-align: middle;
     top: 6px;
-    right: 20px;
 }
 
 div:hover > li {
     position: relative;
-    bottom: 22px;
-    left: 20px;
 }
 
 div {
+    display: flex;
+    flex-flow: row wrap;
+    align-content: flex-start;
+    align-items: baseline;
     position:relative;
     height: 40px;
-    left: 10px;
+    left: -20px;
 }
 
 section {
