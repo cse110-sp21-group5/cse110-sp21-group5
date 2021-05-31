@@ -5,8 +5,10 @@ const dispBar = document.querySelectorAll('.nav a');
 const newEntry = document.querySelector('[class=addEntry]');
 const form = document.createElement('form');
 const textArea = document.createElement('textarea');
+const filter = document.querySelector('[name="filter"]');
+const existingOptions = new Set();
+textArea.focus();
 let existingEntry = false;
-let deleteMode = false;
 form.append(textArea);
 textArea.setAttribute('rows', 3);
 textArea.setAttribute('cols', 50);
@@ -19,7 +21,7 @@ request.onerror = function (event) {
 
 request.onsuccess = function (event) {
   db = event.target.result;
-  getAndShowEntries(db);
+  getAndShowEntries(db, filter.value);
 };
 
 request.onerror = function (event) {
@@ -67,8 +69,14 @@ for (let i = 0; i < dispBar.length; i++) {
 newEntry.addEventListener('click', () => {
   if (document.querySelector('section') === null) {
     document.querySelector('main').append(form);
+    textArea.focus();
+    document.querySelector('.addEntry').remove();
+    document.querySelector('main').append(newEntry);
   } else {
     document.querySelector('section').append(form);
+    textArea.focus();
+    document.querySelector('.addEntry').remove();
+    document.querySelector('main').append(newEntry);
   }
 });
 
@@ -83,27 +91,13 @@ textArea.addEventListener('keyup', function (event) {
 });
 
 /**
- * Loads entries and renders them to index.html
+ * Changes the journal entries displayed based on the filter selection
  */
-/*
-document.addEventListener('DOMContentLoaded', () => {
-  let url = "./sample-entries.json"  // SET URL
-  fetch(url)
-    .then(entries => entries.json())
-    .then(entries => {
-      entries.forEach((entry) => {
-        console.log(entry);
-        let newPost;
-
-        newPost = document.createElement('journal-entry');
-        newPost.entry = entry;
-      });
-    })
-    .catch(error => {
-      console.log(`%cresult of fetch is an error: \n"${error}"`, 'color: red');
-    });
+filter.addEventListener('change', () => {
+  document.querySelectorAll('section').forEach(e => e.remove());
+  // clearing old entries from the page
+  getAndShowEntries(db, filter.value);
 });
-*/
 
 /**
  * Adds a new bullet to the current date and stores the data in the database (IndexedDB)
@@ -115,19 +109,15 @@ function addEntry () {
     textArea.value = '';
     return;
   }
-  // let date1 = new Date('2021', '5', '25');
+  const listedTags = tagGet(textArea.value);
+  filterPopulate(listedTags);
   const date = new Date().toLocaleDateString();
   const entryDiv = document.createElement('div');
   entryDiv.className = date;
   const newEntry = document.createElement('li');
-  // const deleteButton = document.createElement('button');
-  // deleteButton.className = 'delete';
-  // entryDiv.append(deleteButton);
-  // create flag button
-  const flagButton = document.createElement('button');
-  flagButton.className = 'flag';
-  flagButton.setAttribute('state', 0);
-  entryDiv.append(flagButton);
+  const deleteButton = document.createElement('button');
+  deleteButton.className = 'delete';
+  entryDiv.append(deleteButton);
   let dateExists = false;
   const sectionList = document.querySelectorAll('section');
   let sectionExists = false;
@@ -143,14 +133,20 @@ function addEntry () {
   if (sectionExists === false) {
     section = document.createElement('section');
     section.className = date;
+    const sec = document.querySelector('section');
+    if (sec === null) {
+      document.querySelector('main').append(section);
+    } else {
+      document.querySelector('main').insertBefore(section, sec);
+    }
   }
   // Adds date on the first entry of the day
   if (document.querySelector('h3') === null) {
     const newEntryTitle = document.createElement('h3');
     newEntryTitle.innerText = date;
     section.append(newEntryTitle);
-    document.querySelector('main').append(section);
-    addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText);
+    // document.querySelector('main').append(section);
+    addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText, listedTags);
   } else {
     const h3List = document.querySelectorAll('h3');
     h3List.forEach(h3 => {
@@ -162,8 +158,8 @@ function addEntry () {
       const newEntryTitle = document.createElement('h3');
       newEntryTitle.innerText = date;
       section.append(newEntryTitle);
-      document.querySelector('main').append(section);
-      addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText);
+      // document.querySelector('main').append(section);
+      addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText, listedTags);
     }
   }
   // Adds bullets, reset text area and delete the form
@@ -172,14 +168,15 @@ function addEntry () {
   section.append(entryDiv);
   document.querySelector('form').remove();
   textArea.value = '';
-  addEntrytoDB(db, entryDiv, date);
+  addEntrytoDB(db, entryDiv, date, listedTags);
 }
 
 /**
  * Retrieves the entries of the database and shows the entries on the screen
  * @param  database The database that will be used to display entries
+ * @param  tag The string tag associated with the entries to get from the DB
  */
-function getAndShowEntries (database) {
+function getAndShowEntries (database, tag) {
   const transaction = database.transaction(['entries'], 'readonly');
   const objStore = transaction.objectStore('entries');
   const request1 = objStore.openCursor();
@@ -187,9 +184,23 @@ function getAndShowEntries (database) {
   request1.onsuccess = function (event) {
     const cursor = event.target.result;
     if (cursor !== null) {
-      console.log(cursor.value);
-      entries.push(cursor.value);
-      console.log(entries.length);
+      if (cursor.value.content !== cursor.value.date) {
+        filterPopulate(cursor.value.tags);
+      }
+      if (tag === 'date') {
+        entries.push(cursor.value);
+      } else {
+        if (cursor.value.content === cursor.value.date) {
+          entries.push(cursor.value);
+        }
+        if (cursor.value.tags) {
+          for (let i = 0; i < cursor.value.tags.length; i++) {
+            if ((cursor.value.tags[i] === tag) && (cursor.value.content !== cursor.value.date)) {
+              entries.push(cursor.value);
+            }
+          }
+        }
+      }
       cursor.continue();
     } else {
       showEntries(entries);
@@ -202,12 +213,13 @@ function getAndShowEntries (database) {
  * @param  database The database that entries will be added to
  * @param {Object} entry The entry that will be added to the database
  * @param {string} day The day the entry was made
+ * @param {Array} tagList List of tags associated with the entry
  */
-function addEntrytoDB (database, entry, day) {
+function addEntrytoDB (database, entry, day, tagList) {
   const transaction = database.transaction(['entries'], 'readwrite');
   const objStore = transaction.objectStore('entries');
   const entryText = entry.innerText;
-  const entryObject = { content: entryText, date: day };
+  const entryObject = { content: entryText, date: day, tags: tagList };
   objStore.add(entryObject);
   transaction.oncomplete = function () {
     console.log('Data entered into database');
@@ -230,14 +242,10 @@ function showEntries (entries) {
       return;
     }
     const entryDiv = document.createElement('div');
-    // const deleteButton = document.createElement('button');
-    // deleteButton.className = 'delete';
-    // entryDiv.append(deleteButton);
-    // create flag button
-    const flagButton = document.createElement('button');
-    flagButton.className = 'flag';
-    entryDiv.append(flagButton);
+    const deleteButton = document.createElement('button');
+    deleteButton.className = 'delete';
     entryDiv.className = entry.date;
+    entryDiv.append(deleteButton);
     const newEntry = document.createElement('li');
     const sectionList = document.querySelectorAll('section');
     let section;
@@ -275,39 +283,8 @@ function showEntries (entries) {
 }
 
 /**
- * Deletes the selected event when in delete mode
- * Helper function for use on clicking entry
- * @param event The event caused by clicking the entry
- */
-function removeEntry (event) {
-  // Get the div element
-  const divElement = event.target.parentNode;
-  const content = divElement.innerText;
-  const date = divElement.className;
-  // Remove element from IndexedDB
-  const transaction = db.transaction(['entries'], 'readwrite');
-  const objStore = transaction.objectStore('entries');
-  const request1 = objStore.openCursor();
-  request1.onsuccess = function (event) {
-    const cursor = event.target.result;
-    if (cursor === null) {
-      return;
-    }
-    if (cursor.value.content === content && cursor.value.date === date) {
-      objStore.delete(cursor.key); // Delete appropriate element from DB
-      divElement.remove(); // Delete div element from page
-      return;
-    }
-    cursor.continue();
-  };
-  request1.onerror = function (event) {
-    console.error('IndexedDB erorr: ' + event.target.errorCode);
-  };
-}
-
-/**
- * Checks to see if delete button clicked. If so, enables delete mode.
- * Otherwise checks to see if an entry was clicked. If so allows deleting or editing entry, depending on mode.
+ * Checks to see if delete button clicked. If so, removes appropriate entry.
+ * Otherwise checks to see if an entry was clicked. If so allows editing entry.
  * @function
  */
 document.addEventListener('click', function (event) {
@@ -317,49 +294,49 @@ document.addEventListener('click', function (event) {
   if (divElement.querySelector('li') !== null) {
     oldContent = divElement.querySelector('li').innerText;
   }
-  // toggle delete mode
-  if (event.target.className === 'deleteEntry') {
-    const delText = document.getElementById('deleteText');
-    if (deleteMode === true) {
-      deleteMode = false;
-      delText.style.visibility = 'hidden';
-    } else {
-      deleteMode = true;
-      delText.style.visibility = 'visible';
-    }
-  } else if (event.target.className === 'flag') {
-    // show/hide flagged for each entry
-    const flag = event.target.parentNode.querySelector('.flag');
-    console.log(flag.getAttribute('state'));
-    if (flag.getAttribute('state') === 0) {
-      flag.setAttribute('state', 1);
-    } else if (flag.getAttribute('state') === 1) {
-      flag.setAttribute('state', 0);
-    }
-  } else if (divElement.tagName === 'DIV') {
-    // delete if delete mode, otherwise edit entry
-    if (deleteMode) {
-      removeEntry(event);
-    } else if (existingEntry === false) {
-      existingEntry = true;
-      const textBox = document.createElement('textarea');
-      if (divElement.querySelector('li') !== null) {
-        textBox.innerText = divElement.querySelector('li').innerText;
-        divElement.querySelector('li').remove();
-        divElement.append(textBox);
+  if (event.target.className === 'delete') {
+    // Get the div element
+    const divElement = event.target.parentNode;
+    const content = divElement.innerText;
+    const date = divElement.className;
+    // Remove element from IndexedDB
+    const transaction = db.transaction(['entries'], 'readwrite');
+    const objStore = transaction.objectStore('entries');
+    const request1 = objStore.openCursor();
+    request1.onsuccess = function (event) {
+      const cursor = event.target.result;
+      if (cursor === null) {
+        return;
       }
-      const editedEntry = document.createElement('li');
-      textBox.addEventListener('keyup', function (event) {
-        if (event.keyCode === 13) {
-          editedEntry.innerText = textBox.value;
-          textBox.remove();
-          divElement.append(editedEntry);
-          existingEntry = false;
-          // Update appropriate entry in DB
-          updateDB(editedEntry.innerText, oldContent, day);
-        }
-      });
+      if (cursor.value.content === content && cursor.value.date === date) {
+        objStore.delete(cursor.key); // Delete appropriate element from DB
+        divElement.remove(); // Delete div element from page
+        return;
+      }
+      cursor.continue();
+    };
+  } else if (divElement.tagName === 'DIV' && existingEntry === false) {
+    existingEntry = true;
+    const textBox = document.createElement('textarea');
+    if (divElement.querySelector('li') !== null) {
+      textBox.innerText = divElement.querySelector('li').innerText;
+      divElement.querySelector('li').remove();
+      divElement.append(textBox);
+      textBox.focus();
+      textBox.setSelectionRange(textBox.value.length, textBox.value.length);
     }
+    const editedEntry = document.createElement('li');
+    textBox.addEventListener('keyup', function (event) {
+      if (event.keyCode === 13) {
+        editedEntry.innerText = textBox.value;
+        const editedTags = tagGet(editedEntry.innerText);
+        textBox.remove();
+        divElement.append(editedEntry);
+        existingEntry = false;
+        // Update appropriate entry in DB
+        updateDB(editedEntry.innerText, oldContent, day, editedTags);
+      }
+    });
   }
 });
 
@@ -368,13 +345,14 @@ document.addEventListener('click', function (event) {
  * @param {string} entry The new content of the entry
  * @param {string} oldContent The old content of the entry that will be replaced by "entry"
  * @param {string} day The date of the entry
+ * @param {array} tagList List of tags for the entry.
  */
-function updateDB (entry, oldContent, day) {
+function updateDB (entry, oldContent, day, tagList) {
   const bullet = entry;
   const transaction = db.transaction(['entries'], 'readwrite');
   const objStore = transaction.objectStore('entries');
   const request1 = objStore.openCursor();
-  const newContent = { content: bullet, date: day };
+  const newContent = { content: bullet, date: day, tags: tagList };
   request1.onsuccess = function (event) {
     const cursor = event.target.result;
     if (cursor === null) {
@@ -386,4 +364,93 @@ function updateDB (entry, oldContent, day) {
     }
     cursor.continue();
   };
+}
+
+/**
+ * Loads entries and renders them to index.html
+ */
+/*
+  document.addEventListener('DOMContentLoaded', () => {
+  const url = './sample-entries.json'; // SET URL
+  const existingOptions = new Set();
+  // creating a set to keep track of options we already have in filter dropdown
+  fetch(url)
+    .then(entries => entries.json())
+    .then(entries => {
+      entries.sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
+      // sorting entries on arrival to page by date
+      entries.forEach((entry) => {
+        console.log(entry);
+        const newPost = document.createElement('journal-entry');
+        newPost.entry = entry;
+        const tags = entry.tags;
+        // getting the tags array for a specific entry
+        for (let i = 0; i < tags.length; i++) {
+          // loop through the tags array for specific entry
+          const opt = document.createElement('option');
+          opt.value = tags[i];
+          opt.innerHTML = capitalizeFirstLetter(tags[i]);
+          // create a new option with the value of the tag, and set
+          // the innerHTML to display the tag capitalized
+          if (!existingOptions.has(opt.value)) {
+            filter.appendChild(opt);
+            existingOptions.add(opt.value);
+            // if it doesn't exist in the existing set, add it to the filter
+            // then add it to the set after
+          }
+        }
+      });
+    })
+    .catch(error => {
+      console.log(`%cresult of fetch is an error: \n"${error}"`, 'color: red');
+    });
+});
+*/
+
+/**
+ * Function to capitalize first letter in a string (for tags)
+ * @param {string} str String to capitalize.
+ * @return Capitlized string.
+ */
+function capitalizeFirstLetter (str) {
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+/**
+ * Function to get tags
+ * @param {string} str String to get tags from
+ */
+function tagGet (str) {
+  const separatedString = str.split('#')[1];
+  if (separatedString === undefined) {
+    return null;
+  }
+  const removedSpaces = separatedString.split(' ').join('');
+  const removedEnter = removedSpaces.split('\n').join('');
+  const listedTags = removedEnter.split(',');
+  return listedTags;
+}
+
+/**
+ * Function to fill filter with new tags
+ * @param {array} tags List of tags to populate filter.
+ */
+function filterPopulate (tags) {
+  if (tags === null) {
+    return;
+  }
+  for (let i = 0; i < tags.length; i++) {
+    // loop through the tags array for specific entry
+    const opt = document.createElement('option');
+    opt.value = tags[i];
+    opt.innerHTML = capitalizeFirstLetter(tags[i]);
+    // create a new option with the value of the tag, and set
+    // the innerHTML to display the tag capitalized
+    if (!existingOptions.has(opt.value)) {
+      filter.appendChild(opt);
+      existingOptions.add(opt.value);
+      // if it doesn't exist in the existing set, add it to the filter
+      // then add it to the set after
+    }
+  }
 }
