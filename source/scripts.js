@@ -412,13 +412,16 @@ function updateDB (entry, oldContent, day, tagList) {
  */
 function capitalizeFirstLetter (str) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-};
+}
 
 /**
  * Function to get tags
  * @param {string} str String to get tags from
  */
 function tagGet (str) {
+  if (str.length === 0) {
+    return null;
+  }
   const separatedString = str.split('#')[1];
   const removedSpaces = separatedString.split(' ').join('');
   const removedEnter = removedSpaces.split('\n').join('');
