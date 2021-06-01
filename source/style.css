@@ -87,7 +87,8 @@ main {
 }
 
 .tl {
-    position: absolute;
+    /*position: absolute;*/
+    position: fixed;
     right: 12%;  
     width: 10%;
     height: 10%;
@@ -135,7 +136,7 @@ ul.timeline > li:before {
     z-index: 400;
 }
 
-ul.timeline > li:hover:before {  /* blue cicle */
+ul.timeline > li:hover:before {  /* blue circle */
     background: rgb(61, 79, 236);
 }
 

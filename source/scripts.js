@@ -89,6 +89,8 @@ while (idx > 0) {
   const monthClone = monthTemp.content.firstElementChild.cloneNode(true);
   monthClone.firstElementChild.innerText = allMonths[month];
   console.log(allMonths[month]);
+
+  monthClone.id = month;
   // Demo of applying months
   // Get total days in the current month
   const daysInMonth = new Date(date.getFullYear(), (month + 1) % 12, 0).getDate();
@@ -156,6 +158,27 @@ document.addEventListener('click', event => {
   if (!isClickInside) {
     for (let i = 0; i < content.length; i++) {
       content[i].style.display = 'none';
+    }
+  }
+});
+
+// Experimental Scroll Event
+window.addEventListener('scroll', event => {
+  const entries = document.querySelectorAll('journal-entry');
+
+  let bolded = false; // Used to prevent other entries that are within the viewport getting their month bolded. Only looking for the first entry in the viewport
+  let saveMonthText = null; // Used to the save the month to prevent other entries after the current with the same month overriding the bold text
+  for (let i = 0; i < entries.length; i++) {
+    const entryPos = entries[i].getBoundingClientRect();
+    const monthText = document.getElementById(entries[i].shadowRoot.querySelector('.entry-date').innerText.substr(0, entries[i].shadowRoot.querySelector('.entry-date').innerText.indexOf('/')) - 1).querySelector('p');
+    if (entryPos.top >= 0 && entryPos.left >= 0 && entryPos.bottom <= (window.innerHeight) && entryPos.right <= (window.innerWidth) && bolded === false) {
+      saveMonthText = monthText;
+      monthText.style.fontWeight = 'bold';
+      bolded = true;
+    } else {
+      if (monthText !== saveMonthText) {
+        monthText.style.fontWeight = 'normal';
+      }
     }
   }
 });
