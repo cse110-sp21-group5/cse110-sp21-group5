@@ -19,6 +19,11 @@ class JournalEntry extends HTMLElement {
                 margin: 20px auto;
                 box-shadow: 0 2px 2px -2px rgba(0, 0, 0, 0.8);
             }
+            @media (max-width: 500px) {
+                .entry {
+                    margin-left: 30px;
+                }
+            }
             .entry-audio {
                 margin: 10px 0;
                 width: 95%;
