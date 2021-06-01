@@ -173,7 +173,8 @@ window.addEventListener('scroll', event => {
     const monthText = document.getElementById(entries[i].shadowRoot.querySelector('.entry-date').innerText.substr(0, entries[i].shadowRoot.querySelector('.entry-date').innerText.indexOf('/')) - 1).querySelector('p');
     if (entryPos.top >= 0 && entryPos.left >= 0 && entryPos.bottom <= (window.innerHeight) && entryPos.right <= (window.innerWidth) && bolded === false) {
       saveMonthText = monthText;
-      monthText.style.fontWeight = 'bold';
+      monthText.style.fontWeight = 'bolder';
+      monthText.style.textShadow = '1px 1px rgba(0, 0, 0, 0.8)';
       bolded = true;
     } else {
       if (monthText !== saveMonthText) {
