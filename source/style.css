@@ -86,9 +86,9 @@ main {
     color: white;
 }
 
-.tl {
+.tl {  /* timeline */
     position: absolute;
-    right: 12%;  
+    left: 85%;  
     width: 10%;
     height: 10%;
     color: white;
@@ -108,6 +108,7 @@ ul.timeline {
     position: relative;
     font-size: 20px;
 }
+
 ul.timeline:before {
     content: ' ';
     background: rgb(119, 183, 255);
@@ -163,4 +164,40 @@ h4.title {
 /*For aligning the journal entry when navigating to certain day (header covers if not done)*/
 journal-entry {
     scroll-margin-top: 70px;
+}
+
+
+/* screensize 500px */
+@media (max-width: 500px) {
+    .tl {  /* timeline */
+        position: absolute;
+        left: 82%;  
+        width: 10%;
+        height: 10%;
+        color: white;
+    }
+    ul.timeline {
+        font-size: 16px;
+    }
+    .nav {
+        font-size: xx-small;
+    }
+    .nav select {
+        float: left;
+        background-color: rgb(119, 183, 255);
+        font-size: 16px;
+        font-family: Abel;
+        margin-right: auto;
+    }
+    .nav a {
+        float: left;
+        color: #2C2C2C;
+        text-align: center;
+        padding: 10px 12px;
+        text-decoration: none;
+        font-size: 16px;
+    }
+    main {
+        margin-left: 30px;
+    }
 }
