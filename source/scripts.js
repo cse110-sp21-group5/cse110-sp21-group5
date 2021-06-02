@@ -10,8 +10,9 @@ let existingEntry = false;
 form.append(textArea);
 textArea.setAttribute('rows', 3);
 textArea.setAttribute('cols', 50);
+let tab;
 
-const request = indexedDB.open('Daily', 1);
+const request = indexedDB.open('daily', 1);
 let db;
 request.onerror = function (event) {
   console.log('Error opening IndexedDB');
@@ -28,16 +29,9 @@ request.onerror = function (event) {
 
 request.onupgradeneeded = function (event) {
   db = event.target.result;
-  /*
-  if (document.querySelector('h3') !== null) {
-    let date = document.querySelector('h3').innerHTML;
-    if(!db.objectStoreNames.contains(date)) {
-      db.createObjectStore(date, { autoIncrement: true});
-    }
-  }
-  */
-  const entries = db.createObjectStore('entries', { autoIncrement: true });
+  entries = db.createObjectStore('entries', { autoIncrement: true });
 };
+
 
 /**
  * Clears the active <a> tag
@@ -56,6 +50,40 @@ for (let i = 0; i < dispBar.length; i++) {
   dispBar[i].addEventListener('click', function () {
     clrActive();
     dispBar[i].classList.add('active');
+    tab = document.querySelector('.active').attributes['href'].value.substring(1);
+    clearPage();
+    const req = indexedDB.open(tab, 1);
+    
+    req.onerror = function (event) {
+      console.log('Error opening IndexedDB');
+    };
+
+    req.onupgradeneeded = function (event) {
+      db = event.target.result;
+      db.createObjectStore('entries', { autoIncrement: true });
+    };
+    
+    req.onsuccess = function (event) {
+      db = event.target.result;
+      getAndShowEntries(db);
+    };
+    
+    req.onerror = function (event) {
+      console.error('IndexedDB erorr: ' + event.target.errorCode);
+    };
+  });
+}
+
+/**
+ * @function
+ * Clears the entries and header lines off of the page
+ */
+function clearPage() {
+
+  let sxn = document.querySelectorAll('section, hr');
+
+  sxn.forEach(s => {
+    s.remove();
   });
 }
 
@@ -88,29 +116,6 @@ textArea.addEventListener('keyup', function (event) {
     addEntry();
   }
 });
-
-/**
- * Loads entries and renders them to index.html
- */
-/*
-document.addEventListener('DOMContentLoaded', () => {
-  let url = "./sample-entries.json"  // SET URL
-  fetch(url)
-    .then(entries => entries.json())
-    .then(entries => {
-      entries.forEach((entry) => {
-        console.log(entry);
-        let newPost;
-
-        newPost = document.createElement('journal-entry');
-        newPost.entry = entry;
-      });
-    })
-    .catch(error => {
-      console.log(`%cresult of fetch is an error: \n"${error}"`, 'color: red');
-    });
-});
-*/
 
 /**
  * Adds a new bullet to the current date and stores the data in the database (IndexedDB)
@@ -173,7 +178,6 @@ function addEntry () {
       addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText);
     }
   }
-  // Adds bullets, reset text area and delete the form
   newEntry.innerText = textArea.value;
   entryDiv.append(newEntry);
   section.append(entryDiv);
@@ -205,31 +209,11 @@ function getAndShowEntries (database) {
 }
 
 /**
- * Adds the given entry to the database
- * @param  database The database that entries will be added to
- * @param {Object} entry The entry that will be added to the database
- * @param {string} day The day the entry was made
- */
-function addEntrytoDB (database, entry, day) {
-  const transaction = database.transaction(['entries'], 'readwrite');
-  const objStore = transaction.objectStore('entries');
-  const entryText = entry.innerText;
-  const entryObject = { content: entryText, date: day };
-  objStore.add(entryObject);
-  transaction.oncomplete = function () {
-    console.log('Data entered into database');
-  };
-  transaction.onerror = function (event) {
-    console.log('Error entering data into database' + event.target.errorCode);
-  };
-}
-
-/**
  * Shows the given entries on the screen
  * Helper function for getAndShowEntries()
  * @param {Object[]} entries The list of entries that will be shown on the screen
  */
-function showEntries (entries) {
+ function showEntries (entries) {
   entries.forEach((entry) => {
     if (textArea.value.length === 1) {
       document.querySelector('form').remove();
@@ -261,6 +245,7 @@ function showEntries (entries) {
         document.querySelector('main').append(section);
       } else {
         document.querySelector('main').insertBefore(section, sec);
+        document.querySelector('main').insertBefore(document.createElement('hr'), sec);
       }
     }
     if (entry.content === entry.date) {
@@ -278,11 +263,31 @@ function showEntries (entries) {
 }
 
 /**
+ * Adds the given entry to the database
+ * @param  database The database that entries will be added to
+ * @param {Object} entry The entry that will be added to the database
+ * @param {string} day The day the entry was made
+ */
+function addEntrytoDB (database, entry, day) {
+  const transaction = database.transaction(['entries'], 'readwrite');
+  const objStore = transaction.objectStore('entries');
+  const entryText = entry.innerText;
+  const entryObject = { content: entryText, date: day };
+  objStore.add(entryObject);
+  transaction.oncomplete = function () {
+    console.log('Data entered into database');
+  };
+  transaction.onerror = function (event) {
+    console.log('Error entering data into database' + event.target.errorCode);
+  };
+}
+
+/**
  * Checks to see if delete button clicked. If so, removes appropriate entry.
  * Otherwise checks to see if an entry was clicked. If so allows editing entry.
  * @function
  */
-document.addEventListener('click', function (event) {
+ document.addEventListener('click', function (event) {
   const divElement = event.target.parentNode;
   const day = divElement.className;
   let oldContent;
