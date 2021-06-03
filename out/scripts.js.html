@@ -200,142 +200,94 @@ function addEntry () {
     return;
   }
 
+  let dateInput;
+  if (form.querySelector('[type=date]')) {
+    dateInput = form.querySelector('[type=date]').value;
+  } 
+  let date;
   if (db.name == 'daily') {
-
-    const date = new Date().toLocaleDateString();
-    const entryDiv = document.createElement('div');
-    entryDiv.className = date;
-    const newEntry = document.createElement('li');
-    const deleteButton = document.createElement('button');
-    deleteButton.className = 'delete';
-    entryDiv.append(deleteButton);
-    let dateExists = false;
-    const sectionList = document.querySelectorAll('section');
-    let sectionExists = false;
-    let section;
-    
-    if (sectionList !== null) {
-      sectionList.forEach(sec => {
-        if (sec.className === date) {
-          sectionExists = true;
-          section = sec;
-        }
-      });
-    }
-    
-    if (sectionExists === false) {
-      section = document.createElement('section');
-      section.className = date;
-      const sec = document.querySelector('section');
-      if (sec === null) {
-        document.querySelector('main').append(section);
-      } else {
-        document.querySelector('main').insertBefore(section, sec);
-      }
-    }
-    // Adds date on the first entry of the day
-    if (document.querySelector('h3') === null) {
-      const newEntryTitle = document.createElement('h3');
-      newEntryTitle.innerText = date;
-      section.append(newEntryTitle);
-      //document.querySelector('main').append(section);
-      addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText);
-    } else {
-      const h3List = document.querySelectorAll('h3');
-      h3List.forEach(h3 => {
-        if (h3.innerText === date) {
-          dateExists = true;
-        }
-      });
-      if (dateExists === false) {
-        const newEntryTitle = document.createElement('h3');
-        newEntryTitle.innerText = date;
-        section.append(newEntryTitle);
-        //document.querySelector('main').append(section);
-        addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText);
-      }
-    }
-    newEntry.innerText = textArea.value;
-    entryDiv.append(newEntry);
-    section.append(entryDiv);
-    document.querySelector('form').remove();
-    textArea.value = '';
-
-    addEntrytoDB(db, entryDiv, date);
-
+    date = new Date().toLocaleDateString();
   } else if (db.name == 'future') {
+    date = parseDateInput(dateInput);
+  }
+  let month = extractMonth(date);
 
-    let dateInput = form.querySelector('[type=date]').value; 
-    let date = parseDateInput(dateInput);
-    let month = extractMonth(date);
-
-    const entryDiv = document.createElement('div');
-    entryDiv.className = month;
-    const newEntry = document.createElement('li');
-    const deleteButton = document.createElement('button');
-    deleteButton.className = 'delete';
-    entryDiv.append(deleteButton);
-    const sectionList = document.querySelectorAll('section');
-    let sectionExists = false;
-    let section;
-    
-    if (sectionList !== null) {
-      sectionList.forEach(sec => {
-        if (sec.className === month) {
-          sectionExists = true;
-          section = sec;
-        }
-      });
-    }
-    
-    if (sectionExists === false) {
-
-      section = document.createElement('section');
-      section.className = month;
-      const sec = document.querySelector('section');
-      if (sec === null) {
-        document.querySelector('main').append(section);
-      } else {
-        document.querySelector('main').insertBefore(section, sec);
+  const entryDiv = document.createElement('div');
+  entryDiv.className = month;
+  const newEntry = document.createElement('li');
+  const deleteButton = document.createElement('button');
+  deleteButton.className = 'delete';
+  entryDiv.append(deleteButton);
+  const sectionList = document.querySelectorAll('section');
+  let sectionExists = false;
+  let section;
+  
+  if (sectionList !== null) {
+    sectionList.forEach(sec => {
+      if ((db.name == 'daily' &amp;&amp; sec.className === date) || (db.name == 'future' &amp;&amp; sec.className === month)) {
+        sectionExists = true;
+        section = sec;
       }
+    });
+  }
+  if (sectionExists === false) {
+    section = document.createElement('section');
+    if (db.name == 'daily') {
+      section.className = date;
+    } else if (db.name == 'future') {
+      section.className = month;
     }
-    
-    // Adds date on the first entry of the day
-    if (document.querySelector('h3') === null) {
-      const newEntryTitle = document.createElement('h3');
+    const sec = document.querySelector('section');
+    if (sec === null) {
+      document.querySelector('main').append(section);
+    } else {
+      document.querySelector('main').insertBefore(section, sec);
+    }
+  }
+  
+  // Adds date on the first entry of the day
+  if (document.querySelector('h3') === null) {
+    const newEntryTitle = document.createElement('h3');
+    if (db.name == 'daily') {
+      newEntryTitle.innerText = date;
+    } else if (db.name == 'future') {
       newEntryTitle.innerText = month;
+    }
+    section.append(newEntryTitle);
+    //document.querySelector('main').append(section);
+    addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText);
+  } else {
+    
+    let dateExists = false;
+
+    const h3List = document.querySelectorAll('h3');
+    h3List.forEach(h3 => {
+      if ((db.name == 'daily' &amp;&amp; h3.innerText === date) || (db.name == 'future' &amp;&amp; h3.innerText === month)) {
+        dateExists = true;
+      }
+    });
+
+    if (dateExists === false) {
+      const newEntryTitle = document.createElement('h3');
+      if (db.name == 'daily') {
+        newEntryTitle.innerText = date;
+      } else if (db.name == 'future') {
+        newEntryTitle.innerText = month;
+      }
       section.append(newEntryTitle);
       //document.querySelector('main').append(section);
       addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText);
-    } else {
-      
-      let dateExists = false;
-
-      const h3List = document.querySelectorAll('h3');
-      h3List.forEach(h3 => {
-        if (h3.innerText === month) {
-          dateExists = true;
-        }
-      });
-
-      if (dateExists === false) {
-        const newEntryTitle = document.createElement('h3');
-        newEntryTitle.innerText = month;
-        section.append(newEntryTitle);
-        //document.querySelector('main').append(section);
-        addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText);
-      }
     }
-
-    newEntry.innerText = textArea.value;
-    entryDiv.append(newEntry);
-    section.append(entryDiv);
-    document.querySelector('form').remove();
-    textArea.value = '';
-
-    addEntrytoDB(db, entryDiv, date);
-    
   }
+
+  newEntry.innerText = textArea.value;
+  entryDiv.append(newEntry);
+  section.append(entryDiv);
+  document.querySelector('form').remove();
+  textArea.value = '';
+
+  addEntrytoDB(db, entryDiv, date);
+
 }
 
 /**
@@ -392,107 +344,62 @@ function getAndShowEntries (database) {
     return;
   }
 
-  if (db.name === 'daily') {
-    entries.forEach((entry) => {
+  entries.forEach((entry) => {
 
-      const entryDiv = document.createElement('div');
-      const deleteButton = document.createElement('button');
-      deleteButton.className = 'delete';
-      entryDiv.className = entry.date;
-      entryDiv.append(deleteButton);
-      const newEntry = document.createElement('li');
-      const sectionList = document.querySelectorAll('section');
-      let section;
-      let sectionExists = false;
+    const deleteButton = document.createElement('button');
+    deleteButton.className = 'delete';
+    
+    const entryDiv = document.createElement('div');
+    entryDiv.className = entry.date;
+    entryDiv.append(deleteButton);
+    
+    const sectionList = document.querySelectorAll('section');
+    let section;
+    let sectionExists = false;
 
-      if (sectionList !== null) {
-        sectionList.forEach(sec => {
-          if (sec.className === entry.date) {
-            sectionExists = true;
-            section = sec;
-          }
-        });
-      }
+    if (sectionList !== null) {
+      sectionList.forEach(sec => {
+        if ((db.name == 'daily' &amp;&amp; sec.className === entry.date) || (db.name == 'future' &amp;&amp; sec.className === extractMonth(entry.date))) {
+          sectionExists = true;
+          section = sec;
+        }
+      });
+    }
 
-      if (sectionExists === false) {
-        section = document.createElement('section');
-        section.className = entry.date;
-        const sec = document.querySelector('section');
+    if (sectionExists === false) {
+      section = document.createElement('section');
+      section.className = entry.date;
+      const sec = document.querySelector('section');
+
+      if (db.name == 'daily') {
         if (sec === null) {
           document.querySelector('main').append(section);
         } else {
           document.querySelector('main').insertBefore(section, sec);
           document.querySelector('main').insertBefore(document.createElement('hr'), sec);
         }
-      }
-
-      if (entry.content === entry.date) {
-
-        const dateTitle = document.createElement('h3');
-        dateTitle.innerText = entry.date;
-        section.append(dateTitle);
-        return;
-      }
-
-      // Adds bullets, reset text area and delete the form
-      newEntry.innerText = entry.content;
-      entryDiv.append(newEntry);
-      section.append(entryDiv);
-      textArea.value = '';
-    });
-
-  } else if (db.name === 'future') {
-    
-    entries.forEach((entry) => {
-      const deleteButton = document.createElement('button');
-      deleteButton.className = 'delete';
-      
-      const entryDiv = document.createElement('div');      
-      entryDiv.className = entry.date;
-      entryDiv.append(deleteButton);
-      
-      const sectionList = document.querySelectorAll('section');
-      let section;
-      let sectionExists = false;
-
-      if (sectionList !== null) {
-        sectionList.forEach(sec => {
-          if (sec.className === extractMonth(entry.date)) {
-            sectionExists = true;
-            section = sec;
-          }
-        });
-      }
-
-      if (sectionExists === false) {
-        section = document.createElement('section');
-        section.className = entry.date;
-        const sec = document.querySelector('section');
-
+      } else if (db.name == 'future') {
         document.querySelector('main').append(section);
         document.querySelector('main').append(document.createElement('hr'));
-
       }
+      
+    }
 
-      if (entry.content === entry.date) {
+    if (entry.content === entry.date) {
 
-        const dateTitle = document.createElement('h3');
-        dateTitle.innerText = entry.date;
-        section.append(dateTitle);
-        return;
-      }
+      const dateTitle = document.createElement('h3');
+      dateTitle.innerText = entry.date;
+      section.append(dateTitle);
+      return;
+    }
 
-      // Adds bullets, reset text area and delete the form
-      const newEntry = document.createElement('li');
-      newEntry.innerText = entry.content;
-      entryDiv.append(newEntry);
-      section.append(entryDiv);
-      textArea.value = '';
-    });
-
-  } else {
-    console.error('this tab is not yet supported');
-  } 
+    // Adds bullets, reset text area and delete the form
+    const newEntry = document.createElement('li');
+    newEntry.innerText = entry.content;
+    entryDiv.append(newEntry);
+    section.append(entryDiv);
+    textArea.value = '';
+  });
 }
 
 /**
@@ -535,7 +442,6 @@ function addEntrytoDB (database, entry, day) {
       //if we're inserting a month header 
 
       let lastKey = 0; 
-      let placed = false;
 
       transaction = database.transaction(['entries'], 'readwrite');
       objStore = transaction.objectStore('entries');
@@ -549,8 +455,6 @@ function addEntrytoDB (database, entry, day) {
             //insert a new month header 
             let newKey = lastKey + ((cursor.key - lastKey) / 2);
             objStore.add({content: extractMonth(date), date: extractMonth(date)}, newKey);
-            console.log("placed1");
-            placed = true; 
             return;
           }
 
@@ -558,18 +462,12 @@ function addEntrytoDB (database, entry, day) {
           cursor.continue();
         } else {
           objStore.add({content: extractMonth(date), date: extractMonth(date)});
-          console.log("end1");
         }
       };
       
-      /*if (placed == false) {
-        objStore.add({content: extractMonth(date), date: extractMonth(date)});
-        console.log("end1");
-      }*/
     } else {
       //we're inserting a full entry, not a month header 
       let lastKey = 0; 
-      let placed = false;
 
       transaction = database.transaction(['entries'], 'readwrite');
       objStore = transaction.objectStore('entries');
@@ -582,8 +480,6 @@ function addEntrytoDB (database, entry, day) {
           if (isLaterThan(date, cursor.value.date) == -1) {
             let newKey = lastKey + 0.000001;
             objStore.add({content: entryText, date: date}, newKey);
-            console.log("placed2");
-            placed = true; 
             return;
           } 
           
@@ -591,7 +487,6 @@ function addEntrytoDB (database, entry, day) {
           cursor.continue();
         } else {
           objStore.add({content: entryText, date: date});
-          console.log("end2");
         }
       };
     }
@@ -822,7 +717,7 @@ function updateDB (entry, oldContent, day) {
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.4</a> on Thu Jun 03 2021 22:21:17 GMT+0000 (Coordinated Universal Time) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.4</a> on Thu Jun 03 2021 23:11:04 GMT+0000 (Coordinated Universal Time) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>
