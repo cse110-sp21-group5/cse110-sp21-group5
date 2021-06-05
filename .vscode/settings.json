@@ -1,0 +1,7 @@
+{
+    "standard.options": {
+        
+    },
+    "semistandard.enable": false,
+    "standard.engine": "semistandard"
+}

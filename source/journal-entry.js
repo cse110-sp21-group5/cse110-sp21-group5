@@ -1,6 +1,6 @@
 // <journal-entry> custom web component
 class JournalEntry extends HTMLElement {
-  constructor() {
+  constructor () {
     super();
 
     // templated HTML content
@@ -47,39 +47,42 @@ class JournalEntry extends HTMLElement {
             <p class="entry-date"></p>
             <p class="entry-content"></p>
         </article>
+        <input type="checkbox" class="entryFlag"></input>
         `;
 
     // create a shadow root for this web component
-    this.attachShadow({ mode: 'open' })
-    // attach cloned content of template to shadow DOM 
-    this.shadowRoot.appendChild(template.content.cloneNode(true))
+    this.attachShadow({ mode: 'open' });
+    // attach cloned content of template to shadow DOM
+    this.shadowRoot.appendChild(template.content.cloneNode(true));
   }
 
   /*
    * `get` binds a property to a function that will be called when that property is looked up
    * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get
    */
-  get entry() {
+  get entry () {
     return this.getAttribute('entry');
+  }
+
+  get flag () {
+    return this.shadowRoot.querySelector('.entryFlag');
   }
 
   /*
    * `set` binds an object property to a function to be called when there is an attempt to set that property
    * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/set
    */
-  set entry(entry) {
-    console.log();
+  set entry (entry) {
     this.shadowRoot.querySelector('.entry-title').innerHTML = entry.title;
     this.shadowRoot.querySelector('.entry-date').innerHTML = entry.date;
     this.shadowRoot.querySelector('.entry-content').innerHTML = entry.content;
-
     this.setAttribute('entry', entry);
     document.body.appendChild(this);
   }
 }
 
 /*
- * Define a custom element for the JournalEntry web component, 
+ * Define a custom element for the JournalEntry web component,
  * where 'journal-entry' is the string that represents this element.
  * https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements
  */

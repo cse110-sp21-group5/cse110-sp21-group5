@@ -5,6 +5,8 @@ const dispBar = document.querySelectorAll('.nav a');
 const newEntry = document.querySelector('[class=addEntry]');
 const form = document.createElement('form');
 const textArea = document.createElement('textarea');
+const filter = document.querySelector('[name="filter"]');
+const existingOptions = new Set();
 textArea.focus();
 let existingEntry = false;
 form.append(textArea);
@@ -41,7 +43,7 @@ request.onerror = function (event) {
 
 request.onsuccess = function (event) {
   db = event.target.result;
-  getAndShowEntries(db);
+  getAndShowEntries(db, filter.value);
 };
 
 request.onerror = function (event) {
@@ -137,7 +139,6 @@ newEntry.addEventListener('click', () => {
   document.querySelector('main').append(newEntry);
 });
 
-
 /**
  * @function
  * Make a new bullet when enter is pressed (rather than newline)
@@ -146,6 +147,15 @@ textArea.addEventListener('keyup', function (event) {
   if (event.keyCode === 13) {
     addEntry();
   }
+});
+
+/**
+ * Changes the journal entries displayed based on the filter selection
+ */
+filter.addEventListener('change', () => {
+  document.querySelectorAll('section').forEach(e => e.remove());
+  // clearing old entries from the page
+  getAndShowEntries(db, filter.value);
 });
 
 /**
@@ -159,6 +169,7 @@ function addEntry () {
     return;
   }
 
+
   let dateInput;
   if (form.querySelector('[type=date]')) {
     dateInput = form.querySelector('[type=date]').value;
@@ -171,12 +182,26 @@ function addEntry () {
   }
   let month = extractMonth(date);
 
+  //commented out in merge from new-entry-creation to main
+  //const listedTags = tagGet(textArea.value);
+  //filterPopulate(listedTags);
+  //const date = new Date().toLocaleDateString();
+
   const entryDiv = document.createElement('div');
   entryDiv.className = month;
   const newEntry = document.createElement('li');
+  // create delete button
   const deleteButton = document.createElement('button');
   deleteButton.className = 'delete';
   entryDiv.append(deleteButton);
+
+  // create flag button
+  const flagButton = document.createElement('input');
+  flagButton.type = 'checkbox';
+  flagButton.className = 'flag';
+  entryDiv.append(flagButton);
+  let dateExists = false;
+
   const sectionList = document.querySelectorAll('section');
   let sectionExists = false;
   let section;
@@ -213,8 +238,8 @@ function addEntry () {
       newEntryTitle.innerText = month;
     }
     section.append(newEntryTitle);
-    //document.querySelector('main').append(section);
-    addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText);
+    // document.querySelector('main').append(section);
+    addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText, listedTags);
   } else {
     
     let dateExists = false;
@@ -234,8 +259,8 @@ function addEntry () {
         newEntryTitle.innerText = month;
       }
       section.append(newEntryTitle);
-      //document.querySelector('main').append(section);
-      addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText);
+      // document.querySelector('main').append(section);
+      addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText, listedTags);
     }
   }
 
@@ -271,8 +296,9 @@ function parseDateInput(dateInput) {
 /**
  * Retrieves the entries of the database and shows the entries on the screen
  * @param  database The database that will be used to display entries
+ * @param  tag The string tag associated with the entries to get from the DB
  */
-function getAndShowEntries (database) {
+function getAndShowEntries (database, tag) {
   const transaction = database.transaction(['entries'], 'readonly');
   const objStore = transaction.objectStore('entries');
   const request1 = objStore.openCursor();
@@ -280,9 +306,30 @@ function getAndShowEntries (database) {
   request1.onsuccess = function (event) {
     const cursor = event.target.result;
     if (cursor !== null) {
+
+      //commented out in merge from new-entry-creation to main
       //console.log(cursor.value);
-      entries.push(cursor.value);
+      //entries.push(cursor.value);
       //console.log(entries.length);
+
+      if (cursor.value.content !== cursor.value.date) {
+        filterPopulate(cursor.value.tags);
+      }
+      if (tag === 'date') {
+        entries.push(cursor.value);
+      } else {
+        if (cursor.value.content === cursor.value.date) {
+          entries.push(cursor.value);
+        }
+        if (cursor.value.tags) {
+          for (let i = 0; i < cursor.value.tags.length; i++) {
+            if ((cursor.value.tags[i] === tag) && (cursor.value.content !== cursor.value.date)) {
+              entries.push(cursor.value);
+            }
+          }
+        }
+      }
+
       cursor.continue();
     } else {
       showEntries(entries);
@@ -305,13 +352,32 @@ function getAndShowEntries (database) {
 
   entries.forEach((entry) => {
 
+    if (textArea.value.length === 1) {
+      document.querySelector('form').remove();
+      textArea.value = '';
+      return;
+    }
+    const entryDiv = document.createElement('div');
+    // create delete button
+
     const deleteButton = document.createElement('button');
     deleteButton.className = 'delete';
     
     const entryDiv = document.createElement('div');
     entryDiv.className = entry.date;
     entryDiv.append(deleteButton);
-    
+
+    // create flag button
+    const flagButton = document.createElement('input');
+    flagButton.type = 'checkbox';
+    flagButton.className = 'flag';
+    // remember flagged status
+    if (entry.flagged) {
+      flagButton.checked = true;
+    }
+    entryDiv.append(flagButton);
+    const newEntry = document.createElement('li');
+
     const sectionList = document.querySelectorAll('section');
     let section;
     let sectionExists = false;
@@ -537,6 +603,29 @@ function isLaterThan(d1, d2) {
 
   console.error('date comparison error ' + d1 + " " + d2);
   return 0;
+
+ * Updates the flag of the entry in the DB. If flagged, adds entry to "Important" log.
+ * Otherwise, removes entry from "Important" log.
+ * @function
+ */
+function updateFlag(event, content) {
+  const divElement = event.target.parentNode;
+  const day = divElement.className;
+  // update flag in DB
+  let flag = false;
+  if (event.target.checked) {
+    flag = true;
+    // add entry to important log
+    // ... to-do
+    console.log('mark as important!');
+  }
+  else {
+    // remove entry from important log
+    // ... to-do
+    console.log('remove important flag');
+  }
+  const tagList = tagGet(event.target.parentNode.innerText);
+  updateDB(content, content, day, tagList, flag);
 }
 
 /**
@@ -576,12 +665,16 @@ function isLaterThan(d1, d2) {
         
         removeHeader(sectionParent);
 
+        //commented out in merge from new-enrty-creation to main
+        //location.reload();
         return;
       }
       cursor.continue();
     };
-
     
+  } else if (event.target.className === 'flag') {
+    updateFlag(event, oldContent);
+
   } else if (divElement.tagName === 'DIV' && existingEntry === false) {
     existingEntry = true;
     const textBox = document.createElement('textarea');
@@ -596,11 +689,12 @@ function isLaterThan(d1, d2) {
     textBox.addEventListener('keyup', function (event) {
       if (event.keyCode === 13) {
         editedEntry.innerText = textBox.value;
+        const editedTags = tagGet(editedEntry.innerText);
         textBox.remove();
         divElement.append(editedEntry);
         existingEntry = false;
         // Update appropriate entry in DB
-        updateDB(editedEntry.innerText, oldContent, day);
+        updateDB(editedEntry.innerText, oldContent, day, editedTags);
       }
     });
   }
@@ -645,13 +739,15 @@ function removeHeader(sectionParent) {
  * @param {string} entry The new content of the entry
  * @param {string} oldContent The old content of the entry that will be replaced by "entry"
  * @param {string} day The date of the entry
+ * @param {array} tagList List of tags for the entry.
+ * @param {boolean} flag The flag to add the entry to the "Important" log
  */
-function updateDB (entry, oldContent, day) {
+function updateDB (entry, oldContent, day, tagList, flag) {
   const bullet = entry;
   const transaction = db.transaction(['entries'], 'readwrite');
   const objStore = transaction.objectStore('entries');
   const request1 = objStore.openCursor();
-  const newContent = { content: bullet, date: day };
+  const newContent = { content: bullet, date: day, tags: tagList, flagged: flag };
   request1.onsuccess = function (event) {
     const cursor = event.target.result;
     if (cursor === null) {
@@ -663,4 +759,93 @@ function updateDB (entry, oldContent, day) {
     }
     cursor.continue();
   };
+}
+
+/**
+ * Loads entries and renders them to index.html
+ */
+/*
+  document.addEventListener('DOMContentLoaded', () => {
+  const url = './sample-entries.json'; // SET URL
+  const existingOptions = new Set();
+  // creating a set to keep track of options we already have in filter dropdown
+  fetch(url)
+    .then(entries => entries.json())
+    .then(entries => {
+      entries.sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
+      // sorting entries on arrival to page by date
+      entries.forEach((entry) => {
+        console.log(entry);
+        const newPost = document.createElement('journal-entry');
+        newPost.entry = entry;
+        const tags = entry.tags;
+        // getting the tags array for a specific entry
+        for (let i = 0; i < tags.length; i++) {
+          // loop through the tags array for specific entry
+          const opt = document.createElement('option');
+          opt.value = tags[i];
+          opt.innerHTML = capitalizeFirstLetter(tags[i]);
+          // create a new option with the value of the tag, and set
+          // the innerHTML to display the tag capitalized
+          if (!existingOptions.has(opt.value)) {
+            filter.appendChild(opt);
+            existingOptions.add(opt.value);
+            // if it doesn't exist in the existing set, add it to the filter
+            // then add it to the set after
+          }
+        }
+      });
+    })
+    .catch(error => {
+      console.log(`%cresult of fetch is an error: \n"${error}"`, 'color: red');
+    });
+});
+*/
+
+/**
+ * Function to capitalize first letter in a string (for tags)
+ * @param {string} str String to capitalize.
+ * @return Capitlized string.
+ */
+function capitalizeFirstLetter (str) {
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+/**
+ * Function to get tags
+ * @param {string} str String to get tags from
+ */
+function tagGet (str) {
+  const separatedString = str.split('#')[1];
+  if (separatedString === undefined) {
+    return null;
+  }
+  const removedSpaces = separatedString.split(' ').join('');
+  const removedEnter = removedSpaces.split('\n').join('');
+  const listedTags = removedEnter.split(',');
+  return listedTags;
+}
+
+/**
+ * Function to fill filter with new tags
+ * @param {array} tags List of tags to populate filter.
+ */
+function filterPopulate (tags) {
+  if (tags === null) {
+    return;
+  }
+  for (let i = 0; i < tags.length; i++) {
+    // loop through the tags array for specific entry
+    const opt = document.createElement('option');
+    opt.value = tags[i];
+    opt.innerHTML = capitalizeFirstLetter(tags[i]);
+    // create a new option with the value of the tag, and set
+    // the innerHTML to display the tag capitalized
+    if (!existingOptions.has(opt.value)) {
+      filter.appendChild(opt);
+      existingOptions.add(opt.value);
+      // if it doesn't exist in the existing set, add it to the filter
+      // then add it to the set after
+    }
+  }
 }
