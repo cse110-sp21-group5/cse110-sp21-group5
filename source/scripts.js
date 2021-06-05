@@ -687,7 +687,7 @@ function createTimeline () {
 function createFutureTime () {
   console.log('running');
   const allMonths = { 0: 'Jan', 1: 'Feb', 2: 'Mar', 3: 'Apr', 4: 'May', 5: 'Jun', 6: 'Jul', 7: 'Aug', 8: 'Sep', 9: 'Oct', 10: 'Nov', 11: 'Dec' };
-
+  const allMonthsRev = { January: 1, February: 2, March: 3, April: 4, May: 5, June: 6, July: 7, August: 8, September: 9, October: 10, November: 11, December: 12 };
   const date = new Date();
 
   let month = date.getMonth();
@@ -749,7 +749,7 @@ function createFutureTime () {
     let saveMonthText = null; // Used to the save the month to prevent other entries after the current with the same month overriding the bold text
     for (let i = 0; i < entries.length; i++) {
       const entryPos = entries[i].getBoundingClientRect();
-      const monthText = document.getElementById(entries[i].className - 1).querySelector('p');
+      const monthText = document.getElementById(allMonthsRev[entries[i].className] - 1).querySelector('p');
       if (entryPos.top >= 0 && entryPos.left >= 0 && entryPos.bottom <= (window.innerHeight) && entryPos.right <= (window.innerWidth) && bolded === false) {
         saveMonthText = monthText;
         monthText.style.fontWeight = 'bolder';
