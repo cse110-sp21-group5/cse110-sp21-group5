@@ -71,7 +71,7 @@ for (let i = 0; i < dispBar.length; i++) {
 
     if (currentTab === 'Daily') {
       createTimeline();
-    } else {
+    } else if (currentTab === 'Future') {
       // create respective timelines
       createFutureTime();
     }
@@ -637,7 +637,7 @@ function createTimeline () {
   //   }
   // });
 
-  // Experimental Scroll Event
+  // Scroll Event marking month position
   window.addEventListener('scroll', event => {
     const entries = document.querySelectorAll('section');
 
@@ -731,7 +731,7 @@ function createFutureTime () {
     timeClone.querySelector('ul').prepend(monthClone);
     month = month + 1;
 
-    // Case of rolling back to last December
+    // Case of going to next year
     if (month === 12) {
       month = 0;
       date.setFullYear(date.getFullYear() + 1);
@@ -741,7 +741,7 @@ function createFutureTime () {
 
   document.querySelector('aside').appendChild(timeClone);
 
-  // Experimental Scroll Event
+  // Scroll Event marking month position
   window.addEventListener('scroll', event => {
     const entries = document.querySelectorAll('section');
 
