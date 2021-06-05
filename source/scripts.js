@@ -201,10 +201,16 @@ function addEntry () {
   entryDiv.append(deleteButton);
 
   // create flag button
+  const flagLabel = document.createElement('label');
+  const flagText = document.createElement('span');
+  flagText.innerHTML = '!';
+  flagText.className = 'flagText';
   const flagButton = document.createElement('input');
   flagButton.type = 'checkbox';
   flagButton.className = 'flag';
-  entryDiv.append(flagButton);
+  flagLabel.append(flagButton);
+  flagLabel.append(flagText);
+  entryDiv.append(flagLabel);
 
   const sectionList = document.querySelectorAll('section');
   let sectionExists = false;
@@ -259,7 +265,6 @@ function addEntry () {
       } else if (db.name === 'future') {
         newEntryTitle.innerText = month;
       }
-      // section.append(document.createElement('br'));
       console.log(listedTags);
       addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText, listedTags);
     }
@@ -356,6 +361,10 @@ function showEntries (entries) {
     entryDiv.className = entry.date;
 
     // create flag button
+    const flagLabel = document.createElement('label');
+    const flagText = document.createElement('span');
+    flagText.innerHTML = '!';
+    flagText.className = 'flagText';
     const flagButton = document.createElement('input');
     flagButton.type = 'checkbox';
     flagButton.className = 'flag';
@@ -363,7 +372,9 @@ function showEntries (entries) {
     if (entry.flagged) {
       flagButton.checked = true;
     }
-    entryDiv.append(flagButton);
+    flagLabel.append(flagButton);
+    flagLabel.append(flagText);
+    entryDiv.append(flagLabel);
 
     const sectionList = document.querySelectorAll('section');
     let section;

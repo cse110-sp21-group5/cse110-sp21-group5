@@ -68,7 +68,7 @@ body {
 }
 
 li {
-    margin-left: 20px;
+    margin-left: 10px;
     font-size: 20px;
 }
 
@@ -95,16 +95,22 @@ div > button  {
     border: none;
 }
 
-/* text inside flag button */
-.flag:before {
-    content: '';
-    font-size: 17px;
-    color: red;
+/* flag button */
+.flag {
+    display: none;
 }
 
-.flag:checked:before {
-    content: '!';
-    align-self: flex-end;
+.flag + .flagText {
+    visibility: hidden;
+    color: transparent;
+    background-color: #fafafa;
+	border: 1px solid #cacece;
+    padding: 0px 9px 0px 9px;
+}
+
+.flag:checked + .flagText {
+    visibility: visible;
+    color: black;
 }
 
 .addEntry {
@@ -150,23 +156,10 @@ div:hover > .delete {
     top: 0px;
 }
 
-/* flag button box style */
-.flag {
-    visibility: hidden;
-    appearance: none;
-    background-color: #fafafa;
-	border: 1px solid #cacece;
-    padding: 0px 0px 0px 7px;
-    min-width: 22px;
-    min-height: 22px;
-}
-
-div:hover > .flag {
+div:hover .flagText {
     visibility: visible;
     position: relative;
     display: inline;
-    vertical-align: middle;
-    top: 6px;
 }
 
 div:hover > li {
@@ -179,8 +172,8 @@ div {
     align-content: flex-start;
     align-items: baseline;
     position: relative;
-    /* height: 40px; */
-    left: -20px;
+    height: 40px;
+    left: -15px;
 }
 
 section {
