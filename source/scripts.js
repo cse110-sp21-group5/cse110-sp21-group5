@@ -107,7 +107,7 @@ for (let i = 0; i < dispBar.length; i++) {
  * Clears the entries and header lines off of the page
  */
 function clearPage () {
-  const sxn = document.querySelectorAll('section, hr');
+  const sxn = document.querySelectorAll('section, hr, br');
 
   sxn.forEach(s => {
     s.remove();
@@ -255,7 +255,7 @@ function addEntry () {
       } else if (db.name === 'future') {
         newEntryTitle.innerText = month;
       }
-      section.append(newEntryTitle);
+      // section.append(document.createElement('br'));
       console.log(listedTags);
       addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText, listedTags);
     }
@@ -389,6 +389,7 @@ function showEntries (entries) {
       } else if (db.name === 'future') {
         document.querySelector('main').append(section);
         document.querySelector('main').append(document.createElement('hr'));
+        document.querySelector('main').appendChild(document.createElement('br'));
       }
     }
 
