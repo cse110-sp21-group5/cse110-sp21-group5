@@ -617,7 +617,6 @@ document.addEventListener('click', function (event) {
   if (event.target.className === 'delete') {
     // Get the div element
     const divElement = event.target.parentNode;
-    console.log(divElement);
     const content = divElement.innerText;
     const date = divElement.className;
     // Remove element from IndexedDB
@@ -625,17 +624,27 @@ document.addEventListener('click', function (event) {
     const objStore = transaction.objectStore('entries');
     const request1 = objStore.openCursor();
     const sectionParent = divElement.parentNode;
-    console.log(sectionParent.querySelectorAll('div').length);
     request1.onsuccess = function (event) {
       const cursor = event.target.result;
       if (cursor === null) {
         return;
       }
       if (cursor.value.content === content && cursor.value.date === date) {
+        console.log('delete key pressed');
         objStore.delete(cursor.key); // Delete appropriate element from DB
         divElement.remove(); // Delete div element from page
         removeHeader(sectionParent);
-        location.reload();
+        existingOptions.clear();
+        while (filter.firstChild) {
+          filter.removeChild(filter.lastChild);
+        }
+        const opt = document.createElement('option');
+        opt.value = 'date';
+        opt.innerHTML = 'Date (Default)';
+        filter.appendChild(opt);
+        existingOptions.add(opt.value);
+        document.querySelectorAll('section').forEach(e => e.remove());
+        getAndShowEntries(db, filter.value);
         return;
       }
       cursor.continue();
@@ -724,47 +733,6 @@ function updateDB (entry, oldContent, day, tagList, flag) {
     cursor.continue();
   };
 }
-
-/**
- * Loads entries and renders them to index.html
- */
-/*
-  document.addEventListener('DOMContentLoaded', () => {
-  const url = './sample-entries.json'; // SET URL
-  const existingOptions = new Set();
-  // creating a set to keep track of options we already have in filter dropdown
-  fetch(url)
-    .then(entries => entries.json())
-    .then(entries => {
-      entries.sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
-      // sorting entries on arrival to page by date
-      entries.forEach((entry) => {
-        console.log(entry);
-        const newPost = document.createElement('journal-entry');
-        newPost.entry = entry;
-        const tags = entry.tags;
-        // getting the tags array for a specific entry
-        for (let i = 0; i < tags.length; i++) {
-          // loop through the tags array for specific entry
-          const opt = document.createElement('option');
-          opt.value = tags[i];
-          opt.innerHTML = capitalizeFirstLetter(tags[i]);
-          // create a new option with the value of the tag, and set
-          // the innerHTML to display the tag capitalized
-          if (!existingOptions.has(opt.value)) {
-            filter.appendChild(opt);
-            existingOptions.add(opt.value);
-            // if it doesn't exist in the existing set, add it to the filter
-            // then add it to the set after
-          }
-        }
-      });
-    })
-    .catch(error => {
-      console.log(`%cresult of fetch is an error: \n"${error}"`, 'color: red');
-    });
-});
-*/
 
 /**
  * Function to capitalize first letter in a string (for tags)
