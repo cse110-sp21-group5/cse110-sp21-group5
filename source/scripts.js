@@ -174,6 +174,10 @@ function addEntry () {
   let dateInput;
   if (form.querySelector('[type=date]')) {
     dateInput = form.querySelector('[type=date]').value;
+    if (dateInput === '') {
+      console.error('Please enter a date!');
+      return;
+    }
   }
   let date;
   if (db.name === 'daily') {
@@ -297,7 +301,6 @@ function getAndShowEntries (database, tag) {
   request1.onsuccess = function (event) {
     const cursor = event.target.result;
     if (cursor !== null) {
-      console.log(cursor.value);
       if (cursor.value.content !== cursor.value.date) {
         filterPopulate(cursor.value.tags);
       }
@@ -431,6 +434,9 @@ function addEntrytoDB (database, entry, day, tagList) {
   let date;
   if (form.querySelector('input')) {
     date = parseDateInput(form.querySelector('input').value);
+    if (date === '/') {
+      return;
+    }
   }
 
   if (database.name === 'daily') {
@@ -662,7 +668,7 @@ document.addEventListener('click', function (event) {
 });
 
 /**
- * Checks to see if a header line needs to be removed from the database and display and does so 
+ * Checks to see if a header line needs to be removed from the database and display and does so
  *
  */
 function removeHeader (sectionParent) {
