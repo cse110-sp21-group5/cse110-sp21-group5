@@ -740,6 +740,12 @@ function updateDB (entry, oldContent, day, tagList, flag) {
  * @return Capitlized string.
  */
 function capitalizeFirstLetter (str) {
+  if (str.length === 0) {
+    return '';
+  }
+  if (str.length === 1) {
+    return str.charAt(0).toUpperCase();
+  }
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
@@ -784,3 +790,5 @@ function filterPopulate (tags) {
     }
   }
 }
+
+module.exports = { capitalizeFirstLetter, tagGet };

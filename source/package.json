@@ -1,9 +1,9 @@
 {
+    "type": "module",
     "scripts": {
-        "test": "jest"
+        "test": "jest --env=jsdom"
     },
-
-    "name": "CSE110-SP21-GROUP5",
+    "name": "cse110-sp21-group5",
     "jest": {
         "collectCoverage": true
     }
