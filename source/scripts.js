@@ -191,7 +191,11 @@ function addEntry () {
   const newEntry = document.createElement('li');
   // create delete button
   const entryDiv = document.createElement('div');
-  entryDiv.className = month;
+  if (db.name === 'daily') {
+    entryDiv.className = date;
+  } else {
+    entryDiv.className = month;
+  }
   const deleteButton = document.createElement('button');
   deleteButton.className = 'delete';
   entryDiv.append(deleteButton);
@@ -617,7 +621,6 @@ document.addEventListener('click', function (event) {
   }
   if (event.target.className === 'delete') {
     // Get the div element
-    const divElement = event.target.parentNode;
     const content = divElement.innerText;
     const date = divElement.className;
     // Remove element from IndexedDB
