@@ -75,6 +75,15 @@ for (let i = 0; i < dispBar.length; i++) {
     tab = document.querySelector('.active').attributes['href'].value.substring(1);
     clearPage();
     const req = indexedDB.open(tab, 1);
+    existingOptions.clear();
+    while (filter.firstChild) {
+      filter.removeChild(filter.lastChild);
+    }
+    const opt = document.createElement('option');
+    opt.value = 'date';
+    opt.innerHTML = 'Date (Default)';
+    filter.appendChild(opt);
+    existingOptions.add(opt.value);
     req.onerror = function (event) {
       console.log('Error opening IndexedDB');
     };
@@ -85,7 +94,7 @@ for (let i = 0; i < dispBar.length; i++) {
     };
     req.onsuccess = function (event) {
       db = event.target.result;
-      getAndShowEntries(db);
+      getAndShowEntries(db, 'date');
     };
     req.onerror = function (event) {
       console.error('IndexedDB erorr: ' + event.target.errorCode);
@@ -146,7 +155,7 @@ textArea.addEventListener('keyup', function (event) {
  * Changes the journal entries displayed based on the filter selection
  */
 filter.addEventListener('change', () => {
-  document.querySelectorAll('section').forEach(e => e.remove());
+  clearPage();
   // clearing old entries from the page
   getAndShowEntries(db, filter.value);
 });
@@ -175,7 +184,6 @@ function addEntry () {
   const month = extractMonth(date);
   const listedTags = tagGet(textArea.value);
   filterPopulate(listedTags);
-  console.log(listedTags);
   const entryDiv = document.createElement('div');
   entryDiv.className = month;
   const newEntry = document.createElement('li');
@@ -225,10 +233,10 @@ function addEntry () {
     }
     section.append(newEntryTitle);
     // document.querySelector('main').append(section);
+    console.log(listedTags);
     addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText, listedTags);
   } else {
     let dateExists = false;
-
     const h3List = document.querySelectorAll('h3');
     h3List.forEach(h3 => {
       if ((db.name === 'daily' && h3.innerText === date) || (db.name === 'future' && h3.innerText === month)) {
@@ -244,7 +252,7 @@ function addEntry () {
         newEntryTitle.innerText = month;
       }
       section.append(newEntryTitle);
-      // document.querySelector('main').append(section);
+      console.log(listedTags);
       addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText, listedTags);
     }
   }
@@ -255,7 +263,7 @@ function addEntry () {
   document.querySelector('form').remove();
   textArea.value = '';
 
-  addEntrytoDB(db, entryDiv, date);
+  addEntrytoDB(db, entryDiv, date, listedTags);
 }
 
 /**
@@ -289,6 +297,7 @@ function getAndShowEntries (database, tag) {
   request1.onsuccess = function (event) {
     const cursor = event.target.result;
     if (cursor !== null) {
+      console.log(cursor.value);
       if (cursor.value.content !== cursor.value.date) {
         filterPopulate(cursor.value.tags);
       }
@@ -306,7 +315,6 @@ function getAndShowEntries (database, tag) {
           }
         }
       }
-
       cursor.continue();
     } else {
       showEntries(entries);
