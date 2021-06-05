@@ -12,8 +12,30 @@ let existingEntry = false;
 form.append(textArea);
 textArea.setAttribute('rows', 3);
 textArea.setAttribute('cols', 50);
+let tab;
 
-const request = indexedDB.open('Daily', 1);
+/**
+ * define a dictionary for month names and numbers 
+ */
+let dict = [];
+dict[1] = 'January';
+dict[2] = 'February';
+dict[3] = 'March';
+dict[4] = 'April';
+dict[5] = 'May';
+dict[6] = 'June';
+dict[7] = 'July';
+dict[8] = 'August';
+dict[9] = 'September';
+dict[10] = 'October';
+dict[11] = 'November';
+dict[12] = 'December';
+
+for (key in dict) {
+  dict[dict[key]] = key;
+}
+
+const request = indexedDB.open('daily', 1);
 let db;
 request.onerror = function (event) {
   console.log('Error opening IndexedDB');
@@ -30,16 +52,9 @@ request.onerror = function (event) {
 
 request.onupgradeneeded = function (event) {
   db = event.target.result;
-  /*
-  if (document.querySelector('h3') !== null) {
-    let date = document.querySelector('h3').innerHTML;
-    if(!db.objectStoreNames.contains(date)) {
-      db.createObjectStore(date, { autoIncrement: true});
-    }
-  }
-  */
-  const entries = db.createObjectStore('entries', { autoIncrement: true });
+  entries = db.createObjectStore('entries', { autoIncrement: true });
 };
+
 
 /**
  * Clears the active <a> tag
@@ -58,6 +73,40 @@ for (let i = 0; i < dispBar.length; i++) {
   dispBar[i].addEventListener('click', function () {
     clrActive();
     dispBar[i].classList.add('active');
+    tab = document.querySelector('.active').attributes['href'].value.substring(1);
+    clearPage();
+    const req = indexedDB.open(tab, 1);
+    
+    req.onerror = function (event) {
+      console.log('Error opening IndexedDB');
+    };
+
+    req.onupgradeneeded = function (event) {
+      db = event.target.result;
+      db.createObjectStore('entries', { autoIncrement: true });
+    };
+    
+    req.onsuccess = function (event) {
+      db = event.target.result;
+      getAndShowEntries(db);
+    };
+    
+    req.onerror = function (event) {
+      console.error('IndexedDB erorr: ' + event.target.errorCode);
+    };
+  });
+}
+
+/**
+ * @function
+ * Clears the entries and header lines off of the page
+ */
+function clearPage() {
+
+  let sxn = document.querySelectorAll('section, hr');
+
+  sxn.forEach(s => {
+    s.remove();
   });
 }
 
@@ -67,17 +116,27 @@ for (let i = 0; i < dispBar.length; i++) {
  */
 
 newEntry.addEventListener('click', () => {
+  
   if (document.querySelector('section') === null) {
     document.querySelector('main').append(form);
-    textArea.focus();
-    document.querySelector('.addEntry').remove();
-    document.querySelector('main').append(newEntry);
   } else {
     document.querySelector('section').append(form);
-    textArea.focus();
-    document.querySelector('.addEntry').remove();
-    document.querySelector('main').append(newEntry);
   }
+
+  if (form.querySelector('input') != null) {
+    form.querySelector('input').remove();
+  }
+
+  if (db.name == 'future') {
+    
+    let dateIn = document.createElement('input');
+    dateIn.type = 'date';
+    form.append(dateIn);
+  }
+
+  textArea.focus();
+  document.querySelector('.addEntry').remove();
+  document.querySelector('main').append(newEntry);
 });
 
 /**
@@ -109,28 +168,47 @@ function addEntry () {
     textArea.value = '';
     return;
   }
-  const listedTags = tagGet(textArea.value);
-  filterPopulate(listedTags);
-  const date = new Date().toLocaleDateString();
+
+
+  let dateInput;
+  if (form.querySelector('[type=date]')) {
+    dateInput = form.querySelector('[type=date]').value;
+  } 
+  let date;
+  if (db.name == 'daily') {
+    date = new Date().toLocaleDateString();
+  } else if (db.name == 'future') {
+    date = parseDateInput(dateInput);
+  }
+  let month = extractMonth(date);
+
+  //commented out in merge from new-entry-creation to main
+  //const listedTags = tagGet(textArea.value);
+  //filterPopulate(listedTags);
+  //const date = new Date().toLocaleDateString();
+
   const entryDiv = document.createElement('div');
-  entryDiv.className = date;
+  entryDiv.className = month;
   const newEntry = document.createElement('li');
   // create delete button
   const deleteButton = document.createElement('button');
   deleteButton.className = 'delete';
   entryDiv.append(deleteButton);
+
   // create flag button
   const flagButton = document.createElement('input');
   flagButton.type = 'checkbox';
   flagButton.className = 'flag';
   entryDiv.append(flagButton);
   let dateExists = false;
+
   const sectionList = document.querySelectorAll('section');
   let sectionExists = false;
   let section;
+  
   if (sectionList !== null) {
     sectionList.forEach(sec => {
-      if (sec.className === date) {
+      if ((db.name == 'daily' && sec.className === date) || (db.name == 'future' && sec.className === month)) {
         sectionExists = true;
         section = sec;
       }
@@ -138,7 +216,11 @@ function addEntry () {
   }
   if (sectionExists === false) {
     section = document.createElement('section');
-    section.className = date;
+    if (db.name == 'daily') {
+      section.className = date;
+    } else if (db.name == 'future') {
+      section.className = month;
+    }
     const sec = document.querySelector('section');
     if (sec === null) {
       document.querySelector('main').append(section);
@@ -146,35 +228,69 @@ function addEntry () {
       document.querySelector('main').insertBefore(section, sec);
     }
   }
+  
   // Adds date on the first entry of the day
   if (document.querySelector('h3') === null) {
     const newEntryTitle = document.createElement('h3');
-    newEntryTitle.innerText = date;
+    if (db.name == 'daily') {
+      newEntryTitle.innerText = date;
+    } else if (db.name == 'future') {
+      newEntryTitle.innerText = month;
+    }
     section.append(newEntryTitle);
     // document.querySelector('main').append(section);
     addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText, listedTags);
   } else {
+    
+    let dateExists = false;
+
     const h3List = document.querySelectorAll('h3');
     h3List.forEach(h3 => {
-      if (h3.innerText === date) {
+      if ((db.name == 'daily' && h3.innerText === date) || (db.name == 'future' && h3.innerText === month)) {
         dateExists = true;
       }
     });
+
     if (dateExists === false) {
       const newEntryTitle = document.createElement('h3');
-      newEntryTitle.innerText = date;
+      if (db.name == 'daily') {
+        newEntryTitle.innerText = date;
+      } else if (db.name == 'future') {
+        newEntryTitle.innerText = month;
+      }
       section.append(newEntryTitle);
       // document.querySelector('main').append(section);
       addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText, listedTags);
     }
   }
-  // Adds bullets, reset text area and delete the form
+
   newEntry.innerText = textArea.value;
   entryDiv.append(newEntry);
   section.append(entryDiv);
   document.querySelector('form').remove();
   textArea.value = '';
-  addEntrytoDB(db, entryDiv, date, listedTags);
+
+  addEntrytoDB(db, entryDiv, date);
+
+}
+
+/**
+ * //parse dateInput (yyyy-mm-dd) to date (m/d/y)
+ * @param {string} date in string format from the input box 
+ */
+function parseDateInput(dateInput) {
+
+  let date = dateInput.substring(dateInput.indexOf('-') + 1);
+  date = date.replace('-', '/');
+  //remove 0 from months starting with 0
+  if (date.charAt(0) == '0') {
+    date = date.substring(1);
+  }
+  //remove 0 from days starting with 0
+  if (date.charAt(date.indexOf('/') + 1) == '0') {
+    date = date.substring(0, date.indexOf('/') + 1) + date.substring(date.indexOf('/') + 2);
+  }
+  return date.concat('/' + dateInput.substring(0, dateInput.indexOf('-')));
 }
 
 /**
@@ -190,6 +306,12 @@ function getAndShowEntries (database, tag) {
   request1.onsuccess = function (event) {
     const cursor = event.target.result;
     if (cursor !== null) {
+
+      //commented out in merge from new-entry-creation to main
+      //console.log(cursor.value);
+      //entries.push(cursor.value);
+      //console.log(entries.length);
+
       if (cursor.value.content !== cursor.value.date) {
         filterPopulate(cursor.value.tags);
       }
@@ -207,6 +329,7 @@ function getAndShowEntries (database, tag) {
           }
         }
       }
+
       cursor.continue();
     } else {
       showEntries(entries);
@@ -215,34 +338,20 @@ function getAndShowEntries (database, tag) {
 }
 
 /**
- * Adds the given entry to the database
- * @param  database The database that entries will be added to
- * @param {Object} entry The entry that will be added to the database
- * @param {string} day The day the entry was made
- * @param {Array} tagList List of tags associated with the entry
- * @param {boolean} flag The flag to add the entry to the "Important" log
- */
-function addEntrytoDB (database, entry, day, tagList, flag = false) {
-  const transaction = database.transaction(['entries'], 'readwrite');
-  const objStore = transaction.objectStore('entries');
-  const entryText = entry.innerText;
-  const entryObject = { content: entryText, date: day, tags: tagList, flagged: flag };
-  objStore.add(entryObject);
-  transaction.oncomplete = function () {
-    console.log('Data entered into database');
-  };
-  transaction.onerror = function (event) {
-    console.log('Error entering data into database' + event.target.errorCode);
-  };
-}
-
-/**
  * Shows the given entries on the screen
  * Helper function for getAndShowEntries()
  * @param {Object[]} entries The list of entries that will be shown on the screen
  */
-function showEntries (entries) {
+ function showEntries (entries) {
+
+  if (textArea.value.length === 1) {
+    document.querySelector('form').remove();
+    textArea.value = '';
+    return;
+  }
+
   entries.forEach((entry) => {
+
     if (textArea.value.length === 1) {
       document.querySelector('form').remove();
       textArea.value = '';
@@ -250,10 +359,14 @@ function showEntries (entries) {
     }
     const entryDiv = document.createElement('div');
     // create delete button
+
     const deleteButton = document.createElement('button');
     deleteButton.className = 'delete';
+    
+    const entryDiv = document.createElement('div');
     entryDiv.className = entry.date;
     entryDiv.append(deleteButton);
+
     // create flag button
     const flagButton = document.createElement('input');
     flagButton.type = 'checkbox';
@@ -264,34 +377,49 @@ function showEntries (entries) {
     }
     entryDiv.append(flagButton);
     const newEntry = document.createElement('li');
+
     const sectionList = document.querySelectorAll('section');
     let section;
     let sectionExists = false;
+
     if (sectionList !== null) {
       sectionList.forEach(sec => {
-        if (sec.className === entry.date) {
+        if ((db.name == 'daily' && sec.className === entry.date) || (db.name == 'future' && sec.className === extractMonth(entry.date))) {
           sectionExists = true;
           section = sec;
         }
       });
     }
+
     if (sectionExists === false) {
       section = document.createElement('section');
       section.className = entry.date;
       const sec = document.querySelector('section');
-      if (sec === null) {
+
+      if (db.name == 'daily') {
+        if (sec === null) {
+          document.querySelector('main').append(section);
+        } else {
+          document.querySelector('main').insertBefore(section, sec);
+          document.querySelector('main').insertBefore(document.createElement('hr'), sec);
+        }
+      } else if (db.name == 'future') {
         document.querySelector('main').append(section);
-      } else {
-        document.querySelector('main').insertBefore(section, sec);
+        document.querySelector('main').append(document.createElement('hr'));
       }
+      
     }
+
     if (entry.content === entry.date) {
+
       const dateTitle = document.createElement('h3');
       dateTitle.innerText = entry.date;
       section.append(dateTitle);
       return;
     }
+
     // Adds bullets, reset text area and delete the form
+    const newEntry = document.createElement('li');
     newEntry.innerText = entry.content;
     entryDiv.append(newEntry);
     section.append(entryDiv);
@@ -300,6 +428,182 @@ function showEntries (entries) {
 }
 
 /**
+ * Takes a date in string form and returns the string name of the month it is in 
+ * @param {string} date a m/d/y date in string form   
+ */
+function extractMonth(date) {
+
+  month = Number(date.substring(0, date.indexOf('/')));
+
+  return dict[month];
+}
+
+/**
+ * Adds the given entry to the database
+ * @param  database The database that entries will be added to
+ * @param {Object} entry The entry that will be added to the database
+ * @param {string} day The day the entry was made
+ */
+function addEntrytoDB (database, entry, day) {
+  let transaction;
+  let objStore;
+  const entryText = entry.innerText;
+  const entryObject = { content: entryText, date: day };
+
+  let date; 
+  if (form.querySelector('input')) {
+    date = parseDateInput(form.querySelector('input').value);
+  }
+
+  if (database.name === 'daily') {
+    transaction = database.transaction(['entries'], 'readwrite');
+    objStore = transaction.objectStore('entries');
+    objStore.add(entryObject);  
+  } else if (database.name == 'future') {
+    
+    console.log("placing");
+
+    if (day.indexOf('/') == -1) {
+      //if we're inserting a month header 
+
+      let lastKey = 0; 
+
+      transaction = database.transaction(['entries'], 'readwrite');
+      objStore = transaction.objectStore('entries');
+
+      const request1 = objStore.openCursor();
+      request1.onsuccess = function (event) {
+
+        let cursor = event.target.result;
+        if (cursor) {
+          if (isLaterThan(date, cursor.value.date) == -1) {
+            //insert a new month header 
+            let newKey = lastKey + ((cursor.key - lastKey) / 2);
+            objStore.add({content: extractMonth(date), date: extractMonth(date)}, newKey);
+            return;
+          }
+
+          lastKey = cursor.key;
+          cursor.continue();
+        } else {
+          objStore.add({content: extractMonth(date), date: extractMonth(date)});
+        }
+      };
+      
+    } else {
+      //we're inserting a full entry, not a month header 
+      let lastKey = 0; 
+
+      transaction = database.transaction(['entries'], 'readwrite');
+      objStore = transaction.objectStore('entries');
+
+      const request1 = objStore.openCursor();
+      request1.onsuccess = function (event) {
+
+        let cursor = event.target.result;
+        if (cursor) {        
+          if (isLaterThan(date, cursor.value.date) == -1) {
+            let newKey = lastKey + 0.000001;
+            objStore.add({content: entryText, date: date}, newKey);
+            return;
+          } 
+          
+          lastKey = cursor.key;
+          cursor.continue();
+        } else {
+          objStore.add({content: entryText, date: date});
+        }
+      };
+    }
+  }
+  
+  transaction.oncomplete = function () {
+    console.log('Data entered into database');
+  };
+  transaction.onerror = function (event) {
+    console.log('Error entering data into database' + event.target.errorCode);
+  };
+}
+
+/**
+ * Checks to see if one date is later than another. Returns 1 if d1 is later, -1 if d2 is later, or 0 if they are equal. 
+ * @param {string} d1 
+ * @param {string} d2 
+ */
+function isLaterThan(d1, d2) {
+
+  if (d1 == d2) {
+    return 0;
+  } 
+
+  if (d1.indexOf('/') == -1 && d2.indexOf('/') == -1) {
+
+    if (dict[d1] > dict[d2]) {
+      return 1;
+    } 
+    if (dict[d1] < dict[d2]) {
+      return -1;
+    }
+  }
+
+  if (d1.indexOf('/') == -1) {
+    
+    let month = extractMonth(d2);
+    if (month == d1) {
+      return 0;
+    }
+    if (dict[month] > dict[d1]) {
+      return 1;
+    }
+    if (dict[month] < dict[d1]) {
+      return -1;
+    }
+  }
+
+  if (d2.indexOf('/') == -1) {
+    
+    let month = extractMonth(d1);
+    if (month == d2) {
+      return 0;
+    }
+    if (dict[month] > dict[d2]) {
+      return 1;
+    }
+    if (dict[month] < dict[d2]) {
+      return -1;
+    }
+  }
+
+  let year1 = d1.substring(d1.lastIndexOf('/'));
+  let year2 = d2.substring(d2.lastIndexOf('/'));
+
+  if (year1 > year2) {
+    return 1;
+  } else if (year1 < year2) {
+    return -1
+  }
+
+  let month1 = d1.substring(0, d1.indexOf('/'));
+  let month2 = d2.substring(0, d2.indexOf('/'));
+
+  if (month1 > month2) {
+    return 1;
+  } else if (month1 < month2) {
+    return -1;
+  }
+
+  let day1 = d1.substring(d1.indexOf('/') + 1, d1.lastIndexOf('/'));
+  let day2 = d2.substring(d2.indexOf('/') + 1, d2.lastIndexOf('/'));
+
+  if (day1 > day2) {
+    return 1;
+  } else if (day1 < day2) {
+    return -1;
+  }
+
+  console.error('date comparison error ' + d1 + " " + d2);
+  return 0;
+
  * Updates the flag of the entry in the DB. If flagged, adds entry to "Important" log.
  * Otherwise, removes entry from "Important" log.
  * @function
@@ -329,7 +633,7 @@ function updateFlag(event, content) {
  * Otherwise checks to see if an entry was clicked. If so allows editing entry.
  * @function
  */
-document.addEventListener('click', function (event) {
+ document.addEventListener('click', function (event) {
   const divElement = event.target.parentNode;
   const day = divElement.className;
   let oldContent;
@@ -339,27 +643,38 @@ document.addEventListener('click', function (event) {
   if (event.target.className === 'delete') {
     // Get the div element
     const divElement = event.target.parentNode;
+    console.log(divElement);
     const content = divElement.innerText;
     const date = divElement.className;
     // Remove element from IndexedDB
     const transaction = db.transaction(['entries'], 'readwrite');
     const objStore = transaction.objectStore('entries');
     const request1 = objStore.openCursor();
+    
+    let sectionParent = divElement.parentNode;
+    console.log(sectionParent.querySelectorAll('div').length);
+    
     request1.onsuccess = function (event) {
       const cursor = event.target.result;
-      if (cursor === null) {
+      if (cursor === null) {        
         return;
       }
       if (cursor.value.content === content && cursor.value.date === date) {
         objStore.delete(cursor.key); // Delete appropriate element from DB
         divElement.remove(); // Delete div element from page
-        location.reload();
+        
+        removeHeader(sectionParent);
+
+        //commented out in merge from new-enrty-creation to main
+        //location.reload();
         return;
       }
       cursor.continue();
     };
+    
   } else if (event.target.className === 'flag') {
     updateFlag(event, oldContent);
+
   } else if (divElement.tagName === 'DIV' && existingEntry === false) {
     existingEntry = true;
     const textBox = document.createElement('textarea');
@@ -384,6 +699,40 @@ document.addEventListener('click', function (event) {
     });
   }
 });
+
+/**
+ * Checks to see if a header line needs to be removed from the database and display and does so 
+ * 
+ */
+function removeHeader(sectionParent) {
+  
+  //remove header line from page and database if it is now empty
+  if (sectionParent.querySelectorAll('div').length == 0) {
+          
+    console.log('removing ' + sectionParent)
+
+    let dateRemove = sectionParent.className;
+
+    // Remove element from IndexedDB
+    const transaction = db.transaction(['entries'], 'readwrite');
+    const objStore = transaction.objectStore('entries');
+    const request1 = objStore.openCursor();
+    request1.onsuccess = function (event) {
+      const cursor = event.target.result;
+      if (cursor === null) {
+        return;
+      }
+      if (cursor.value.content === dateRemove && cursor.value.date === dateRemove) {
+        objStore.delete(cursor.key); // Delete appropriate element from DB
+        return;
+      }
+      cursor.continue();
+    };
+
+    sectionParent.remove();
+  }
+}
+
 
 /**
  * Updates the database, replacing oldContent with entry
