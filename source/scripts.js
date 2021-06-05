@@ -184,10 +184,10 @@ function addEntry () {
   const month = extractMonth(date);
   const listedTags = tagGet(textArea.value);
   filterPopulate(listedTags);
-  const entryDiv = document.createElement('div');
-  entryDiv.className = month;
   const newEntry = document.createElement('li');
   // create delete button
+  const entryDiv = document.createElement('div');
+  entryDiv.className = month;
   const deleteButton = document.createElement('button');
   deleteButton.className = 'delete';
   entryDiv.append(deleteButton);
@@ -345,8 +345,8 @@ function showEntries (entries) {
 
     const deleteButton = document.createElement('button');
     deleteButton.className = 'delete';
-    entryDiv.className = entry.date;
     entryDiv.append(deleteButton);
+    entryDiv.className = entry.date;
 
     // create flag button
     const flagButton = document.createElement('input');
