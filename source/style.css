@@ -87,18 +87,12 @@ textarea {
 div > button  {
     position: relative;
     top: 22px;
-    right: 4%;
+    left: 0px;
 
     cursor:pointer;
     background-color: transparent;
     outline: none;
     border: none;
-}
-
-.delete:before {
-    content: '\2716';
-    font-size: 15px;
-    color: gray;
 }
 
 /* text inside flag button */
@@ -117,6 +111,7 @@ div > button  {
     background-color: transparent;
     border:none;
 }
+
 button.addEntry:before {
     content:'\002B';
     font-size: 20px;
@@ -138,7 +133,14 @@ div > textarea {
 }
 
 .delete {
-    visibility: hidden;
+    visibility: hidden; 
+    display: none;
+}
+
+.delete:before {
+    content: '\2716';
+    font-size: 15px;
+    color: gray;
 }
 
 div:hover > .delete {
