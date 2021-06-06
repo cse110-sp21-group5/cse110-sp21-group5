@@ -191,11 +191,8 @@ function addEntry () {
   const newEntry = document.createElement('li');
   // create delete button
   const entryDiv = document.createElement('div');
-  if (db.name === 'daily') {
-    entryDiv.className = date;
-  } else {
-    entryDiv.className = month;
-  }
+  // all log types will have class of specific date
+  entryDiv.className = date;
   const deleteButton = document.createElement('button');
   deleteButton.className = 'delete';
   entryDiv.append(deleteButton);
@@ -440,12 +437,13 @@ function extractMonth (date) {
  * @param {Object} entry The entry that will be added to the database
  * @param {string} day The day the entry was made
  * @param {array} tagList The list of tags associated with an entry
+ * @param {boolean} flag The flag to add the entry to the "Important" log
  */
-function addEntrytoDB (database, entry, day, tagList) {
+function addEntrytoDB (database, entry, day, tagList, flag = false) {
   let transaction;
   let objStore;
   const entryText = entry.innerText;
-  const entryObject = { content: entryText, date: day, tags: tagList };
+  const entryObject = { content: entryText, date: day, tags: tagList, flagged: flag };
 
   let date;
   if (form.querySelector('input')) {
@@ -599,8 +597,9 @@ function isLaterThan (d1, d2) {
  * Otherwise, removes entry from "Important" log.
  * @function
  */
-function updateFlag (event, content) {
-  const divElement = event.target.parentNode;
+function updateFlag (event) {
+  const divElement = event.target.parentNode.parentNode;
+  const content = divElement.querySelector('li').innerText;
   const day = divElement.className;
   // update flag in DB
   let flag = false;
@@ -614,7 +613,7 @@ function updateFlag (event, content) {
     // ... to-do
     console.log('remove important flag');
   }
-  const tagList = tagGet(event.target.parentNode.innerText);
+  const tagList = tagGet(divElement.innerText);
   updateDB(content, content, day, tagList, flag);
 }
 
@@ -632,8 +631,8 @@ document.addEventListener('click', function (event) {
   }
   if (event.target.className === 'delete') {
     // Get the div element
-    const content = divElement.innerText;
     const date = divElement.className;
+    console.log(date);
     // Remove element from IndexedDB
     const transaction = db.transaction(['entries'], 'readwrite');
     const objStore = transaction.objectStore('entries');
@@ -644,7 +643,7 @@ document.addEventListener('click', function (event) {
       if (cursor === null) {
         return;
       }
-      if (cursor.value.content === content && cursor.value.date === date) {
+      if (cursor.value.content === oldContent && cursor.value.date === date) {
         console.log('delete key pressed');
         objStore.delete(cursor.key); // Delete appropriate element from DB
         divElement.remove(); // Delete div element from page
@@ -665,7 +664,7 @@ document.addEventListener('click', function (event) {
       cursor.continue();
     };
   } else if (event.target.className === 'flag') {
-    updateFlag(event, oldContent);
+    updateFlag(event);
   } else if (divElement.tagName === 'DIV' && existingEntry === false) {
     existingEntry = true;
     const textBox = document.createElement('textarea');
@@ -730,7 +729,7 @@ function removeHeader (sectionParent) {
  * @param {array} tagList List of tags for the entry.
  * @param {boolean} flag The flag to add the entry to the "Important" log
  */
-function updateDB (entry, oldContent, day, tagList, flag) {
+function updateDB (entry, oldContent, day, tagList, flag = false) {
   const bullet = entry;
   const transaction = db.transaction(['entries'], 'readwrite');
   const objStore = transaction.objectStore('entries');
