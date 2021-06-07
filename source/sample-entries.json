@@ -19,18 +19,13 @@
         "date": "5/27/2021",
         "title": "finish drone build",
         "content": "mount new flight controller and tune rates",
-        "tags": {
-            "tag1": "hobbies"
-        }
+        "tags": ["hobbies", "fun"]
     },
     {
         "date": "4/26/2021",
         "title": "complete lab 7",
         "content": "do lab 7 by thursday to get the participation points",
-        "tags": {
-        "tag1": "important",
-        "tag2": "school"
-        }
+        "tags": ["important", "school"]
     },
     {
         "date": "4/26/2021",
@@ -157,8 +152,6 @@
         "date": "4/8/2020",
         "title": "send Mother's Day gift",
         "content": "spa gift card for Mom",
-        "tags": {
-            "tag1": "family"
-        }
+        "tags": ["family", "important"]
     }
 ]

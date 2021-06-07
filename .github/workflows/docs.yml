@@ -1,7 +1,9 @@
 ## Main code obtained from https://github.com/marketplace/actions/jsdoc-action
 name: Documentation
 
-on: push
+on: 
+  push:
+    branches: main
 
 jobs:    
   deploy:

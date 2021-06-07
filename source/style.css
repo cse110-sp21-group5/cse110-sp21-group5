@@ -185,6 +185,10 @@ section {
 
 section ~ li {
     margin-left: 20px;
+}
+
+li {
+    margin-left: 10px;
     font-size: 20px;
 }
 
@@ -225,6 +229,24 @@ div > button  {
 .flag:checked:before {
     content: '!';
     align-self: flex-end;
+}
+
+/* flag button */
+.flag {
+    display: none;
+}
+
+.flag + .flagText {
+    visibility: hidden;
+    color: transparent;
+    background-color: #fafafa;
+	border: 1px solid #cacece;
+    padding: 0px 9px 0px 9px;
+}
+
+.flag:checked + .flagText {
+    visibility: visible;
+    color: black;
 }
 
 .addEntry {
@@ -280,6 +302,12 @@ section ~ div:hover > .flag {
     display: inline;
     vertical-align: middle;
     top: 6px;
+}
+
+div:hover .flagText {
+    visibility: visible;
+    position: relative;
+    display: inline;
 }
 
 section ~ div:hover > li {

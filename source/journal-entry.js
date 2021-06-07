@@ -54,6 +54,7 @@ class JournalEntry extends HTMLElement {
             <p class="entry-date"></p>
             <p class="entry-content"></p>
         </article>
+        <input type="checkbox" class="entryFlag"></input>
         `;
 
     // create a shadow root for this web component
@@ -70,16 +71,18 @@ class JournalEntry extends HTMLElement {
     return this.getAttribute('entry');
   }
 
+  get flag () {
+    return this.shadowRoot.querySelector('.entryFlag');
+  }
+
   /*
    * `set` binds an object property to a function to be called when there is an attempt to set that property
    * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/set
    */
   set entry (entry) {
-    console.log();
     this.shadowRoot.querySelector('.entry-title').innerHTML = entry.title;
     this.shadowRoot.querySelector('.entry-date').innerHTML = entry.date;
     this.shadowRoot.querySelector('.entry-content').innerHTML = entry.content;
-
     this.setAttribute('entry', entry);
     document.body.appendChild(this);
   }
