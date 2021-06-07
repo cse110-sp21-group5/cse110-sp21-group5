@@ -33,7 +33,7 @@ dict[11] = 'November';
 dict[12] = 'December';
 
 for (const key in dict) {
-  dict[dict[key]] = key;
+  dict[dict[key]] = Number(key);
 }
 
 const request = indexedDB.open('daily', 1);
@@ -543,6 +543,7 @@ function addEntrytoDB (database, entry, day, tagList, flag = false) {
       request1.onsuccess = function (event) {
         const cursor = event.target.result;
         if (cursor) {
+          
           if (isLaterThan(date, cursor.value.date) === -1) {
             // insert a new month header
             const newKey = lastKey + ((cursor.key - lastKey) / 2);
@@ -633,8 +634,8 @@ function isLaterThan (d1, d2) {
     }
   }
 
-  const year1 = d1.substring(d1.lastIndexOf('/'));
-  const year2 = d2.substring(d2.lastIndexOf('/'));
+  const year1 = Number(d1.substring(d1.lastIndexOf('/') + 1));
+  const year2 = Number(d2.substring(d2.lastIndexOf('/') + 1));
 
   if (year1 > year2) {
     return 1;
@@ -642,8 +643,8 @@ function isLaterThan (d1, d2) {
     return -1;
   }
 
-  const month1 = d1.substring(0, d1.indexOf('/'));
-  const month2 = d2.substring(0, d2.indexOf('/'));
+  const month1 = Number(d1.substring(0, d1.indexOf('/')));
+  const month2 = Number(d2.substring(0, d2.indexOf('/')));
 
   if (month1 > month2) {
     return 1;
@@ -651,8 +652,8 @@ function isLaterThan (d1, d2) {
     return -1;
   }
 
-  const day1 = d1.substring(d1.indexOf('/') + 1, d1.lastIndexOf('/'));
-  const day2 = d2.substring(d2.indexOf('/') + 1, d2.lastIndexOf('/'));
+  const day1 = Number(d1.substring(d1.indexOf('/') + 1, d1.lastIndexOf('/')));
+  const day2 = Number(d2.substring(d2.indexOf('/') + 1, d2.lastIndexOf('/')));
 
   if (day1 > day2) {
     return 1;
