@@ -3,6 +3,7 @@
 // select the <a> tags used for navigation at the top of the page
 const dispBar = document.querySelectorAll('.nav a');
 const newEntry = document.querySelector('[class=addEntry]');
+const addEnt = newEntry;
 const form = document.createElement('form');
 const textArea = document.createElement('textarea');
 const filter = document.querySelector('[name="filter"]');
@@ -160,7 +161,12 @@ newEntry.addEventListener('click', () => {
   textArea.focus();
   document.querySelector('.addEntry').remove();
   if (db.name === 'daily') {
-    document.querySelector('main').append(newEntry);
+    if (document.querySelector('section') === null) {
+      document.querySelector('main').append(newEntry);
+    }
+    else {
+      //document.querySelector('section').append(newEntry);
+    }
   } else if (db.name === 'future') {
     if (document.querySelector('section') !== null) {
       document.querySelector('section').prepend(newEntry);
@@ -198,6 +204,11 @@ function addEntry () {
   if (textArea.value.length === 1) {
     document.querySelector('form').remove();
     textArea.value = '';
+    if (document.querySelector('section') === null) {
+      document.querySelector('main').append(addEnt);
+    } else {
+      document.querySelector('section').append(addEnt);
+    }
     return;
   }
 
@@ -300,6 +311,9 @@ function addEntry () {
   newEntry.innerText = textArea.value;
   entryDiv.append(newEntry);
   section.append(entryDiv);
+  if (db.name === 'daily') {
+    section.append(addEnt);
+  }
   document.querySelector('form').remove();
   textArea.value = '';
 
@@ -665,7 +679,9 @@ function updateFlag (event) {
  */
 document.addEventListener('click', function (event) {
   const divElement = event.target.parentNode;
-  const day = divElement.className;
+  if (divElement !== null) {
+    const day = divElement.className;
+  }
 
   // check for click on outside or inside timeline to close dropdown
   const timeline = document.querySelector('.timeline');
@@ -680,7 +696,7 @@ document.addEventListener('click', function (event) {
     }
   }
   let oldContent;
-  if (divElement.querySelector('li') !== null) {
+  if (divElement !== null && divElement.querySelector('li') !== null) {
     oldContent = divElement.querySelector('li').innerText;
   }
   if (event.target.className === 'delete') {
@@ -719,7 +735,7 @@ document.addEventListener('click', function (event) {
     };
   } else if (event.target.className === 'flag') {
     updateFlag(event);
-  } else if (event.target.parentNode.className !== 'tl' && divElement.tagName === 'DIV' && divElement.parentNode.tagName === 'SECTION' && existingEntry === false) {
+  } else if (event.target.parentNode !== null && event.target.parentNode.className !== 'tl' && divElement.tagName === 'DIV' && divElement.parentNode.tagName === 'SECTION' && existingEntry === false) {
     existingEntry = true;
     const textBox = document.createElement('textarea');
     if (divElement.querySelector('li') !== null) {
