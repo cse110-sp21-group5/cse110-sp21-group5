@@ -220,12 +220,14 @@ function addEntry () {
       return;
     }
   }
+  
   let date;
   if (db.name === 'daily') {
     date = new Date().toLocaleDateString();
   } else if (db.name === 'future') {
     date = parseDateInput(dateInput);
   }
+
   const month = extractMonth(date);
   const listedTags = tagGet(textArea.value);
   filterPopulate(listedTags);
@@ -272,7 +274,18 @@ function addEntry () {
     if (sec === null) {
       document.querySelector('main').append(section);
     } else {
-      document.querySelector('main').insertBefore(section, sec);
+      if (db.name == 'daily') {
+        document.querySelector('main').insertBefore(section, sec);
+      } else if (db.name == 'future') {
+        
+        let sxns = document.querySelectorAll('section');
+        let index = 0;
+        while (index < sxns.length && isLaterThan(section.className, sxns[index].className) == 1) {
+          index++;
+        }
+        document.querySelector('main').insertBefore(section, sxns[index]);
+      }
+      
     } 
   }
   // Adds date on the first entry of the day
@@ -303,7 +316,8 @@ function addEntry () {
       } else if (db.name === 'future') {
         newEntryTitle.innerText = month;
       }
-      console.log(listedTags);
+      section.insertBefore(newEntryTitle, section.childNodes[0]);
+      //console.log(listedTags);
       addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText, listedTags);
     }
   }
@@ -762,7 +776,7 @@ document.addEventListener('click', function (event) {
 
 /**
  * Checks to see if a header line needs to be removed from the database and display and does so
- *
+ * 
  */
 function removeHeader (sectionParent) {
   // remove header line from page and database if it is now empty
