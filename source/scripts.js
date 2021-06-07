@@ -206,8 +206,10 @@ function addEntry () {
     textArea.value = '';
     if (document.querySelector('section') === null) {
       document.querySelector('main').append(addEnt);
-    } else {
+    } else if(db.name === 'daily') {
       document.querySelector('section').append(addEnt);
+    } else {
+      document.querySelector('section').prepend(addEnt);
     }
     return;
   }
