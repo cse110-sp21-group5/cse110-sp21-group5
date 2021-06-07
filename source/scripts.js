@@ -441,6 +441,9 @@ function showEntries (entries) {
  * @param {string} date a m/d/y date in string form
  */
 function extractMonth (date) {
+  if (date === undefined) {
+    return;
+  }
   const month = Number(date.substring(0, date.indexOf('/')));
 
   return dict[month];
@@ -693,7 +696,7 @@ document.addEventListener('click', function (event) {
     };
   } else if (event.target.className === 'flag') {
     updateFlag(event);
-  } else if (event.target.parentNode.className !== 'tl' && divElement.tagName === 'DIV' && existingEntry === false) {
+  } else if (event.target.parentNode.className !== 'tl' && divElement.tagName === 'DIV' && divElement.parentNode.tagName === 'SECTION' && existingEntry === false) {
     existingEntry = true;
     const textBox = document.createElement('textarea');
     if (divElement.querySelector('li') !== null) {
