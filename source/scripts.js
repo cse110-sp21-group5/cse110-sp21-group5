@@ -751,7 +751,7 @@ document.addEventListener('click', function (event) {
     };
   } else if (event.target.className === 'flag') {
     updateFlag(event);
-  } else if (event.target.parentNode !== null && event.target.parentNode.className !== 'tl' && divElement.tagName === 'DIV' && divElement.parentNode.tagName === 'SECTION' && existingEntry === false) {
+  } else if (event.target.parentNode !== null && event.target.parentNode.className !== 'tl' && divElement.tagName === 'DIV' && divElement.parentNode.tagName === 'SECTION' && existingEntry === false && document.querySelector('textArea') === null) {
     existingEntry = true;
     const textBox = document.createElement('textarea');
     if (divElement.querySelector('li') !== null) {
