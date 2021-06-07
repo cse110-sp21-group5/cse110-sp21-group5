@@ -180,7 +180,7 @@ function addEntry () {
     }
   }
   let date;
-  if (db.name === 'daily') {
+  if (db.name === 'daily' || db.name === 'important') {
     date = new Date().toLocaleDateString();
   } else if (db.name === 'future') {
     date = parseDateInput(dateInput);
@@ -205,6 +205,10 @@ function addEntry () {
   const flagButton = document.createElement('input');
   flagButton.type = 'checkbox';
   flagButton.className = 'flag';
+  // the important log has the flag checked by default
+  if (db.name === 'important') {
+    flagButton.checked = true;
+  }
   flagLabel.append(flagButton);
   flagLabel.append(flagText);
   entryDiv.append(flagLabel);
@@ -214,7 +218,7 @@ function addEntry () {
   let section;
   if (sectionList !== null) {
     sectionList.forEach(sec => {
-      if ((db.name === 'daily' && sec.className === date) || (db.name === 'future' && sec.className === month)) {
+      if (((db.name === 'daily' || db.name === 'important') && sec.className === date) || (db.name === 'future' && sec.className === month)) {
         sectionExists = true;
         section = sec;
       }
@@ -222,7 +226,7 @@ function addEntry () {
   }
   if (sectionExists === false) {
     section = document.createElement('section');
-    if (db.name === 'daily') {
+    if (db.name === 'daily' || db.name === 'important') {
       section.className = date;
     } else if (db.name === 'future') {
       section.className = month;
@@ -237,7 +241,7 @@ function addEntry () {
   // Adds date on the first entry of the day
   if (document.querySelector('h3') === null) {
     const newEntryTitle = document.createElement('h3');
-    if (db.name === 'daily') {
+    if (db.name === 'daily' || db.name === 'important') {
       newEntryTitle.innerText = date;
     } else if (db.name === 'future') {
       newEntryTitle.innerText = month;
@@ -250,14 +254,14 @@ function addEntry () {
     let dateExists = false;
     const h3List = document.querySelectorAll('h3');
     h3List.forEach(h3 => {
-      if ((db.name === 'daily' && h3.innerText === date) || (db.name === 'future' && h3.innerText === month)) {
+      if (((db.name === 'daily' || db.name === 'important') && h3.innerText === date) || (db.name === 'future' && h3.innerText === month)) {
         dateExists = true;
       }
     });
 
     if (dateExists === false) {
       const newEntryTitle = document.createElement('h3');
-      if (db.name === 'daily') {
+      if (db.name === 'daily' || db.name === 'important') {
         newEntryTitle.innerText = date;
       } else if (db.name === 'future') {
         newEntryTitle.innerText = month;
@@ -273,7 +277,11 @@ function addEntry () {
   document.querySelector('form').remove();
   textArea.value = '';
 
-  addEntrytoDB(db, entryDiv, date, listedTags);
+  if (db.name === 'important') {
+    addEntrytoDB(db, entryDiv, date, listedTags, true);
+  } else {
+    addEntrytoDB(db, entryDiv, date, listedTags);
+  }
 }
 
 /**
@@ -337,6 +345,7 @@ function getAndShowEntries (database, tag) {
  * @param {Object[]} entries The list of entries that will be shown on the screen
  */
 function showEntries (entries) {
+  clearPage();
   if (textArea.value.length === 1) {
     document.querySelector('form').remove();
     textArea.value = '';
@@ -379,19 +388,18 @@ function showEntries (entries) {
 
     if (sectionList !== null) {
       sectionList.forEach(sec => {
-        if ((db.name === 'daily' && sec.className === entry.date) || (db.name === 'future' && sec.className === extractMonth(entry.date))) {
+        if (((db.name === 'daily' || db.name === 'important') && sec.className === entry.date) || (db.name === 'future' && sec.className === extractMonth(entry.date))) {
           sectionExists = true;
           section = sec;
         }
       });
     }
-
     if (sectionExists === false) {
       section = document.createElement('section');
       section.className = entry.date;
       const sec = document.querySelector('section');
 
-      if (db.name === 'daily') {
+      if (db.name === 'daily' || db.name === 'important') {
         if (sec === null) {
           document.querySelector('main').append(section);
         } else {
@@ -439,10 +447,15 @@ function extractMonth (date) {
  * @param {array} tagList The list of tags associated with an entry
  * @param {boolean} flag The flag to add the entry to the "Important" log
  */
-function addEntrytoDB (database, entry, day, tagList, flag = false) {
+function addEntrytoDB (database, entry, day, tagList, flag = false, callback = undefined) {
   let transaction;
   let objStore;
-  const entryText = entry.innerText;
+  let entryText = entry.innerText;
+  // ignore the flag button text, just get the entry's text
+  if (flag === true) {
+    // li/the entry is the last child of div
+    entryText = entry.lastChild.innerText;
+  }
   const entryObject = { content: entryText, date: day, tags: tagList, flagged: flag };
 
   let date;
@@ -452,8 +465,7 @@ function addEntrytoDB (database, entry, day, tagList, flag = false) {
       return;
     }
   }
-
-  if (database.name === 'daily') {
+  if (database.name === 'daily' || database.name === 'important') {
     transaction = database.transaction(['entries'], 'readwrite');
     objStore = transaction.objectStore('entries');
     objStore.add(entryObject);
@@ -511,6 +523,9 @@ function addEntrytoDB (database, entry, day, tagList, flag = false) {
   }
   transaction.oncomplete = function () {
     console.log('Data entered into database');
+    if (callback !== undefined) {
+      callback();
+    }
   };
   transaction.onerror = function (event) {
     console.log('Error entering data into database' + event.target.errorCode);
@@ -597,24 +612,157 @@ function isLaterThan (d1, d2) {
  * Otherwise, removes entry from "Important" log.
  * @function
  */
-function updateFlag (event) {
-  const divElement = event.target.parentNode.parentNode;
+function updateFlag (event, fromDelete = false) {
+  let checkbox = event.target;
+  let divElement = event.target.parentNode.parentNode;
+  if (fromDelete) {
+    divElement = event.target.parentNode;
+    checkbox = divElement.querySelector('.flag');
+    // force checkbox to be unchecked to mimic unchecking behavior
+    checkbox.checked = false;
+    console.log('from delete');
+  }
+  console.log(divElement);
+  const tagList = tagGet(divElement.innerText);
   const content = divElement.querySelector('li').innerText;
   const day = divElement.className;
   // update flag in DB
   let flag = false;
-  if (event.target.checked) {
+  if (checkbox.checked) {
     flag = true;
-    // add entry to important log
-    // ... to-do
+    if (db.name !== 'important') {
+      // add entry to important log
+      // migrates daily or future -> important (creates copy)
+      const req = indexedDB.open('important', 1);
+      // init object store if not created
+      req.onupgradeneeded = function (event) {
+        const thisDB = event.target.result;
+        thisDB.createObjectStore('entries', { autoIncrement: true });
+      };
+      req.onsuccess = function (event) {
+        const newDB = event.target.result;
+        // search the DB if it has the date header yet
+        let headerExists = false;
+        const transaction = newDB.transaction(['entries'], 'readwrite');
+        const objStore = transaction.objectStore('entries');
+        const request1 = objStore.openCursor();
+        request1.onsuccess = function (event) {
+          const cursor = event.target.result;
+          if (cursor === null) {
+            return;
+          }
+          if (cursor.value.content === day && cursor.value.date === day) {
+            headerExists = true;
+            return;
+          }
+          cursor.continue();
+        };
+        transaction.oncomplete = function () {
+          if (!headerExists) {
+            const newEntryTitle = document.createElement('h3');
+            newEntryTitle.innerText = day;
+            addEntrytoDB(newDB, newEntryTitle, newEntryTitle.innerText, null);
+          }
+          addEntrytoDB(newDB, divElement, day, tagList, flag, function after () {
+            newDB.close();
+          });
+        };
+      };
+    }
     console.log('mark as important!');
   } else {
     // remove entry from important log
-    // ... to-do
+    if (db.name === 'important') {
+      // wait until entry fully removed, then change the corresponding log entry's flag
+      removeEntryFromDB(divElement, content, undefined, function after () {
+        // check both logs to see which one the entry came from
+        const reqDaily = indexedDB.open('daily');
+        reqDaily.onsuccess = function (event) {
+          const newDB = event.target.result;
+          // uncheck in that log
+          updateDB(content, content, day, tagList, flag, newDB);
+        };
+        // causes errors
+        const reqFuture = indexedDB.open('future');
+        // init object store if not created
+        reqFuture.onupgradeneeded = function (event) {
+          const thisDB = event.target.result;
+          thisDB.createObjectStore('entries', { autoIncrement: true });
+        };
+        reqFuture.onsuccess = function (event) {
+          const newDB = event.target.result;
+          // uncheck in that log
+          updateDB(content, content, day, tagList, flag, newDB);
+        };
+      });
+    } else {
+      const req = indexedDB.open('important');
+      // init object store if not created
+      req.onupgradeneeded = function (event) {
+        const thisDB = event.target.result;
+        thisDB.createObjectStore('entries', { autoIncrement: true });
+      };
+      req.onsuccess = function (event) {
+        const newDB = event.target.result;
+        removeEntryFromDB(divElement, content, newDB);
+      };
+    }
     console.log('remove important flag');
   }
-  const tagList = tagGet(divElement.innerText);
+  console.log('before updating this db:', db);
   updateDB(content, content, day, tagList, flag);
+}
+
+function removeEntryFromDB (divElement, oldContent, newDB = undefined, callback = undefined) {
+  // restrict db to this scope
+  let thisDB = db;
+  // Get the div element
+  const date = divElement.className;
+  console.log(date);
+  // Use this specific DB to remove from, not the current one
+  if (newDB !== undefined) {
+    thisDB = newDB;
+  }
+  // Remove element from IndexedDB
+  const transaction = thisDB.transaction(['entries'], 'readwrite');
+  const objStore = transaction.objectStore('entries');
+  const request1 = objStore.openCursor();
+  const sectionParent = divElement.parentNode;
+  request1.onsuccess = function (event) {
+    const cursor = event.target.result;
+    if (cursor === null) {
+      return;
+    }
+    if (cursor.value.content === oldContent && cursor.value.date === date) {
+      console.log('delete key pressed');
+      objStore.delete(cursor.key); // Delete appropriate element from DB
+      divElement.remove(); // Delete div element from page
+      removeHeader(sectionParent);
+      existingOptions.clear();
+      while (filter.firstChild) {
+        filter.removeChild(filter.lastChild);
+      }
+      const opt = document.createElement('option');
+      opt.value = 'date';
+      opt.innerHTML = 'Date (Default)';
+      filter.appendChild(opt);
+      existingOptions.add(opt.value);
+      document.querySelectorAll('section').forEach(e => e.remove());
+      if (newDB !== undefined) {
+        // finished with the new db
+        thisDB.close();
+      }
+      getAndShowEntries(thisDB, filter.value);
+      return;
+    }
+    cursor.continue();
+  };
+  transaction.oncomplete = function () {
+    // execute any callback functions now
+    if (callback !== undefined) {
+      callback();
+    }
+  };
 }
 
 /**
@@ -630,39 +778,10 @@ document.addEventListener('click', function (event) {
     oldContent = divElement.querySelector('li').innerText;
   }
   if (event.target.className === 'delete') {
-    // Get the div element
-    const date = divElement.className;
-    console.log(date);
-    // Remove element from IndexedDB
-    const transaction = db.transaction(['entries'], 'readwrite');
-    const objStore = transaction.objectStore('entries');
-    const request1 = objStore.openCursor();
-    const sectionParent = divElement.parentNode;
-    request1.onsuccess = function (event) {
-      const cursor = event.target.result;
-      if (cursor === null) {
-        return;
-      }
-      if (cursor.value.content === oldContent && cursor.value.date === date) {
-        console.log('delete key pressed');
-        objStore.delete(cursor.key); // Delete appropriate element from DB
-        divElement.remove(); // Delete div element from page
-        removeHeader(sectionParent);
-        existingOptions.clear();
-        while (filter.firstChild) {
-          filter.removeChild(filter.lastChild);
-        }
-        const opt = document.createElement('option');
-        opt.value = 'date';
-        opt.innerHTML = 'Date (Default)';
-        filter.appendChild(opt);
-        existingOptions.add(opt.value);
-        document.querySelectorAll('section').forEach(e => e.remove());
-        getAndShowEntries(db, filter.value);
-        return;
-      }
-      cursor.continue();
-    };
+    removeEntryFromDB(divElement, oldContent);
+    if (db.name === 'important') {
+      updateFlag(event, true);
+    }
   } else if (event.target.className === 'flag') {
     updateFlag(event);
   } else if (divElement.tagName === 'DIV' && existingEntry === false) {
@@ -729,9 +848,15 @@ function removeHeader (sectionParent) {
  * @param {array} tagList List of tags for the entry.
  * @param {boolean} flag The flag to add the entry to the "Important" log
  */
-function updateDB (entry, oldContent, day, tagList, flag = false) {
+function updateDB (entry, oldContent, day, tagList, flag = false, newDB = undefined) {
+  // restrict db to this scope
+  let thisDB = db;
   const bullet = entry;
-  const transaction = db.transaction(['entries'], 'readwrite');
+  // Use this specific DB to remove from, not the current one
+  if (newDB !== undefined) {
+    thisDB = newDB;
+  }
+  const transaction = thisDB.transaction(['entries'], 'readwrite');
   const objStore = transaction.objectStore('entries');
   const request1 = objStore.openCursor();
   const newContent = { content: bullet, date: day, tags: tagList, flagged: flag };
@@ -742,9 +867,14 @@ function updateDB (entry, oldContent, day, tagList, flag = false) {
     }
     if (cursor.value.content === oldContent && cursor.value.date === day) {
       objStore.put(newContent, cursor.key); // Update appropriate element from DB
-      return;
     }
     cursor.continue();
+  };
+  transaction.oncomplete = function () {
+    if (newDB !== undefined) {
+      // finished with the new db
+      thisDB.close();
+    }
   };
 }
 
