@@ -1,18 +1,36 @@
 /* Main page stylesheet */
 body {
-    margin-left: 0;
+    height: 100%;
+    margin: 0;
     font-family: Abel;
+    background-image: url(blue-sky.jpg); 
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+main {
+    background-color: white;
+    border-radius: 6px;
+    /* list-style-type: none; */
+    margin-bottom: 30px;
+    max-width: 700px;
+    padding: 20px;
+    width: 70%;
+    margin: 20px auto;
+    /* opacity: 0.5; */
 }
   
 .nav {
+    z-index: 9999;
     display: flex;
     position: sticky;
     top: 0px;
     flex-wrap: wrap;
     flex-direction: row;
-    justify-content: flex-start;
+    justify-content: flex-end;
     overflow: hidden;
     background-color: rgb(119, 183, 255);
+    box-shadow: 0 2px 2px -2px rgba(0, 0, 0, 0.8);
 }
 
 .nav select {
@@ -20,6 +38,7 @@ body {
     background-color: rgb(119, 183, 255);
     font-size: 20px;
     font-family: Abel;
+    margin-right: auto;
 }
 
 .nav select:after {
@@ -67,12 +86,109 @@ body {
     color: white;
 }
 
-li {
+.tl {  /* timeline */
+    position: fixed;
+    left: 85%;  
+    width: 10%;
+    height: 90%;
+    color: white;
+    overflow-y: auto;
+    background: transparent;
+
+    /*Disable text highlighting*/
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+    
+    
+    /* Hide scrollbar */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.tl::-webkit-scrollbar {
+    display: none;
+}
+
+ul.timeline {
+    list-style-type: none;
+    position: relative;
+    font-size: 20px;
+    margin-block-start: -2em;
+    /* overflow-y: auto; */
+}
+
+
+ul.timeline:before {
+    content: ' ';
+    background: rgb(119, 183, 255);
+    display: inline-block;
+    position: absolute;
+    left: 36px;
+    width: 2px;
+    height: 100%;
+    z-index: 400;
+}
+ul.timeline > li {
+    margin: 30px 0;
+    padding-left: 10px;
+}
+ul.timeline > li:before {
+    content: ' ';
+    background: rgb(119, 183, 255);
+    display: inline-block;
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid white;
+    left: 30px;
+    width: 10px;
+    height: 10px;
+    z-index: 400;
+}
+
+ul.timeline > li:hover:before {  /* blue circle */
+    background: rgb(61, 79, 236);
+}
+
+ul li:hover { /* month */
+    font-weight: bold;
+    text-shadow: 1px 1px rgba(0, 0, 0, 0.8);
+}
+
+ul li ul li:hover { /* days */
+    color:rgb(61, 79, 236);
+    text-decoration: underline;
+    text-shadow: 1px 1px rgba(0, 0, 0, 0.8);
+}
+
+ul.days {
+    font-size: 15px;
+    padding-left: 10px;
+}
+
+h4.title {
+    font-size: 25px;
+    margin: 40px 30px;
+}
+
+/* For aligning the journal entry when navigating to certain day (header covers if not done) */
+section {
+    scroll-margin-top: 70px;
+}
+
+/* need to add below style for smaller screens */
+
+section ~ li {
     margin-left: 20px;
     font-size: 20px;
 }
 
-h3 {
+section ~ h3 {
     margin-left: 20px;
 }
 
@@ -87,12 +203,16 @@ textarea {
 div > button  {
     position: relative;
     top: 22px;
-    left: 0px;
-
     cursor:pointer;
     background-color: transparent;
     outline: none;
     border: none;
+}
+
+.delete:before {
+    content: '\2716';
+    font-size: 15px;
+    color: gray;
 }
 
 /* text inside flag button */
@@ -111,7 +231,6 @@ div > button  {
     background-color: transparent;
     border:none;
 }
-
 button.addEntry:before {
     content:'\002B';
     font-size: 20px;
@@ -125,7 +244,7 @@ main {
     margin-left: 20px;
 }
 
-div > textarea {
+section ~ div > textarea {
     position: relative;
     bottom: 15px;
     font-family: Abel;
@@ -133,16 +252,10 @@ div > textarea {
 }
 
 .delete {
-    visibility: hidden; 
+    visibility: hidden;
 }
 
-.delete:before {
-    content: '\2716';
-    font-size: 15px;
-    color: gray;
-}
-
-div:hover > .delete {
+section ~ div:hover > .delete {
     visibility: visible;
     position: relative;
     display: inline;
@@ -161,7 +274,7 @@ div:hover > .delete {
     min-height: 22px;
 }
 
-div:hover > .flag {
+section ~ div:hover > .flag {
     visibility: visible;
     position: relative;
     display: inline;
@@ -169,11 +282,11 @@ div:hover > .flag {
     top: 6px;
 }
 
-div:hover > li {
+section ~ div:hover > li {
     position: relative;
 }
 
-div {
+section ~ div {
     display: flex;
     flex-flow: row nowrap;
     align-content: flex-start;
@@ -188,8 +301,37 @@ section {
     background-color: white;
 }
 
-hr {
-    border: 1px solid rgb(119, 183, 255);
-    width: 50%;
-    float: left;
+/* screensize 500px */
+@media (max-width: 500px) {
+    .tl {  /* timeline */
+        position: absolute;
+        left: 82%;  
+        width: 10%;
+        height: 10%;
+        color: white;
+    }
+    ul.timeline {
+        font-size: 16px;
+    }
+    .nav {
+        font-size: xx-small;
+    }
+    .nav select {
+        float: left;
+        background-color: rgb(119, 183, 255);
+        font-size: 16px;
+        font-family: Abel;
+        margin-right: auto;
+    }
+    .nav a {
+        float: left;
+        color: #2C2C2C;
+        text-align: center;
+        padding: 10px 12px;
+        text-decoration: none;
+        font-size: 16px;
+    }
+    main {
+        margin-left: 30px;
+    }
 }
