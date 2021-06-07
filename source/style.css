@@ -188,7 +188,7 @@ section ~ li {
 }
 
 li {
-    margin-left: 10px;
+    margin-left: 30px;
     font-size: 20px;
 }
 
@@ -204,7 +204,7 @@ textarea {
     margin-left: 20px;
 }
 
-div > button  {
+div > .delete  {
     position: relative;
     top: 22px;
     cursor:pointer;
@@ -277,12 +277,13 @@ section ~ div > textarea {
     visibility: hidden;
 }
 
-section ~ div:hover > .delete {
+div:hover > .delete {
     visibility: visible;
     position: relative;
     display: inline;
     vertical-align: top;
-    top: 0px;
+    top: 23px;
+    right: 20px;
 }
 
 /* flag button box style */
@@ -295,7 +296,6 @@ section ~ div:hover > .delete {
     min-width: 22px;
     min-height: 22px;
 }
-
 section ~ div:hover > .flag {
     visibility: visible;
     position: relative;
@@ -308,6 +308,8 @@ div:hover .flagText {
     visibility: visible;
     position: relative;
     display: inline;
+    right: 20px;
+    top: 23px;
 }
 
 section ~ div:hover > li {
