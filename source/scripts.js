@@ -620,9 +620,7 @@ function updateFlag (event, fromDelete = false) {
     checkbox = divElement.querySelector('.flag');
     // force checkbox to be unchecked to mimic unchecking behavior
     checkbox.checked = false;
-    console.log('from delete');
   }
-  console.log(divElement);
   const tagList = tagGet(divElement.innerText);
   const content = divElement.querySelector('li').innerText;
   const day = divElement.className;
@@ -709,7 +707,6 @@ function updateFlag (event, fromDelete = false) {
     }
     console.log('remove important flag');
   }
-  console.log('before updating this db:', db);
   updateDB(content, content, day, tagList, flag);
 }
 
