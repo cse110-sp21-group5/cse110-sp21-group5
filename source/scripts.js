@@ -230,7 +230,7 @@ function addEntry () {
     date = parseDateInput(dateInput);
   }
 
-  const month = extractMonth(date);
+  const monthYear = extractMonthYear(date);
   const listedTags = tagGet(textArea.value);
   filterPopulate(listedTags);
   const newEntry = document.createElement('li');
@@ -259,7 +259,7 @@ function addEntry () {
   let section;
   if (sectionList !== null) {
     sectionList.forEach(sec => {
-      if ((db.name === 'daily' && sec.className === date) || (db.name === 'future' && sec.className === month)) {
+      if ((db.name === 'daily' && sec.className === date) || (db.name === 'future' && sec.className === monthYear)) {
         sectionExists = true;
         section = sec;
       }
@@ -270,7 +270,7 @@ function addEntry () {
     if (db.name === 'daily') {
       section.className = date;
     } else if (db.name === 'future') {
-      section.className = month;
+      section.className = monthYear;
     }
     const sec = document.querySelector('section');
     if (sec === null) {
@@ -296,7 +296,7 @@ function addEntry () {
     if (db.name === 'daily') {
       newEntryTitle.innerText = date;
     } else if (db.name === 'future') {
-      newEntryTitle.innerText = month;
+      newEntryTitle.innerText = monthYear;
     }
     section.append(newEntryTitle);
     // document.querySelector('main').append(section);
@@ -306,7 +306,7 @@ function addEntry () {
     let dateExists = false;
     const h3List = document.querySelectorAll('h3');
     h3List.forEach(h3 => {
-      if ((db.name === 'daily' && h3.innerText === date) || (db.name === 'future' && h3.innerText === month)) {
+      if ((db.name === 'daily' && h3.innerText === date) || (db.name === 'future' && h3.innerText === monthYear)) {
         dateExists = true;
       }
     });
@@ -316,7 +316,7 @@ function addEntry () {
       if (db.name === 'daily') {
         newEntryTitle.innerText = date;
       } else if (db.name === 'future') {
-        newEntryTitle.innerText = month;
+        newEntryTitle.innerText = monthYear;
       }
       section.insertBefore(newEntryTitle, section.childNodes[0]);
       //console.log(listedTags);
@@ -492,6 +492,7 @@ function showEntries (entries) {
 /**
  * Takes a date in string form and returns the string name of the month it is in
  * @param {string} date a m/d/y date in string form
+ * @return {string} the name of the month from the given date
  */
 function extractMonth (date) {
   if (date === undefined) {
@@ -500,6 +501,22 @@ function extractMonth (date) {
   const month = Number(date.substring(0, date.indexOf('/')));
 
   return dict[month];
+}
+
+/**
+ * Takes a date in string form and returns the string name of the month it is in
+ * @param {string} date a m/d/y date in string form
+ * @return {string} the name of the month and the year of the given date
+ */
+ function extractMonthYear (date) {
+  if (date === undefined) {
+    return;
+  }
+  const month = dict[Number(date.substring(0, date.indexOf('/')))];
+
+  const year = date.substring(date.lastIndexOf('/') + 1);
+
+  return month + " " + year;
 }
 
 /**
@@ -547,14 +564,14 @@ function addEntrytoDB (database, entry, day, tagList, flag = false) {
           if (isLaterThan(date, cursor.value.date) === -1) {
             // insert a new month header
             const newKey = lastKey + ((cursor.key - lastKey) / 2);
-            objStore.add({ content: extractMonth(date), date: extractMonth(date), tags: tagList }, newKey);
+            objStore.add({ content: extractMonthYear(date), date: extractMonthYear(date), tags: tagList }, newKey);
             return;
           }
 
           lastKey = cursor.key;
           cursor.continue();
         } else {
-          objStore.add({ content: extractMonth(date), date: extractMonth(date), tags: tagList });
+          objStore.add({ content: extractMonthYear(date), date: extractMonthYear(date), tags: tagList });
         }
       };
     } else {
@@ -595,43 +612,77 @@ function addEntrytoDB (database, entry, day, tagList, flag = false) {
  * @param {string} d2
  */
 function isLaterThan (d1, d2) {
+  
   if (d1 === d2) {
     return 0;
   }
 
   if (d1.indexOf('/') === -1 && d2.indexOf('/') === -1) {
-    if (dict[d1] > dict[d2]) {
+    
+    const y1 = Number(d1.substring(d1.indexOf(' ') + 1));
+    const y2 = Number(d2.substring(d2.indexOf(' ') + 1));
+    
+    if (y1 > y2) {
       return 1;
+    } else if (y1 < y2) {
+      return -1;
     }
-    if (dict[d1] < dict[d2]) {
+
+    const m1 = dict[d1.substring(0, d1.indexOf(' '))];
+    const m2 = dict[d2.substring(0, d2.indexOf(' '))];
+
+    if (m1 > m2) {
+      return 1;
+    } else if (m1 < m1) {
       return -1;
     }
   }
 
   if (d1.indexOf('/') === -1) {
-    const month = extractMonth(d2);
-    if (month === d1) {
-      return 0;
-    }
-    if (dict[month] > dict[d1]) {
+    
+    const y1 = Number(d1.substring(d1.indexOf(' ') + 1));
+    const y2 = Number(d2.substring(d2.lastIndexOf('/') + 1));
+    
+    if (y1 > y2) {
       return 1;
-    }
-    if (dict[month] < dict[d1]) {
+    } else if (y1 < y2) {
       return -1;
     }
+
+    const m1 = dict[d1.substring(0, d1.indexOf(' '))];
+    const m2 = dict[extractMonth(d2)];
+
+    if (m1 > m2) {
+      return 1;
+    }
+    if (m1 < m2) {
+      return -1;
+    }
+
+    return 0;
   }
 
   if (d2.indexOf('/') === -1) {
-    const month = extractMonth(d1);
-    if (month === d2) {
-      return 0;
-    }
-    if (dict[month] > dict[d2]) {
+    const y1 = Number(d1.substring(d1.lastIndexOf('/') + 1));
+    const y2 = Number(d2.substring(d2.indexOf(' ') + 1));
+    
+    if (y1 > y2) {
       return 1;
-    }
-    if (dict[month] < dict[d2]) {
+    } else if (y1 < y2) {
       return -1;
     }
+
+    const m1 = dict[extractMonth(d1)];
+    const m2 = dict[d2.substring(0, d2.indexOf(' '))];
+
+    if (m1 > m2) {
+      return 1;
+    }
+    if (m1 < m2) {
+      return -1;
+    }
+
+    return 0;
   }
 
   const year1 = Number(d1.substring(d1.lastIndexOf('/') + 1));
