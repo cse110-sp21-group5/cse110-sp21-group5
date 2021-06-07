@@ -21,8 +21,31 @@
             </select>
             <a class="active" href="#daily">Daily</a>
             <a href="#future">Future</a>
-            <a href="#important">Important</a>
+            <a href="#custom">Custom</a>
         </nav>
+        
+        <!--Sidebar-->
+        <aside class='sidebar'>
+            <template id='timeline'>
+                <div class="tl">
+                    <h4 class="title">2021</h4>
+                    <ul class="timeline">
+                    </ul>
+                </div>
+            </template>
+
+            <template id='month'>
+                <li>
+                    <!--<a href="#" class="float-right">May</a>-->
+                    <p class="float-right">May</p>
+                    <div id='dropdown' class=dropdown-content style='display:none'>
+                        <ul style='list-style-type: none' class='days'>
+                            <li></li>
+                        </ul>
+                    </div>
+                </li>
+            </template>
+        </aside>
     </body>
     <main>
         <h1> Penpals </h1>
@@ -31,8 +54,26 @@
         <script src="journal-entry.js" type="module"></script>
         <!-- test spacer for nav flex -->
         <!-- <p style="margin-bottom:20cm;"></p> -->
-    </main>
 
+        
+    </main>
+<!--
+    <template id='dropDown'>
+        <div class="tl">
+            <h4 style="font-size: 30px;">2021</h4>
+            <ul class="timeline">
+                <li>
+                    <a href="#" class="float-right">May</a>
+                </li>
+                <li>
+                    <a href="#" class="float-right">Apr</a>
+                </li>
+                <li>
+                    <a href="#" class="float-right">Mar</a>
+                </li>
+            </ul>
+        </div>
+    </template>-->
     
 
     <template>

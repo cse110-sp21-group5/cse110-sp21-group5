@@ -68,11 +68,26 @@ function clrActive () {
  * @function
  * Adds event listeners to all elements of the navigation bar selected in dispBar
  */
+// create initial timeline
+createTimeline();
 for (let i = 0; i < dispBar.length; i++) {
   dispBar[i].addEventListener('click', function () {
     clrActive();
     dispBar[i].classList.add('active');
-    tab = document.querySelector('.active').attributes['href'].value.substring(1);
+    tab = document.querySelector('.active').attributes.href.value.substring(1);
+
+    /* Create respective timeline based on tab change */
+    const tl = document.querySelector('.tl');
+    if (tl) {
+      tl.remove();
+    }
+
+    if (tab === 'daily') {
+      createTimeline();
+    } else if (tab === 'future') {
+      createFutureTime();
+    }
+
     clearPage();
     const req = indexedDB.open(tab, 1);
     existingOptions.clear();
@@ -625,6 +640,19 @@ function updateFlag (event) {
 document.addEventListener('click', function (event) {
   const divElement = event.target.parentNode;
   const day = divElement.className;
+
+  // check for click on outside or inside timeline to close dropdown
+  const timeline = document.querySelector('.timeline');
+  if (timeline) {
+    const isClickInside = timeline.contains(event.target);
+
+    if (!isClickInside) {
+      const content = document.querySelectorAll('.dropdown-content');
+      for (let i = 0; i < content.length; i++) {
+        content[i].style.display = 'none';
+      }
+    }
+  }
   let oldContent;
   if (divElement.querySelector('li') !== null) {
     oldContent = divElement.querySelector('li').innerText;
@@ -665,7 +693,7 @@ document.addEventListener('click', function (event) {
     };
   } else if (event.target.className === 'flag') {
     updateFlag(event);
-  } else if (divElement.tagName === 'DIV' && existingEntry === false) {
+  } else if (event.target.parentNode.className !== 'tl' && divElement.tagName === 'DIV' && existingEntry === false) {
     existingEntry = true;
     const textBox = document.createElement('textarea');
     if (divElement.querySelector('li') !== null) {
@@ -797,4 +825,199 @@ function filterPopulate (tags) {
       // then add it to the set after
     }
   }
+}
+
+/*
+ * Begin process of laying out months (for daily log)
+ */
+function createTimeline () {
+  const allMonths = { 0: 'Jan', 1: 'Feb', 2: 'Mar', 3: 'Apr', 4: 'May', 5: 'Jun', 6: 'Jul', 7: 'Aug', 8: 'Sep', 9: 'Oct', 10: 'Nov', 11: 'Dec' };
+
+  const date = new Date();
+
+  let month = date.getMonth();
+
+  // Get timeline template
+  const timeTemp = document.getElementById('timeline');
+  const timeClone = timeTemp.content.firstElementChild.cloneNode(true);
+
+  // Set Year Header
+  const timeYear = timeClone.querySelector('h4');
+  timeYear.innerText = date.getFullYear();
+
+  // Get month template
+  const monthTemp = document.getElementById('month');
+
+  // Append month template to the timeline
+  let idx = 12;
+  while (idx > 0) {
+    const monthClone = monthTemp.content.firstElementChild.cloneNode(true);
+    monthClone.firstElementChild.innerText = allMonths[month];
+    // console.log(allMonths[month]);
+
+    monthClone.id = month;
+    // Demo of applying months
+    // Get total days in the current month
+    const daysInMonth = new Date(date.getFullYear(), (month + 1) % 12, 0).getDate();
+
+    // List out the days in the current month
+    for (let i = 0; i < daysInMonth; i++) {
+      const listItem = document.createElement('li');
+
+      listItem.innerText = i + 1;
+
+      // Copy over values due to block scope
+      const checkMonth = month + 1;
+      const checkYear = date.getFullYear().toString();
+      // Event listener for navigating to certain day
+      listItem.addEventListener('click', event => {
+        const entries = document.querySelectorAll('section');
+        const checkDate = checkMonth + '/' + listItem.innerText + '/' + checkYear;
+        // console.log(checkDate);
+        for (let index = 0; index < entries.length; index++) {
+          if (entries[index].className === checkDate) {
+            entries[index].scrollIntoView({ behavior: 'smooth' });
+            break;
+          }
+          // console.log('nav');
+        }
+      });
+
+      // End navigating to certain day function
+
+      monthClone.querySelector('ul').appendChild(listItem);
+    }
+
+    // console.log(monthClone.querySelector('p').innerText);
+    monthClone.querySelector('p').addEventListener('click', event => {
+      if (monthClone.querySelector('div').style.display === 'none') {
+        monthClone.querySelector('div').style.display = 'inline-block';
+      } else {
+        monthClone.querySelector('div').style.display = 'none';
+      }
+    });
+    // end of demo
+
+    // console.log(timeClone.querySelector('ul'));
+    timeClone.querySelector('ul').appendChild(monthClone);
+    month = month - 1;
+
+    // Case of rolling back to last December
+    if (month === -1) {
+      month = 11;
+      date.setFullYear(date.getFullYear() - 1);
+    }
+    idx = idx - 1;
+  }
+
+  document.querySelector('aside').appendChild(timeClone);
+
+  // Scroll Event marking month position
+  window.addEventListener('scroll', event => {
+    const entries = document.querySelectorAll('section');
+
+    let bolded = false; // Used to prevent other entries that are within the viewport getting their month bolded. Only looking for the first entry in the viewport
+    let saveMonthText = null; // Used to the save the month to prevent other entries after the current with the same month overriding the bold text
+    for (let i = 0; i < entries.length; i++) {
+      const entryPos = entries[i].getBoundingClientRect();
+
+      try {
+        const monthText = document.getElementById(entries[i].className.substr(0, entries[i].className.indexOf('/')) - 1).querySelector('p'); // Month text on timeline
+        if (entryPos.top >= 0 && entryPos.left >= 0 && entryPos.bottom <= (window.innerHeight) && entryPos.right <= (window.innerWidth) && bolded === false) {
+          saveMonthText = monthText;
+          monthText.style.fontWeight = 'bolder';
+          bolded = true;
+        } else {
+          if (monthText !== saveMonthText) {
+            monthText.style.fontWeight = 'normal';
+          }
+        }
+      } catch (error) {
+        // console.error(error);
+      }
+    }
+  });
+}
+
+function createFutureTime () {
+  // console.log('running');
+  const allMonths = { 0: 'Jan', 1: 'Feb', 2: 'Mar', 3: 'Apr', 4: 'May', 5: 'Jun', 6: 'Jul', 7: 'Aug', 8: 'Sep', 9: 'Oct', 10: 'Nov', 11: 'Dec' };
+  const allMonthsRev = { January: 1, February: 2, March: 3, April: 4, May: 5, June: 6, July: 7, August: 8, September: 9, October: 10, November: 11, December: 12 };
+  const date = new Date();
+
+  let month = date.getMonth();
+
+  // Get timeline template
+  const timeTemp = document.getElementById('timeline');
+  const timeClone = timeTemp.content.firstElementChild.cloneNode(true);
+
+  // Set Year Header
+  const timeYear = timeClone.querySelector('h4');
+  timeYear.innerText = date.getFullYear();
+
+  // Get month template
+  const monthTemp = document.getElementById('month');
+
+  // Append month template to the timeline
+  let idx = 6;
+  while (idx > 0) {
+    const monthClone = monthTemp.content.firstElementChild.cloneNode(true);
+    monthClone.firstElementChild.innerText = allMonths[month];
+    // console.log(allMonths[month]);
+
+    monthClone.id = month;
+
+    // Copy over values due to block scope
+    const checkMonth = month + 1;
+    monthClone.querySelector('p').addEventListener('click', event => {
+      const entries = document.querySelectorAll('section');
+      const checkDate = checkMonth;
+      // console.log(checkDate);
+      for (let index = 0; index < entries.length; index++) {
+        if (allMonthsRev[entries[index].className] === checkDate) {
+          entries[index].scrollIntoView({ behavior: 'smooth' });
+          break;
+        }
+        // console.log('nav');
+      }
+    });
+
+    timeClone.querySelector('ul').prepend(monthClone);
+    month = month + 1;
+
+    // Case of going to next year
+    if (month === 12) {
+      month = 0;
+      date.setFullYear(date.getFullYear() + 1);
+    }
+    idx = idx - 1;
+  }
+
+  document.querySelector('aside').appendChild(timeClone);
+
+  // Scroll Event marking month position
+  window.addEventListener('scroll', event => {
+    const entries = document.querySelectorAll('section');
+
+    let bolded = false; // Used to prevent other entries that are within the viewport getting their month bolded. Only looking for the first entry in the viewport
+    let saveMonthText = null; // Used to the save the month to prevent other entries after the current with the same month overriding the bold text
+    for (let i = 0; i < entries.length; i++) {
+      const entryPos = entries[i].getBoundingClientRect();
+
+      try {
+        const monthText = document.getElementById(allMonthsRev[entries[i].className] - 1).querySelector('p'); // Month text on timeline
+        if (entryPos.top >= 0 && entryPos.left >= 0 && entryPos.bottom <= (window.innerHeight) && entryPos.right <= (window.innerWidth) && bolded === false) {
+          saveMonthText = monthText;
+          monthText.style.fontWeight = 'bolder';
+          bolded = true;
+        } else {
+          if (monthText !== saveMonthText) {
+            monthText.style.fontWeight = 'normal';
+          }
+        }
+      } catch (error) {
+        // console.error(error);
+      }
+    }
+  });
 }
