@@ -135,9 +135,9 @@ function clearPage () {
  */
 
 newEntry.addEventListener('click', () => {
-  if (document.querySelector('section') === null) {
+  if (document.querySelector('section') === null && db.name === 'daily') {
     document.querySelector('main').append(form);
-  } else {
+  } else if (db.name === 'daily') {
     document.querySelector('section').append(form);
   }
 
@@ -149,11 +149,26 @@ newEntry.addEventListener('click', () => {
     const dateIn = document.createElement('input');
     dateIn.type = 'date';
     form.append(dateIn);
+    if (document.querySelector('section') !== null) {
+      document.querySelector('section').prepend(form);
+    }
+    else {
+      document.querySelector('main').append(form);
+    }
   }
 
   textArea.focus();
   document.querySelector('.addEntry').remove();
-  document.querySelector('main').append(newEntry);
+  if (db.name === 'daily') {
+    document.querySelector('main').append(newEntry);
+  } else if (db.name === 'future') {
+    if (document.querySelector('section') !== null) {
+      document.querySelector('section').prepend(newEntry);
+    }
+    else {
+      document.querySelector('main').append(newEntry);
+    }
+  }
 });
 
 /**
@@ -247,7 +262,7 @@ function addEntry () {
       document.querySelector('main').append(section);
     } else {
       document.querySelector('main').insertBefore(section, sec);
-    }
+    } 
   }
   // Adds date on the first entry of the day
   if (document.querySelector('h3') === null) {
@@ -352,6 +367,14 @@ function getAndShowEntries (database, tag) {
  * @param {Object[]} entries The list of entries that will be shown on the screen
  */
 function showEntries (entries) {
+  if (document.querySelector(['.addEntry']) === null) {
+    const s = document.querySelector('section');
+    if (s !== null) {
+      document.querySelector('main').insertBefore(newEntry, s);
+    } else {
+      document.querySelector('main').append(newEntry);
+    }
+  }
   if (textArea.value.length === 1) {
     document.querySelector('form').remove();
     textArea.value = '';
