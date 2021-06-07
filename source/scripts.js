@@ -58,7 +58,7 @@ request.onupgradeneeded = function (event) {
 /**
  * Clears the active <a> tag
  */
-function clrActive() {
+function clrActive () {
   for (let i = 0; i < dispBar.length; i++) {
     dispBar[i].classList.remove('active');
   }
@@ -121,7 +121,7 @@ for (let i = 0; i < dispBar.length; i++) {
  * @function
  * Clears the entries and header lines off of the page
  */
-function clearPage() {
+function clearPage () {
   const sxn = document.querySelectorAll('section, hr, br');
 
   sxn.forEach(s => {
@@ -178,7 +178,7 @@ filter.addEventListener('change', () => {
 /**
  * Adds a new bullet to the current date and stores the data in the database (IndexedDB)
  */
-function addEntry() {
+function addEntry () {
   // Checks to see if the input is empty
   if (textArea.value.length === 1) {
     document.querySelector('form').remove();
@@ -295,7 +295,7 @@ function addEntry() {
  * //parse dateInput (yyyy-mm-dd) to date (m/d/y)
  * @param {string} date in string format from the input box
  */
-function parseDateInput(dateInput) {
+function parseDateInput (dateInput) {
   let date = dateInput.substring(dateInput.indexOf('-') + 1);
   date = date.replace('-', '/');
   // remove 0 from months starting with 0
@@ -314,7 +314,7 @@ function parseDateInput(dateInput) {
  * @param  database The database that will be used to display entries
  * @param  tag The string tag associated with the entries to get from the DB
  */
-function getAndShowEntries(database, tag) {
+function getAndShowEntries (database, tag) {
   const transaction = database.transaction(['entries'], 'readonly');
   const objStore = transaction.objectStore('entries');
   const request1 = objStore.openCursor();
@@ -351,7 +351,7 @@ function getAndShowEntries(database, tag) {
  * Helper function for getAndShowEntries()
  * @param {Object[]} entries The list of entries that will be shown on the screen
  */
-function showEntries(entries) {
+function showEntries (entries) {
   if (textArea.value.length === 1) {
     document.querySelector('form').remove();
     textArea.value = '';
@@ -440,7 +440,7 @@ function showEntries(entries) {
  * Takes a date in string form and returns the string name of the month it is in
  * @param {string} date a m/d/y date in string form
  */
-function extractMonth(date) {
+function extractMonth (date) {
   const month = Number(date.substring(0, date.indexOf('/')));
 
   return dict[month];
@@ -454,7 +454,7 @@ function extractMonth(date) {
  * @param {array} tagList The list of tags associated with an entry
  * @param {boolean} flag The flag to add the entry to the "Important" log
  */
-function addEntrytoDB(database, entry, day, tagList, flag = false) {
+function addEntrytoDB (database, entry, day, tagList, flag = false) {
   let transaction;
   let objStore;
   const entryText = entry.innerText;
@@ -537,7 +537,7 @@ function addEntrytoDB(database, entry, day, tagList, flag = false) {
  * @param {string} d1
  * @param {string} d2
  */
-function isLaterThan(d1, d2) {
+function isLaterThan (d1, d2) {
   if (d1 === d2) {
     return 0;
   }
@@ -612,7 +612,7 @@ function isLaterThan(d1, d2) {
  * Otherwise, removes entry from "Important" log.
  * @function
  */
-function updateFlag(event) {
+function updateFlag (event) {
   const divElement = event.target.parentNode.parentNode;
   const content = divElement.querySelector('li').innerText;
   const day = divElement.className;
@@ -722,7 +722,7 @@ document.addEventListener('click', function (event) {
  * Checks to see if a header line needs to be removed from the database and display and does so
  *
  */
-function removeHeader(sectionParent) {
+function removeHeader (sectionParent) {
   // remove header line from page and database if it is now empty
   if (sectionParent.querySelectorAll('div').length === 0) {
     console.log('removing ' + sectionParent);
@@ -757,7 +757,7 @@ function removeHeader(sectionParent) {
  * @param {array} tagList List of tags for the entry.
  * @param {boolean} flag The flag to add the entry to the "Important" log
  */
-function updateDB(entry, oldContent, day, tagList, flag = false) {
+function updateDB (entry, oldContent, day, tagList, flag = false) {
   const bullet = entry;
   const transaction = db.transaction(['entries'], 'readwrite');
   const objStore = transaction.objectStore('entries');
@@ -781,7 +781,7 @@ function updateDB(entry, oldContent, day, tagList, flag = false) {
  * @param {string} str String to capitalize.
  * @return Capitlized string.
  */
-function capitalizeFirstLetter(str) {
+function capitalizeFirstLetter (str) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
@@ -789,7 +789,7 @@ function capitalizeFirstLetter(str) {
  * Function to get tags
  * @param {string} str String to get tags from
  */
-function tagGet(str) {
+function tagGet (str) {
   const separatedString = str.split('#')[1];
   if (separatedString === undefined) {
     return null;
@@ -804,7 +804,7 @@ function tagGet(str) {
  * Function to fill filter with new tags
  * @param {array} tags List of tags to populate filter.
  */
-function filterPopulate(tags) {
+function filterPopulate (tags) {
   if (tags === null) {
     return;
   }
@@ -830,7 +830,7 @@ function filterPopulate(tags) {
 /*
  * Begin process of laying out months (for daily log)
  */
-function createTimeline() {
+function createTimeline () {
   const allMonths = { 0: 'Jan', 1: 'Feb', 2: 'Mar', 3: 'Apr', 4: 'May', 5: 'Jun', 6: 'Jul', 7: 'Aug', 8: 'Sep', 9: 'Oct', 10: 'Nov', 11: 'Dec' };
 
   const date = new Date();
@@ -939,7 +939,7 @@ function createTimeline() {
   });
 }
 
-function createFutureTime() {
+function createFutureTime () {
   // console.log('running');
   const allMonths = { 0: 'Jan', 1: 'Feb', 2: 'Mar', 3: 'Apr', 4: 'May', 5: 'Jun', 6: 'Jul', 7: 'Aug', 8: 'Sep', 9: 'Oct', 10: 'Nov', 11: 'Dec' };
   const allMonthsRev = { January: 1, February: 2, March: 3, April: 4, May: 5, June: 6, July: 7, August: 8, September: 9, October: 10, November: 11, December: 12 };
