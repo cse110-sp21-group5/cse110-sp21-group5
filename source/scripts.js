@@ -749,7 +749,7 @@ function removeEntryFromDB (divElement, oldContent, newDB = undefined, callback 
         // finished with the new db
         thisDB.close();
       }
-      getAndShowEntries(thisDB, filter.value);
+      getAndShowEntries(db, filter.value);
       return;
     }
     cursor.continue();
