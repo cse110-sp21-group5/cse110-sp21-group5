@@ -139,7 +139,11 @@ newEntry.addEventListener('click', () => {
   if (document.querySelector('section') === null && db.name === 'daily') {
     document.querySelector('main').append(form);
   } else if (db.name === 'daily') {
-    document.querySelector('section').append(form);
+    if (document.querySelector('h3').textContent === new Date().toLocaleDateString()) {
+      document.querySelector('section').append(form);
+    } else {
+      document.querySelector('section').prepend(form);
+    }
   }
 
   if (form.querySelector('input') != null) {
@@ -166,11 +170,7 @@ newEntry.addEventListener('click', () => {
       // document.querySelector('section').append(newEntry);
     }
   } else if (db.name === 'future') {
-    if (document.querySelector('section') !== null) {
-      document.querySelector('section').prepend(newEntry);
-    } else {
-      document.querySelector('main').append(newEntry);
-    }
+    document.querySelector('section').prepend(newEntry);
   }
 });
 
