@@ -9,9 +9,9 @@ body {
 }
 
 main {
+    /*Code to center journal-entries*/
     margin-left: 20px;
 
-    /*Code to center journal-entries*/
     background-color: white;
     border-radius: 6px;
     list-style-type: none;
