@@ -265,6 +265,7 @@ function addEntry () {
       }
     });
   }
+
   if (sectionExists === false) {
     section = document.createElement('section');
     if (db.name === 'daily') {
@@ -285,13 +286,29 @@ function addEntry () {
         while (index < sxns.length && isLaterThan(section.className, sxns[index].className) == 1) {
           index++;
         }
-        document.querySelector('main').insertBefore(section, sxns[index]);
+        if (index == sxns.length) {
+          document.querySelector('main').append(section);
+        } else {
+          document.querySelector('main').insertBefore(section, sxns[index]);
+        }
+        
       }
       
     } 
-  }
+
+    const newEntryTitle = document.createElement('h3');
+    if (db.name === 'daily') {
+      newEntryTitle.innerText = date;
+    } else if (db.name === 'future') {
+      newEntryTitle.innerText = monthYear;
+    }
+    section.append(newEntryTitle);
+    // document.querySelector('main').append(section);
+    console.log(listedTags);
+    addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText, listedTags);
+  } 
   // Adds date on the first entry of the day
-  if (document.querySelector('h3') === null) {
+  /*if (section.querySelector('h3') === null) {
     const newEntryTitle = document.createElement('h3');
     if (db.name === 'daily') {
       newEntryTitle.innerText = date;
@@ -322,7 +339,7 @@ function addEntry () {
       //console.log(listedTags);
       addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText, listedTags);
     }
-  }
+  }*/
 
   newEntry.innerText = textArea.value;
   entryDiv.append(newEntry);
@@ -447,7 +464,7 @@ function showEntries (entries) {
 
     if (sectionList !== null) {
       sectionList.forEach(sec => {
-        if ((db.name === 'daily' && sec.className === entry.date) || (db.name === 'future' && sec.className === extractMonth(entry.date))) {
+        if ((db.name === 'daily' && sec.className === entry.date) || (db.name === 'future' && sec.className === extractMonthYear(entry.date))) {
           sectionExists = true;
           section = sec;
         }
@@ -837,12 +854,12 @@ function removeHeader (sectionParent) {
   if (sectionParent.querySelectorAll('div').length === 0) {
     console.log('removing ' + sectionParent);
 
-    let dateRemove;
-    if (db.name == 'daily') {
+    let dateRemove = sectionParent.className;
+    /*if (db.name == 'daily') {
       dateRemove = sectionParent.className;
     } else if (db.name == 'future') {
       dateRemove = extractMonthYear(sectionParent.className);
-    }
+    }*/
 
     // Remove element from IndexedDB
     const transaction = db.transaction(['entries'], 'readwrite');
