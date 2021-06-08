@@ -933,7 +933,7 @@ function filterPopulate (tags) {
  */
 function createTimeline () {
   const allMonths = { 0: 'Jan', 1: 'Feb', 2: 'Mar', 3: 'Apr', 4: 'May', 5: 'Jun', 6: 'Jul', 7: 'Aug', 8: 'Sep', 9: 'Oct', 10: 'Nov', 11: 'Dec' };
-
+  const validBold = {}; // approves highlighting of timeline based on month and year
   const date = new Date();
 
   let month = date.getMonth();
@@ -1001,6 +1001,7 @@ function createTimeline () {
 
     // console.log(timeClone.querySelector('ul'));
     timeClone.querySelector('ul').appendChild(monthClone);
+    validBold[month + 1] = date.getFullYear();
     month = month - 1;
 
     // Case of rolling back to last December
@@ -1012,11 +1013,12 @@ function createTimeline () {
   }
 
   document.querySelector('aside').appendChild(timeClone);
-
+  console.log(validBold);
   // Scroll Event marking month position
   window.addEventListener('scroll', event => {
     const entries = document.querySelectorAll('section');
 
+    let scrollCheck = false; // Used to check if the month is within the timeline in terms of the year
     let bolded = false; // Used to prevent other entries that are within the viewport getting their month bolded. Only looking for the first entry in the viewport
     let saveMonthText = null; // Used to the save the month to prevent other entries after the current with the same month overriding the bold text
     for (let i = 0; i < entries.length; i++) {
@@ -1024,7 +1026,12 @@ function createTimeline () {
 
       try {
         const monthText = document.getElementById(entries[i].className.substr(0, entries[i].className.indexOf('/')) - 1).querySelector('p'); // Month text on timeline
-        if (entryPos.top >= 0 && entryPos.left >= 0 && entryPos.bottom <= (window.innerHeight) && entryPos.right <= (window.innerWidth) && bolded === false) {
+        if ((validBold[entries[i].className.substring(0, entries[i].className.indexOf(' '))]) === (extractMonthYear(entries[i].className).substring(extractMonth(entries[i].className).indexOf(' ') + 1, extractMonthYear(entries[i].className).length))) {
+          scrollCheck = true;
+        } else {
+          scrollCheck = false;
+        }
+        if (entryPos.top >= 0 && entryPos.left >= 0 && entryPos.bottom <= (window.innerHeight) && entryPos.right <= (window.innerWidth) && bolded === false && scrollCheck) {
           saveMonthText = monthText;
           monthText.style.fontWeight = 'bolder';
           bolded = true;
@@ -1045,7 +1052,7 @@ function createFutureTime () {
   const allMonths = { 0: 'Jan', 1: 'Feb', 2: 'Mar', 3: 'Apr', 4: 'May', 5: 'Jun', 6: 'Jul', 7: 'Aug', 8: 'Sep', 9: 'Oct', 10: 'Nov', 11: 'Dec' };
   const allMonthsRev = { January: 1, February: 2, March: 3, April: 4, May: 5, June: 6, July: 7, August: 8, September: 9, October: 10, November: 11, December: 12 };
   const date = new Date();
-
+  const validBold = {}; // approves highlighting of timeline based on month and year
   let month = date.getMonth();
 
   // Get timeline template
@@ -1075,7 +1082,7 @@ function createFutureTime () {
       const checkDate = checkMonth;
       // console.log(checkDate);
       for (let index = 0; index < entries.length; index++) {
-        if (allMonthsRev[entries[index].className] === checkDate) {
+        if (allMonthsRev[entries[index].className.substring(0, entries[index].className.indexOf(' '))] === checkDate) {
           entries[index].scrollIntoView({ behavior: 'smooth' });
           break;
         }
@@ -1083,7 +1090,7 @@ function createFutureTime () {
       }
     });
 
-    timeClone.querySelector('ul').prepend(monthClone);
+    timeClone.querySelector('ul').appendChild(monthClone);
     month = month + 1;
 
     // Case of going to next year
@@ -1094,6 +1101,19 @@ function createFutureTime () {
     idx = idx - 1;
   }
 
+  // Keep track of the next 6 months and their respective years
+  const tempDate = new Date();
+  let tempMonth = tempDate.getMonth() + 1;
+  for (let i = 0; i < 6; i++) {
+    // Case of going to next year
+    if (tempMonth === 12) {
+      tempMonth = 0;
+      tempDate.setFullYear(tempDate.getFullYear() + 1);
+    }
+    validBold[tempMonth] = tempDate.getFullYear();
+    tempMonth = tempMonth + 1;
+  }
+
   document.querySelector('aside').appendChild(timeClone);
 
   // Scroll Event marking month position
@@ -1102,15 +1122,25 @@ function createFutureTime () {
 
     let bolded = false; // Used to prevent other entries that are within the viewport getting their month bolded. Only looking for the first entry in the viewport
     let saveMonthText = null; // Used to the save the month to prevent other entries after the current with the same month overriding the bold text
+    let scrollCheck = false; // Used to check if the month is within the timeline in terms of the year
     for (let i = 0; i < entries.length; i++) {
       const entryPos = entries[i].getBoundingClientRect();
 
       try {
-        const monthText = document.getElementById(allMonthsRev[entries[i].className] - 1).querySelector('p'); // Month text on timeline
-        if (entryPos.top >= 0 && entryPos.left >= 0 && entryPos.bottom <= (window.innerHeight) && entryPos.right <= (window.innerWidth) && bolded === false) {
+        const monthText = document.getElementById(allMonthsRev[entries[i].className.substring(0, entries[i].className.indexOf(' '))] - 1).querySelector('p'); // Month text on timeline
+        // console.log(typeof validBold[allMonthsRev[entries[i].className.substring(0, entries[i].className.indexOf(' '))]].toString());
+        // console.log(typeof (entries[i].className.substring(entries[i].className.indexOf(' ') + 1, entries[i].className.length)));
+        // Check if the year of that entry month is a valid month to highlight
+        if ((validBold[allMonthsRev[entries[i].className.substring(0, entries[i].className.indexOf(' '))]]).toString() === (entries[i].className.substring(entries[i].className.indexOf(' ') + 1, entries[i].className.length))) {
+          scrollCheck = true;
+        } else {
+          scrollCheck = false;
+        }
+        if (entryPos.top >= 0 && entryPos.left >= 0 && entryPos.bottom <= (window.innerHeight) && entryPos.right <= (window.innerWidth) && bolded === false && scrollCheck) {
           saveMonthText = monthText;
           monthText.style.fontWeight = 'bolder';
           bolded = true;
+          console.log('go');
         } else {
           if (monthText !== saveMonthText) {
             monthText.style.fontWeight = 'normal';
