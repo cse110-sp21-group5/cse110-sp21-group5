@@ -1042,7 +1042,8 @@ function createTimeline () {
 
       try {
         const monthText = document.getElementById(entries[i].className.substr(0, entries[i].className.indexOf('/')) - 1).querySelector('p'); // Month text on timeline
-        if ((validBold[entries[i].className.substring(0, entries[i].className.indexOf(' '))]) === (extractMonthYear(entries[i].className).substring(extractMonth(entries[i].className).indexOf(' ') + 1, extractMonthYear(entries[i].className).length))) {
+        // console.log(entries[i].className.substring(entries[i].className.lastIndexOf('/') + 1, entries[i].className.length));
+        if ((validBold[entries[i].className.substring(0, entries[i].className.indexOf('/'))]) === Number(entries[i].className.substring(entries[i].className.lastIndexOf('/') + 1, entries[i].className.length))) {
           scrollCheck = true;
         } else {
           scrollCheck = false;
