@@ -286,10 +286,8 @@ function addEntry () {
         } else {
           document.querySelector('main').insertBefore(section, sxns[index]);
         }
-        
       }
-      
-    } 
+    }
 
     const newEntryTitle = document.createElement('h3');
     if (db.name === 'daily') {
@@ -301,9 +299,9 @@ function addEntry () {
     // document.querySelector('main').append(section);
     console.log(listedTags);
     addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText, listedTags);
-  } 
+  }
   // Adds date on the first entry of the day
-  /*if (section.querySelector('h3') === null) {
+  /* if (section.querySelector('h3') === null) {
     const newEntryTitle = document.createElement('h3');
     if (db.name === 'daily') {
       newEntryTitle.innerText = date;
@@ -333,7 +331,7 @@ function addEntry () {
       // console.log(listedTags);
       addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText, listedTags);
     }
-  }*/
+  } */
 
   newEntry.innerText = textArea.value;
   entryDiv.append(newEntry);
@@ -841,12 +839,12 @@ function removeHeader (sectionParent) {
   if (sectionParent.querySelectorAll('div').length === 0) {
     console.log('removing ' + sectionParent);
 
-    let dateRemove = sectionParent.className;
-    /*if (db.name == 'daily') {
+    const dateRemove = sectionParent.className;
+    /* if (db.name == 'daily') {
       dateRemove = sectionParent.className;
     } else if (db.name === 'future') {
       dateRemove = extractMonthYear(sectionParent.className);
-    }*/
+    } */
 
     // Remove element from IndexedDB
     const transaction = db.transaction(['entries'], 'readwrite');
