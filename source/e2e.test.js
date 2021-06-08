@@ -1,5 +1,5 @@
 beforeAll(async () => {
-  await page.goto('http://127.0.0.1:5500/source/');
+  await page.goto('https://cse110-sp21-group5.github.io/cse110-sp21-group5/source/');
   await page.waitForTimeout(500);
 });
 test('Clicking add entry button should open up textBox', async () => {
