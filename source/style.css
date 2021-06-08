@@ -9,15 +9,17 @@ body {
 }
 
 main {
+    /*Code to center journal-entries*/
+    margin-left: 20px;
+
     background-color: white;
     border-radius: 6px;
-    /* list-style-type: none; */
+    list-style-type: none;
     margin-bottom: 30px;
     max-width: 700px;
     padding: 20px;
     width: 70%;
     margin: 20px auto;
-    /* opacity: 0.5; */
 }
   
 .nav {
@@ -260,10 +262,6 @@ button.addEntry:before {
     cursor: pointer;
     font-size: 30px;
 
-}
-
-main {
-    margin-left: 20px;
 }
 
 section ~ div > textarea {

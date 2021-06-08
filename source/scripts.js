@@ -152,8 +152,7 @@ newEntry.addEventListener('click', () => {
     form.append(dateIn);
     if (document.querySelector('section') !== null) {
       document.querySelector('section').prepend(form);
-    }
-    else {
+    } else {
       document.querySelector('main').append(form);
     }
   }
@@ -163,15 +162,13 @@ newEntry.addEventListener('click', () => {
   if (db.name === 'daily') {
     if (document.querySelector('section') === null) {
       document.querySelector('main').append(newEntry);
-    }
-    else {
-      //document.querySelector('section').append(newEntry);
+    } else {
+      // document.querySelector('section').append(newEntry);
     }
   } else if (db.name === 'future') {
     if (document.querySelector('section') !== null) {
       document.querySelector('section').prepend(newEntry);
-    }
-    else {
+    } else {
       document.querySelector('main').append(newEntry);
     }
   }
@@ -206,7 +203,7 @@ function addEntry () {
     textArea.value = '';
     if (document.querySelector('section') === null) {
       document.querySelector('main').append(addEnt);
-    } else if(db.name === 'daily') {
+    } else if (db.name === 'daily') {
       document.querySelector('section').append(addEnt);
     } else {
       document.querySelector('section').prepend(addEnt);
@@ -222,7 +219,6 @@ function addEntry () {
       return;
     }
   }
-  
   let date;
   if (db.name === 'daily') {
     date = new Date().toLocaleDateString();
@@ -277,13 +273,12 @@ function addEntry () {
     if (sec === null) {
       document.querySelector('main').append(section);
     } else {
-      if (db.name == 'daily') {
+      if (db.name === 'daily') {
         document.querySelector('main').insertBefore(section, sec);
-      } else if (db.name == 'future') {
-        
-        let sxns = document.querySelectorAll('section');
+      } else if (db.name === 'future') {
+        const sxns = document.querySelectorAll('section');
         let index = 0;
-        while (index < sxns.length && isLaterThan(section.className, sxns[index].className) == 1) {
+        while (index < sxns.length && isLaterThan(section.className, sxns[index].className) === 1) {
           index++;
         }
         if (index == sxns.length) {
@@ -317,7 +312,6 @@ function addEntry () {
     }
     section.append(newEntryTitle);
     // document.querySelector('main').append(section);
-    console.log(listedTags);
     addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText, listedTags);
   } else {
     let dateExists = false;
@@ -336,7 +330,7 @@ function addEntry () {
         newEntryTitle.innerText = monthYear;
       }
       section.insertBefore(newEntryTitle, section.childNodes[0]);
-      //console.log(listedTags);
+      // console.log(listedTags);
       addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText, listedTags);
     }
   }*/
@@ -481,12 +475,12 @@ function showEntries (entries) {
           document.querySelector('main').append(section);
         } else {
           document.querySelector('main').insertBefore(section, sec);
-          //document.querySelector('main').insertBefore(document.createElement('hr'), sec);
+          // document.querySelector('main').insertBefore(document.createElement('hr'), sec);
         }
       } else if (db.name === 'future') {
         document.querySelector('main').append(section);
-        //document.querySelector('main').append(document.createElement('hr'));
-        //document.querySelector('main').appendChild(document.createElement('br'));
+        // document.querySelector('main').append(document.createElement('hr'));
+        // document.querySelector('main').appendChild(document.createElement('br'));
       }
     }
 
@@ -525,7 +519,7 @@ function extractMonth (date) {
  * @param {string} date a m/d/y date in string form
  * @return {string} the name of the month and the year of the given date
  */
- function extractMonthYear (date) {
+function extractMonthYear (date) {
   if (date === undefined) {
     return;
   }
@@ -533,7 +527,7 @@ function extractMonth (date) {
 
   const year = date.substring(date.lastIndexOf('/') + 1);
 
-  return month + " " + year;
+  return month + ' ' + year;
 }
 
 /**
@@ -577,7 +571,6 @@ function addEntrytoDB (database, entry, day, tagList, flag = false) {
       request1.onsuccess = function (event) {
         const cursor = event.target.result;
         if (cursor) {
-          
           if (isLaterThan(date, cursor.value.date) === -1) {
             // insert a new month header
             const newKey = lastKey + ((cursor.key - lastKey) / 2);
@@ -629,16 +622,13 @@ function addEntrytoDB (database, entry, day, tagList, flag = false) {
  * @param {string} d2
  */
 function isLaterThan (d1, d2) {
-  
   if (d1 === d2) {
     return 0;
   }
 
   if (d1.indexOf('/') === -1 && d2.indexOf('/') === -1) {
-    
     const y1 = Number(d1.substring(d1.indexOf(' ') + 1));
     const y2 = Number(d2.substring(d2.indexOf(' ') + 1));
-    
     if (y1 > y2) {
       return 1;
     } else if (y1 < y2) {
@@ -650,16 +640,14 @@ function isLaterThan (d1, d2) {
 
     if (m1 > m2) {
       return 1;
-    } else if (m1 < m1) {
+    } else if (m1 < m2) {
       return -1;
     }
   }
 
   if (d1.indexOf('/') === -1) {
-    
     const y1 = Number(d1.substring(d1.indexOf(' ') + 1));
     const y2 = Number(d2.substring(d2.lastIndexOf('/') + 1));
-    
     if (y1 > y2) {
       return 1;
     } else if (y1 < y2) {
@@ -682,7 +670,6 @@ function isLaterThan (d1, d2) {
   if (d2.indexOf('/') === -1) {
     const y1 = Number(d1.substring(d1.lastIndexOf('/') + 1));
     const y2 = Number(d2.substring(d2.indexOf(' ') + 1));
-    
     if (y1 > y2) {
       return 1;
     } else if (y1 < y2) {
@@ -764,8 +751,9 @@ function updateFlag (event) {
  */
 document.addEventListener('click', function (event) {
   const divElement = event.target.parentNode;
+  let day;
   if (divElement !== null) {
-    const day = divElement.className;
+    day = divElement.className;
   }
 
   // check for click on outside or inside timeline to close dropdown
@@ -847,7 +835,6 @@ document.addEventListener('click', function (event) {
 
 /**
  * Checks to see if a header line needs to be removed from the database and display and does so
- * 
  */
 function removeHeader (sectionParent) {
   // remove header line from page and database if it is now empty
@@ -857,7 +844,7 @@ function removeHeader (sectionParent) {
     let dateRemove = sectionParent.className;
     /*if (db.name == 'daily') {
       dateRemove = sectionParent.className;
-    } else if (db.name == 'future') {
+    } else if (db.name === 'future') {
       dateRemove = extractMonthYear(sectionParent.className);
     }*/
 
