@@ -167,10 +167,14 @@ newEntry.addEventListener('click', () => {
     if (document.querySelector('section') === null) {
       document.querySelector('main').append(newEntry);
     } else {
-      // document.querySelector('section').append(newEntry);
+      document.querySelector('section').append(newEntry);
     }
   } else if (db.name === 'future') {
-    document.querySelector('section').prepend(newEntry);
+    if (document.querySelector('section') === null) {
+      document.querySelector('main').append(newEntry);
+    } else {
+      document.querySelector('section').prepend(newEntry);
+    }
   }
 });
 
