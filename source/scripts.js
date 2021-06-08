@@ -1013,7 +1013,7 @@ function createTimeline () {
   }
 
   document.querySelector('aside').appendChild(timeClone);
-  console.log(validBold);
+  // console.log(validBold);
   // Scroll Event marking month position
   window.addEventListener('scroll', event => {
     const entries = document.querySelectorAll('section');
@@ -1140,7 +1140,6 @@ function createFutureTime () {
           saveMonthText = monthText;
           monthText.style.fontWeight = 'bolder';
           bolded = true;
-          console.log('go');
         } else {
           if (monthText !== saveMonthText) {
             monthText.style.fontWeight = 'normal';
