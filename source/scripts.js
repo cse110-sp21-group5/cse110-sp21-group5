@@ -803,7 +803,7 @@ function updateFlag (event, fromDelete = false) {
   updateDB(content, content, day, tagList, flag);
 }
 
-function removeEntryFromDB (divElement, oldContent, newDB = undefined, callback = undefined) {
+function removeEntryFromDB (divElement, oldContent, newDB, callback = undefined) {
   // restrict db to this scope
   let thisDB = db;
   // Get the div element
@@ -824,10 +824,11 @@ function removeEntryFromDB (divElement, oldContent, newDB = undefined, callback 
       return;
     }
     if (cursor.value.content === oldContent && cursor.value.date === date) {
+      const fullDate = cursor.value.date;
       console.log('delete key pressed');
       objStore.delete(cursor.key); // Delete appropriate element from DB
       divElement.remove(); // Delete div element from page
-      removeHeader(sectionParent);
+      removeHeader(sectionParent, newDB, fullDate);
       existingOptions.clear();
       while (filter.firstChild) {
         filter.removeChild(filter.lastChild);
@@ -884,14 +885,21 @@ document.addEventListener('click', function (event) {
     oldContent = divElement.querySelector('li').innerText;
   }
   if (event.target.className === 'delete') {
-    removeEntryFromDB(divElement, oldContent);
+    removeEntryFromDB(divElement, oldContent, undefined);
+    // update respective log's flag, else also remove from important DB
     if (db.name === 'important') {
       updateFlag(event, true);
+    } else {
+      const req = indexedDB.open('important');
+      req.onsuccess = function (event) {
+        const newDB = event.target.result;
+        // remove the entry
+        removeEntryFromDB(divElement, oldContent, newDB);
+      };
     }
   } else if (event.target.className === 'flag') {
     updateFlag(event);
-    // long if
-  } else if (divElement.tagName === 'DIV' && existingEntry === false) {
+  } else if (event.target.parentNode !== null && event.target.parentNode.className !== 'tl' && divElement.tagName === 'DIV' && divElement.parentNode.tagName === 'SECTION' && existingEntry === false && document.querySelector('textArea') === null) {
     existingEntry = true;
     const textBox = document.createElement('textarea');
     if (divElement.querySelector('li') !== null) {
@@ -918,9 +926,37 @@ document.addEventListener('click', function (event) {
 
 /**
  * Checks to see if a header line needs to be removed from the database
- * and display and does so
+ * and display and does so.
+ * Any function calling this which passes in a defined newDB must close the newDB.
  */
-function removeHeader (sectionParent) {
+function removeHeader (sectionParent, newDB = undefined, fullDate = '') {
+  // remove header line from other database that is not being shown right now
+  if (newDB !== undefined) {
+    console.log('checking to remove remote header ' + sectionParent);
+    const dateRemove = fullDate;
+    // Remove element from IndexedDB
+    const transaction = newDB.transaction(['entries'], 'readwrite');
+    const objStore = transaction.objectStore('entries');
+    // remaining number of entries with same date
+    const requestRemainingEntries = objStore.openCursor();
+    let headerKey = 0;
+    requestRemainingEntries.onsuccess = function (event) {
+      const cursor = event.target.result;
+      if (cursor === null) {
+        // reached the end without finding remaining entries
+        objStore.delete(headerKey);
+        return;
+      }
+      if (cursor.value.content === dateRemove && cursor.value.date === dateRemove) {
+        headerKey = cursor.key;
+      } else if (cursor.value.date === dateRemove) {
+        // found a remaining entry, stop searching, don't remove header
+        return;
+      }
+      cursor.continue();
+    };
+    // the newDB is guaranteed to close by the calling function
+  }
   // remove header line from page and database if it is now empty
   if (sectionParent.querySelectorAll('div').length === 0) {
     console.log('removing ' + sectionParent);
