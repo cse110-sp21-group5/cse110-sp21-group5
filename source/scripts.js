@@ -3,6 +3,7 @@
 // select the <a> tags used for navigation at the top of the page
 const dispBar = document.querySelectorAll('.nav a');
 const newEntry = document.querySelector('[class=addEntry]');
+const addEnt = newEntry;
 const form = document.createElement('form');
 const textArea = document.createElement('textarea');
 const filter = document.querySelector('[name="filter"]');
@@ -32,7 +33,7 @@ dict[11] = 'November';
 dict[12] = 'December';
 
 for (const key in dict) {
-  dict[dict[key]] = key;
+  dict[dict[key]] = Number(key);
 }
 
 const request = indexedDB.open('daily', 1);
@@ -68,11 +69,26 @@ function clrActive () {
  * @function
  * Adds event listeners to all elements of the navigation bar selected in dispBar
  */
+// create initial timeline
+createTimeline();
 for (let i = 0; i < dispBar.length; i++) {
   dispBar[i].addEventListener('click', function () {
     clrActive();
     dispBar[i].classList.add('active');
-    tab = document.querySelector('.active').attributes['href'].value.substring(1);
+    tab = document.querySelector('.active').attributes.href.value.substring(1);
+
+    /* Create respective timeline based on tab change */
+    const tl = document.querySelector('.tl');
+    if (tl) {
+      tl.remove();
+    }
+
+    if (tab === 'daily') {
+      createTimeline();
+    } else if (tab === 'future') {
+      createFutureTime();
+    }
+
     clearPage();
     const req = indexedDB.open(tab, 1);
     existingOptions.clear();
@@ -120,9 +136,10 @@ function clearPage () {
  */
 
 newEntry.addEventListener('click', () => {
-  if (document.querySelector('section') === null) {
+  // add form for daily
+  if (document.querySelector('section') === null && db.name === 'daily') {
     document.querySelector('main').append(form);
-  } else {
+  } else if (db.name === 'daily') {
     document.querySelector('section').append(form);
   }
 
@@ -130,15 +147,33 @@ newEntry.addEventListener('click', () => {
     form.querySelector('input').remove();
   }
 
+  // add form for future
   if (db.name === 'future') {
     const dateIn = document.createElement('input');
     dateIn.type = 'date';
     form.append(dateIn);
+    if (document.querySelector('section') !== null) {
+      document.querySelector('section').prepend(form);
+    } else {
+      document.querySelector('main').append(form);
+    }
   }
 
   textArea.focus();
   document.querySelector('.addEntry').remove();
-  document.querySelector('main').append(newEntry);
+  if (db.name === 'daily') {
+    if (document.querySelector('section') === null) {
+      document.querySelector('main').append(newEntry);
+    } else {
+      // document.querySelector('section').append(newEntry);
+    }
+  } else if (db.name === 'future') {
+    if (document.querySelector('section') !== null) {
+      document.querySelector('section').prepend(newEntry);
+    } else {
+      document.querySelector('main').append(newEntry);
+    }
+  }
 });
 
 /**
@@ -168,6 +203,13 @@ function addEntry () {
   if (textArea.value.length === 1) {
     document.querySelector('form').remove();
     textArea.value = '';
+    if (document.querySelector('section') === null) {
+      document.querySelector('main').append(addEnt);
+    } else if (db.name === 'daily') {
+      document.querySelector('section').append(addEnt);
+    } else {
+      document.querySelector('section').prepend(addEnt);
+    }
     return;
   }
 
@@ -185,7 +227,7 @@ function addEntry () {
   } else if (db.name === 'future') {
     date = parseDateInput(dateInput);
   }
-  const month = extractMonth(date);
+  const monthYear = extractMonthYear(date);
   const listedTags = tagGet(textArea.value);
   filterPopulate(listedTags);
   const newEntry = document.createElement('li');
@@ -218,62 +260,57 @@ function addEntry () {
   let section;
   if (sectionList !== null) {
     sectionList.forEach(sec => {
-      if (((db.name === 'daily' || db.name === 'important') && sec.className === date) || (db.name === 'future' && sec.className === month)) {
+      if (((db.name === 'daily' || db.name === 'important') && sec.className === date) || (db.name === 'future' && sec.className === monthYear)) {
         sectionExists = true;
         section = sec;
       }
     });
   }
+
   if (sectionExists === false) {
     section = document.createElement('section');
     if (db.name === 'daily' || db.name === 'important') {
       section.className = date;
     } else if (db.name === 'future') {
-      section.className = month;
+      section.className = monthYear;
     }
     const sec = document.querySelector('section');
     if (sec === null) {
       document.querySelector('main').append(section);
     } else {
-      document.querySelector('main').insertBefore(section, sec);
+      if (db.name === 'daily') {
+        document.querySelector('main').insertBefore(section, sec);
+      } else if (db.name === 'future') {
+        const sxns = document.querySelectorAll('section');
+        let index = 0;
+        while (index < sxns.length && isLaterThan(section.className, sxns[index].className) === 1) {
+          index++;
+        }
+        if (index === sxns.length) {
+          document.querySelector('main').append(section);
+        } else {
+          document.querySelector('main').insertBefore(section, sxns[index]);
+        }
+      }
     }
-  }
-  // Adds date on the first entry of the day
-  if (document.querySelector('h3') === null) {
     const newEntryTitle = document.createElement('h3');
-    if (db.name === 'daily' || db.name === 'important') {
+    if (db.name === 'daily') {
       newEntryTitle.innerText = date;
     } else if (db.name === 'future') {
-      newEntryTitle.innerText = month;
+      newEntryTitle.innerText = monthYear;
     }
     section.append(newEntryTitle);
     // document.querySelector('main').append(section);
     console.log(listedTags);
     addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText, listedTags);
-  } else {
-    let dateExists = false;
-    const h3List = document.querySelectorAll('h3');
-    h3List.forEach(h3 => {
-      if (((db.name === 'daily' || db.name === 'important') && h3.innerText === date) || (db.name === 'future' && h3.innerText === month)) {
-        dateExists = true;
-      }
-    });
-
-    if (dateExists === false) {
-      const newEntryTitle = document.createElement('h3');
-      if (db.name === 'daily' || db.name === 'important') {
-        newEntryTitle.innerText = date;
-      } else if (db.name === 'future') {
-        newEntryTitle.innerText = month;
-      }
-      console.log(listedTags);
-      addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText, listedTags);
-    }
   }
 
   newEntry.innerText = textArea.value;
   entryDiv.append(newEntry);
   section.append(entryDiv);
+  if (db.name === 'daily') {
+    section.append(addEnt);
+  }
   document.querySelector('form').remove();
   textArea.value = '';
 
@@ -346,6 +383,14 @@ function getAndShowEntries (database, tag) {
  */
 function showEntries (entries) {
   clearPage();
+  if (document.querySelector(['.addEntry']) === null) {
+    const s = document.querySelector('section');
+    if (s !== null) {
+      document.querySelector('main').insertBefore(newEntry, s);
+    } else {
+      document.querySelector('main').append(newEntry);
+    }
+  }
   if (textArea.value.length === 1) {
     document.querySelector('form').remove();
     textArea.value = '';
@@ -388,7 +433,7 @@ function showEntries (entries) {
 
     if (sectionList !== null) {
       sectionList.forEach(sec => {
-        if (((db.name === 'daily' || db.name === 'important') && sec.className === entry.date) || (db.name === 'future' && sec.className === extractMonth(entry.date))) {
+        if (((db.name === 'daily' || db.name === 'important') && sec.className === entry.date) || (db.name === 'future' && sec.className === extractMonthYear(entry.date))) {
           sectionExists = true;
           section = sec;
         }
@@ -432,11 +477,31 @@ function showEntries (entries) {
 /**
  * Takes a date in string form and returns the string name of the month it is in
  * @param {string} date a m/d/y date in string form
+ * @return {string} the name of the month from the given date
  */
 function extractMonth (date) {
+  if (date === undefined) {
+    return;
+  }
   const month = Number(date.substring(0, date.indexOf('/')));
 
   return dict[month];
+}
+
+/**
+ * Takes a date in string form and returns the string name of the month it is in
+ * @param {string} date a m/d/y date in string form
+ * @return {string} the name of the month and the year of the given date
+ */
+function extractMonthYear (date) {
+  if (date === undefined) {
+    return;
+  }
+  const month = dict[Number(date.substring(0, date.indexOf('/')))];
+
+  const year = date.substring(date.lastIndexOf('/') + 1);
+
+  return month + ' ' + year;
 }
 
 /**
@@ -487,14 +552,14 @@ function addEntrytoDB (database, entry, day, tagList, flag = false, callback = u
           if (isLaterThan(date, cursor.value.date) === -1) {
             // insert a new month header
             const newKey = lastKey + ((cursor.key - lastKey) / 2);
-            objStore.add({ content: extractMonth(date), date: extractMonth(date), tags: tagList }, newKey);
+            objStore.add({ content: extractMonthYear(date), date: extractMonthYear(date), tags: tagList }, newKey);
             return;
           }
 
           lastKey = cursor.key;
           cursor.continue();
         } else {
-          objStore.add({ content: extractMonth(date), date: extractMonth(date), tags: tagList });
+          objStore.add({ content: extractMonthYear(date), date: extractMonthYear(date), tags: tagList });
         }
       };
     } else {
@@ -543,42 +608,70 @@ function isLaterThan (d1, d2) {
   }
 
   if (d1.indexOf('/') === -1 && d2.indexOf('/') === -1) {
-    if (dict[d1] > dict[d2]) {
+    const y1 = Number(d1.substring(d1.indexOf(' ') + 1));
+    const y2 = Number(d2.substring(d2.indexOf(' ') + 1));
+    if (y1 > y2) {
       return 1;
+    } else if (y1 < y2) {
+      return -1;
     }
-    if (dict[d1] < dict[d2]) {
+
+    const m1 = dict[d1.substring(0, d1.indexOf(' '))];
+    const m2 = dict[d2.substring(0, d2.indexOf(' '))];
+
+    if (m1 > m2) {
+      return 1;
+    } else if (m1 < m2) {
       return -1;
     }
   }
 
   if (d1.indexOf('/') === -1) {
-    const month = extractMonth(d2);
-    if (month === d1) {
-      return 0;
-    }
-    if (dict[month] > dict[d1]) {
+    const y1 = Number(d1.substring(d1.indexOf(' ') + 1));
+    const y2 = Number(d2.substring(d2.lastIndexOf('/') + 1));
+    if (y1 > y2) {
       return 1;
-    }
-    if (dict[month] < dict[d1]) {
+    } else if (y1 < y2) {
       return -1;
     }
+
+    const m1 = dict[d1.substring(0, d1.indexOf(' '))];
+    const m2 = dict[extractMonth(d2)];
+
+    if (m1 > m2) {
+      return 1;
+    }
+    if (m1 < m2) {
+      return -1;
+    }
+
+    return 0;
   }
 
   if (d2.indexOf('/') === -1) {
-    const month = extractMonth(d1);
-    if (month === d2) {
-      return 0;
-    }
-    if (dict[month] > dict[d2]) {
+    const y1 = Number(d1.substring(d1.lastIndexOf('/') + 1));
+    const y2 = Number(d2.substring(d2.indexOf(' ') + 1));
+    if (y1 > y2) {
       return 1;
-    }
-    if (dict[month] < dict[d2]) {
+    } else if (y1 < y2) {
       return -1;
     }
+
+    const m1 = dict[extractMonth(d1)];
+    const m2 = dict[d2.substring(0, d2.indexOf(' '))];
+
+    if (m1 > m2) {
+      return 1;
+    }
+    if (m1 < m2) {
+      return -1;
+    }
+
+    return 0;
   }
 
-  const year1 = d1.substring(d1.lastIndexOf('/'));
-  const year2 = d2.substring(d2.lastIndexOf('/'));
+  const year1 = Number(d1.substring(d1.lastIndexOf('/') + 1));
+  const year2 = Number(d2.substring(d2.lastIndexOf('/') + 1));
 
   if (year1 > year2) {
     return 1;
@@ -586,8 +679,8 @@ function isLaterThan (d1, d2) {
     return -1;
   }
 
-  const month1 = d1.substring(0, d1.indexOf('/'));
-  const month2 = d2.substring(0, d2.indexOf('/'));
+  const month1 = Number(d1.substring(0, d1.indexOf('/')));
+  const month2 = Number(d2.substring(0, d2.indexOf('/')));
 
   if (month1 > month2) {
     return 1;
@@ -595,8 +688,8 @@ function isLaterThan (d1, d2) {
     return -1;
   }
 
-  const day1 = d1.substring(d1.indexOf('/') + 1, d1.lastIndexOf('/'));
-  const day2 = d2.substring(d2.indexOf('/') + 1, d2.lastIndexOf('/'));
+  const day1 = Number(d1.substring(d1.indexOf('/') + 1, d1.lastIndexOf('/')));
+  const day2 = Number(d2.substring(d2.indexOf('/') + 1, d2.lastIndexOf('/')));
 
   if (day1 > day2) {
     return 1;
@@ -769,9 +862,25 @@ function removeEntryFromDB (divElement, oldContent, newDB = undefined, callback 
  */
 document.addEventListener('click', function (event) {
   const divElement = event.target.parentNode;
-  const day = divElement.className;
+  let day;
+  if (divElement !== null) {
+    day = divElement.className;
+  }
+
+  // check for click on outside or inside timeline to close dropdown
+  const timeline = document.querySelector('.timeline');
+  if (timeline) {
+    const isClickInside = timeline.contains(event.target);
+
+    if (!isClickInside) {
+      const content = document.querySelectorAll('.dropdown-content');
+      for (let i = 0; i < content.length; i++) {
+        content[i].style.display = 'none';
+      }
+    }
+  }
   let oldContent;
-  if (divElement.querySelector('li') !== null) {
+  if (divElement !== null && divElement.querySelector('li') !== null) {
     oldContent = divElement.querySelector('li').innerText;
   }
   if (event.target.className === 'delete') {
@@ -781,6 +890,7 @@ document.addEventListener('click', function (event) {
     }
   } else if (event.target.className === 'flag') {
     updateFlag(event);
+    // long if
   } else if (divElement.tagName === 'DIV' && existingEntry === false) {
     existingEntry = true;
     const textBox = document.createElement('textarea');
@@ -807,8 +917,8 @@ document.addEventListener('click', function (event) {
 });
 
 /**
- * Checks to see if a header line needs to be removed from the database and display and does so
- *
+ * Checks to see if a header line needs to be removed from the database
+ * and display and does so
  */
 function removeHeader (sectionParent) {
   // remove header line from page and database if it is now empty
@@ -864,6 +974,7 @@ function updateDB (entry, oldContent, day, tagList, flag = false, newDB = undefi
     }
     if (cursor.value.content === oldContent && cursor.value.date === day) {
       objStore.put(newContent, cursor.key); // Update appropriate element from DB
+      return;
     }
     cursor.continue();
   };
@@ -924,4 +1035,230 @@ function filterPopulate (tags) {
       // then add it to the set after
     }
   }
+}
+
+/*
+ * Begin process of laying out months (for daily log)
+ */
+function createTimeline () {
+  const allMonths = { 0: 'Jan', 1: 'Feb', 2: 'Mar', 3: 'Apr', 4: 'May', 5: 'Jun', 6: 'Jul', 7: 'Aug', 8: 'Sep', 9: 'Oct', 10: 'Nov', 11: 'Dec' };
+  const validBold = {}; // approves highlighting of timeline based on month and year
+  const date = new Date();
+
+  let month = date.getMonth();
+
+  // Get timeline template
+  const timeTemp = document.getElementById('timeline');
+  const timeClone = timeTemp.content.firstElementChild.cloneNode(true);
+
+  // Set Year Header
+  const timeYear = timeClone.querySelector('h4');
+  timeYear.innerText = date.getFullYear();
+
+  // Get month template
+  const monthTemp = document.getElementById('month');
+
+  // Append month template to the timeline
+  let idx = 12;
+  while (idx > 0) {
+    const monthClone = monthTemp.content.firstElementChild.cloneNode(true);
+    monthClone.firstElementChild.innerText = allMonths[month];
+    // console.log(allMonths[month]);
+
+    monthClone.id = month;
+    // Demo of applying months
+    // Get total days in the current month
+    const daysInMonth = new Date(date.getFullYear(), (month + 1) % 12, 0).getDate();
+
+    // List out the days in the current month
+    for (let i = 0; i < daysInMonth; i++) {
+      const listItem = document.createElement('li');
+
+      listItem.innerText = i + 1;
+
+      // Copy over values due to block scope
+      const checkMonth = month + 1;
+      const checkYear = date.getFullYear().toString();
+      // Event listener for navigating to certain day
+      listItem.addEventListener('click', event => {
+        const entries = document.querySelectorAll('section');
+        const checkDate = checkMonth + '/' + listItem.innerText + '/' + checkYear;
+        // console.log(checkDate);
+        for (let index = 0; index < entries.length; index++) {
+          if (entries[index].className === checkDate) {
+            entries[index].scrollIntoView({ behavior: 'smooth' });
+            break;
+          }
+          // console.log('nav');
+        }
+      });
+
+      // End navigating to certain day function
+
+      monthClone.querySelector('ul').appendChild(listItem);
+    }
+
+    // console.log(monthClone.querySelector('p').innerText);
+    monthClone.querySelector('p').addEventListener('click', event => {
+      if (monthClone.querySelector('div').style.display === 'none') {
+        monthClone.querySelector('div').style.display = 'inline-block';
+      } else {
+        monthClone.querySelector('div').style.display = 'none';
+      }
+    });
+    // end of demo
+
+    // console.log(timeClone.querySelector('ul'));
+    timeClone.querySelector('ul').appendChild(monthClone);
+    validBold[month + 1] = date.getFullYear();
+    month = month - 1;
+
+    // Case of rolling back to last December
+    if (month === -1) {
+      month = 11;
+      date.setFullYear(date.getFullYear() - 1);
+    }
+    idx = idx - 1;
+  }
+
+  document.querySelector('aside').appendChild(timeClone);
+  // console.log(validBold);
+  // Scroll Event marking month position
+  window.addEventListener('scroll', event => {
+    const entries = document.querySelectorAll('section');
+
+    let scrollCheck = false; // Used to check if the month is within the timeline in terms of the year
+    let bolded = false; // Used to prevent other entries that are within the viewport getting their month bolded. Only looking for the first entry in the viewport
+    let saveMonthText = null; // Used to the save the month to prevent other entries after the current with the same month overriding the bold text
+    for (let i = 0; i < entries.length; i++) {
+      const entryPos = entries[i].getBoundingClientRect();
+
+      try {
+        const monthText = document.getElementById(entries[i].className.substr(0, entries[i].className.indexOf('/')) - 1).querySelector('p'); // Month text on timeline
+        // console.log(entries[i].className.substring(entries[i].className.lastIndexOf('/') + 1, entries[i].className.length));
+        if ((validBold[entries[i].className.substring(0, entries[i].className.indexOf('/'))]) === Number(entries[i].className.substring(entries[i].className.lastIndexOf('/') + 1, entries[i].className.length))) {
+          scrollCheck = true;
+        } else {
+          scrollCheck = false;
+        }
+        if (entryPos.top >= 0 && entryPos.left >= 0 && entryPos.bottom <= (window.innerHeight) && entryPos.right <= (window.innerWidth) && bolded === false && scrollCheck) {
+          saveMonthText = monthText;
+          monthText.style.fontWeight = 'bolder';
+          bolded = true;
+        } else {
+          if (monthText !== saveMonthText) {
+            monthText.style.fontWeight = 'normal';
+          }
+        }
+      } catch (error) {
+        // console.error(error);
+      }
+    }
+  });
+}
+
+function createFutureTime () {
+  // console.log('running');
+  const allMonths = { 0: 'Jan', 1: 'Feb', 2: 'Mar', 3: 'Apr', 4: 'May', 5: 'Jun', 6: 'Jul', 7: 'Aug', 8: 'Sep', 9: 'Oct', 10: 'Nov', 11: 'Dec' };
+  const allMonthsRev = { January: 1, February: 2, March: 3, April: 4, May: 5, June: 6, July: 7, August: 8, September: 9, October: 10, November: 11, December: 12 };
+  const date = new Date();
+  const validBold = {}; // approves highlighting of timeline based on month and year
+  let month = date.getMonth();
+
+  // Get timeline template
+  const timeTemp = document.getElementById('timeline');
+  const timeClone = timeTemp.content.firstElementChild.cloneNode(true);
+
+  // Set Year Header
+  const timeYear = timeClone.querySelector('h4');
+  timeYear.innerText = date.getFullYear();
+
+  // Get month template
+  const monthTemp = document.getElementById('month');
+
+  // Append month template to the timeline
+  let idx = 6;
+  while (idx > 0) {
+    const monthClone = monthTemp.content.firstElementChild.cloneNode(true);
+    monthClone.firstElementChild.innerText = allMonths[month];
+    // console.log(allMonths[month]);
+
+    monthClone.id = month;
+
+    // Copy over values due to block scope
+    const checkMonth = month + 1;
+    monthClone.querySelector('p').addEventListener('click', event => {
+      const entries = document.querySelectorAll('section');
+      const checkDate = checkMonth;
+      const checkYear = date.getFullYear();
+      // console.log(checkDate);
+      for (let index = 0; index < entries.length; index++) {
+        if (allMonthsRev[entries[index].className.substring(0, entries[index].className.indexOf(' '))] === checkDate && checkYear === Number(entries[index].className.substring(entries[index].className.indexOf(' ') + 1, entries[index].className.length))) {
+          entries[index].scrollIntoView({ behavior: 'smooth' });
+          break;
+        }
+        // console.log('nav');
+      }
+    });
+
+    timeClone.querySelector('ul').appendChild(monthClone);
+    month = month + 1;
+
+    // Case of going to next year
+    if (month === 12) {
+      month = 0;
+      date.setFullYear(date.getFullYear() + 1);
+    }
+    idx = idx - 1;
+  }
+
+  // Keep track of the next 6 months and their respective years
+  const tempDate = new Date();
+  let tempMonth = tempDate.getMonth() + 1;
+  for (let i = 0; i < 6; i++) {
+    // Case of going to next year
+    if (tempMonth === 12) {
+      tempMonth = 0;
+      tempDate.setFullYear(tempDate.getFullYear() + 1);
+    }
+    validBold[tempMonth] = tempDate.getFullYear();
+    tempMonth = tempMonth + 1;
+  }
+
+  document.querySelector('aside').appendChild(timeClone);
+
+  // Scroll Event marking month position
+  window.addEventListener('scroll', event => {
+    const entries = document.querySelectorAll('section');
+
+    let bolded = false; // Used to prevent other entries that are within the viewport getting their month bolded. Only looking for the first entry in the viewport
+    let saveMonthText = null; // Used to the save the month to prevent other entries after the current with the same month overriding the bold text
+    let scrollCheck = false; // Used to check if the month is within the timeline in terms of the year
+    for (let i = 0; i < entries.length; i++) {
+      const entryPos = entries[i].getBoundingClientRect();
+
+      try {
+        const monthText = document.getElementById(allMonthsRev[entries[i].className.substring(0, entries[i].className.indexOf(' '))] - 1).querySelector('p'); // Month text on timeline
+        // console.log(typeof validBold[allMonthsRev[entries[i].className.substring(0, entries[i].className.indexOf(' '))]].toString());
+        // console.log(typeof (entries[i].className.substring(entries[i].className.indexOf(' ') + 1, entries[i].className.length)));
+        // Check if the year of that entry month is a valid month to highlight
+        if ((validBold[allMonthsRev[entries[i].className.substring(0, entries[i].className.indexOf(' '))]]).toString() === (entries[i].className.substring(entries[i].className.indexOf(' ') + 1, entries[i].className.length))) {
+          scrollCheck = true;
+        } else {
+          scrollCheck = false;
+        }
+        if (entryPos.top >= 0 && entryPos.left >= 0 && entryPos.bottom <= (window.innerHeight) && entryPos.right <= (window.innerWidth) && bolded === false && scrollCheck) {
+          saveMonthText = monthText;
+          monthText.style.fontWeight = 'bolder';
+          bolded = true;
+        } else {
+          if (monthText !== saveMonthText) {
+            monthText.style.fontWeight = 'normal';
+          }
+        }
+      } catch (error) {
+        // console.error(error);
+      }
+    }
+  });
 }
