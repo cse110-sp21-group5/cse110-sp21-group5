@@ -22,6 +22,7 @@ main {
 }
 
 .nav {
+    z-index: 9999;
     display: flex;
     position: sticky;
     top: 0px;
