@@ -264,6 +264,16 @@ button.addEntry:before {
 
 main {
     margin-left: 20px;
+
+    /*Code to center journal-entries*/
+    background-color: white;
+    border-radius: 6px;
+    list-style-type: none;
+    margin-bottom: 30px;
+    max-width: 700px;
+    padding: 20px;
+    width: 70%;
+    margin: 20px auto;
 }
 
 section ~ div > textarea {
