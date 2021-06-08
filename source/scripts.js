@@ -837,7 +837,12 @@ function removeHeader (sectionParent) {
   if (sectionParent.querySelectorAll('div').length === 0) {
     console.log('removing ' + sectionParent);
 
-    const dateRemove = sectionParent.className;
+    let dateRemove;
+    if (db.name == 'daily') {
+      dateRemove = sectionParent.className;
+    } else if (db.name == 'future') {
+      dateRemove = extractMonthYear(sectionParent.className);
+    }
 
     // Remove element from IndexedDB
     const transaction = db.transaction(['entries'], 'readwrite');
