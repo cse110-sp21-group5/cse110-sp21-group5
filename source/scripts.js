@@ -1096,9 +1096,10 @@ function createFutureTime () {
     monthClone.querySelector('p').addEventListener('click', event => {
       const entries = document.querySelectorAll('section');
       const checkDate = checkMonth;
+      const checkYear = date.getFullYear();
       // console.log(checkDate);
       for (let index = 0; index < entries.length; index++) {
-        if (allMonthsRev[entries[index].className.substring(0, entries[index].className.indexOf(' '))] === checkDate) {
+        if (allMonthsRev[entries[index].className.substring(0, entries[index].className.indexOf(' '))] === checkDate && checkYear === Number(entries[index].className.substring(entries[index].className.indexOf(' ') + 1, entries[index].className.length))) {
           entries[index].scrollIntoView({ behavior: 'smooth' });
           break;
         }
