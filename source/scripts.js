@@ -294,7 +294,6 @@ function addEntry () {
     }
     section.append(newEntryTitle);
     // document.querySelector('main').append(section);
-    console.log(listedTags);
     addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText, listedTags);
   } else {
     let dateExists = false;
