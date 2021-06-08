@@ -444,14 +444,14 @@ function showEntries (entries) {
       section.className = entry.date;
       const sec = document.querySelector('section');
 
-      if (db.name === 'daily' || db.name === 'important') {
+      if (db.name === 'daily') {
         if (sec === null) {
           document.querySelector('main').append(section);
         } else {
           document.querySelector('main').insertBefore(section, sec);
           document.querySelector('main').insertBefore(document.createElement('hr'), sec);
         }
-      } else if (db.name === 'future') {
+      } else if (db.name === 'future' || db.name === 'important') {
         document.querySelector('main').append(section);
         document.querySelector('main').append(document.createElement('hr'));
         document.querySelector('main').appendChild(document.createElement('br'));
@@ -530,7 +530,7 @@ function addEntrytoDB (database, entry, day, tagList, flag = false, callback = u
       return;
     }
   }
-  if (database.name === 'daily' || database.name === 'important') {
+  if (database.name === 'daily') {
     transaction = database.transaction(['entries'], 'readwrite');
     objStore = transaction.objectStore('entries');
     objStore.add(entryObject);
@@ -585,6 +585,31 @@ function addEntrytoDB (database, entry, day, tagList, flag = false, callback = u
         }
       };
     }
+  } else if (database.name === 'important') {
+    let lastKey = 0;
+
+    transaction = database.transaction(['entries'], 'readwrite');
+    objStore = transaction.objectStore('entries');
+
+    const request1 = objStore.openCursor();
+    request1.onsuccess = function (event) {
+      const cursor = event.target.result;
+      if (cursor) {
+        if (isLaterThan(day, cursor.value.date) === -1) {
+          let newKey = lastKey + 0.000001;
+          if (entryText === day) {
+            newKey = lastKey + ((cursor.key - lastKey) / 2);
+          }
+          objStore.add(entryObject, newKey);
+          return;
+        }
+
+        lastKey = cursor.key;
+        cursor.continue();
+      } else {
+        objStore.add(entryObject);
+      }
+    };
   }
   transaction.oncomplete = function () {
     console.log('Data entered into database');
@@ -717,6 +742,18 @@ function updateFlag (event, fromDelete = false) {
   const tagList = tagGet(divElement.innerText);
   const content = divElement.querySelector('li').innerText;
   const day = divElement.className;
+  // const cursor = event.target.result;
+  //       if (cursor) {
+  //         if (isLaterThan(date, cursor.value.date) === -1) {
+  //           const newKey = lastKey + 0.000001;
+  //           objStore.add({ content: entryText, date: date, tags: tagList }, newKey);
+  //           return;
+  //         }
+  //         lastKey = cursor.key;
+  //         cursor.continue();
+  //       } else {
+  //         objStore.add({ content: entryText, date: date, tags: tagList });
+  //       }
   // update flag in DB
   let flag = false;
   if (checkbox.checked) {
