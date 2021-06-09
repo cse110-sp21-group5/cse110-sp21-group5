@@ -1,4 +1,5 @@
 // This is where we will write our JS
+// IndexedDB code basis obtained from/inspired by https://medium.com/@AndyHaskell2013/build-a-basic-web-app-with-indexeddb-8ab4f83f8bda
 
 // select the <a> tags used for navigation at the top of the page
 const dispBar = document.querySelectorAll('.nav a');
@@ -127,8 +128,8 @@ for (let i = 0; i < dispBar.length; i++) {
 }
 
 /**
- * @function
  * Clears the entries and header lines off of the page
+ * @function
  */
 function clearPage () {
   const sxn = document.querySelectorAll('section, hr, br');
@@ -138,7 +139,7 @@ function clearPage () {
   });
 }
 
-/**
+/*
  * Appends the created form to 'main' when "New Entry" is clicked
  * @function
  * newEntry EventListener
@@ -187,10 +188,10 @@ newEntry.addEventListener('click', () => {
   }
 });
 
-/**
+/*
  * Make a new bullet when enter is pressed (rather than newline)
  * @function
- * textArea Event Listener
+ * textArea EventListener
  */
 textArea.addEventListener('keyup', function (event) {
   if (event.keyCode === 13) {
@@ -198,7 +199,7 @@ textArea.addEventListener('keyup', function (event) {
   }
 });
 
-/**
+/*
  * Changes the journal entries displayed based on the filter selection
  * @function
  * filter EventListener
@@ -742,9 +743,9 @@ function isLaterThan (d1, d2) {
   return 0;
 }
 
-/** Updates the flag of the entry in the DB. If flagged, adds entry to "Important" log.
+/** 
+ * Updates the flag of the entry in the DB. If flagged, adds entry to "Important" log.
  * Otherwise, removes entry from "Important" log.
- * @function
  */
 function updateFlag (event, fromDelete = false) {
   let checkbox = event.target;
@@ -849,7 +850,6 @@ function updateFlag (event, fromDelete = false) {
  * @param  newDB The databse that the element will be removed from
  * @param {function} callback Callback function
  */
-
 function removeEntryFromDB (divElement, oldContent, newDB, callback = undefined) {
   // restrict db to this scope
   let thisDB = db;
@@ -978,9 +978,9 @@ document.addEventListener('click', function (event) {
  * Checks to see if a header line needs to be removed from the database
  * and display and does so.
  * Any function calling this which passes in a defined newDB must close the newDB.
- * @param {HTMLElement} sectionParent
- * @param newDB
- * @param {string} fullDate
+ * @param {HTMLElement} sectionParent section element containing the element to be removed 
+ * @param {database} newDB the current database 
+ * @param {string} fullDate the date of the element
  */
 function removeHeader (sectionParent, newDB = undefined, fullDate = '') {
   // remove header line from other database that is not being shown right now
