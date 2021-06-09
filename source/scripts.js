@@ -15,6 +15,9 @@ textArea.setAttribute('rows', 3);
 textArea.setAttribute('cols', 50);
 let tab;
 
+// assume indexedDB is defined/available
+/* global indexedDB */
+
 /**
  * define a dictionary for month names and numbers
  */
@@ -53,7 +56,7 @@ request.onerror = function (event) {
 
 request.onupgradeneeded = function (event) {
   db = event.target.result;
-  const entries = db.createObjectStore('entries', { autoIncrement: true });
+  db.createObjectStore('entries', { autoIncrement: true });
 };
 
 /**
