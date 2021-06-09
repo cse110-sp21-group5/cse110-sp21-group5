@@ -1,3 +1,5 @@
+const { PageEmittedEvents } = require("puppeteer");
+
 beforeAll(async () => {
   await page.goto('https://cse110-sp21-group5.github.io/cse110-sp21-group5/source/');
   await page.waitForTimeout(500);
@@ -100,7 +102,6 @@ test('Adding entry with date between the first and second should create an entry
   expect(entryContent).toBe('No');
 }, 20000);
 
-
 test('Going to daily log should have elements saved', async () => {
   await page.click('a');
   let entry = await page.$('div > li');
@@ -116,3 +117,28 @@ test('Going back to future log should have elements saved', async () => {
   const entryContent = await b.jsonValue();
   expect(entryContent).toBe('Hello');
 });
+
+test('Filter should filter elements in future log', async() => {
+  await page.click('.addEntry');
+  await page.keyboard.type('Nope #nope');
+  await page.type('[type=date]', '07-15-2021');
+  await page.focus('textarea');
+  await page.keyboard.press('Enter');
+  await page.select('select', 'nope');
+  let entry = await page.$('section > div > li');
+  const b = await entry.getProperty('textContent');
+  const entryContent = await b.jsonValue();
+  expect(entryContent).toBe('Nope #nope');
+}, 20000);
+
+test('Filter should filter elements in daily log', async() => {
+  await page.click('a');
+  await page.click('.addEntry');
+  await page.keyboard.type('Maybe #maybe');
+  await page.keyboard.press('Enter');
+  await page.select('select', 'maybe');
+  let entry = await page.$('section > div > li');
+  const b = await entry.getProperty('textContent');
+  const entryContent = await b.jsonValue();
+  expect(entryContent).toBe('Maybe #maybe');
+}, 20000);
