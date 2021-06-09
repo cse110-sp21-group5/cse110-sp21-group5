@@ -22,7 +22,7 @@ Engineer Intern at [Amazon](https://www.amazon.com/) as well this summer in Seat
 
 -----------------
 
-Hey! I'm **Matthew Larkins**, a fourth year computer engineering major. I like to surf, run, skate, rock climb, and build robots/drones in my free time. My job on the team is as one of the leaders as well as a designer. Check out some of my projects here: https://khankhuu.github.io/matthew-larkins.
+Hey! I'm **Matthew Larkins**. I'm a fourth year computer engineering major. I like to surf, run, and build and fly drones in my free time. My job on the team is as one of the leaders as well as a designer. Check out some of my projects here: https://khankhuu.github.io/matthew-larkins.
 
 ![Matt's Photo](./resources/pictures/matthew-picture.png)
 
