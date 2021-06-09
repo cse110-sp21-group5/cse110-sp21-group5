@@ -1,5 +1,5 @@
 // This is where we will write our JS
-// Feature
+// New Feature
 // IndexedDB code basis obtained from/inspired by https://medium.com/@AndyHaskell2013/build-a-basic-web-app-with-indexeddb-8ab4f83f8bda
 
 // select the <a> tags used for navigation at the top of the page
