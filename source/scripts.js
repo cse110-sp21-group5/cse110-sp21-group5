@@ -162,7 +162,28 @@ newEntry.addEventListener('click', () => {
   // add form for future
   if (db.name === 'future') {
     const dateIn = document.createElement('input');
+    // convert current date to appropriate form
+    const date = new Date(new Date().toLocaleDateString());
+    const year = date.getFullYear();
+    // month is 0 indexed
+    let month = date.getMonth() + 1;
+    let maxMonth = (month + 5) % 12;
+    let day = date.getDay();
+
+    if (month < 10) {
+      month = '0' + month;
+    }
+    if (maxMonth < 10) {
+      maxMonth = '0' + maxMonth;
+    }
+    if (day < 10) {
+      day = '0' + day;
+    }
+    const dateYMD = year + '-' + month + '-' + day;
+    const maxDateYMD = year + '-' + maxMonth + '-' + day;
     dateIn.type = 'date';
+    dateIn.min = dateYMD;
+    dateIn.max = maxDateYMD;
     form.append(dateIn);
     if (document.querySelector('section') !== null) {
       document.querySelector('section').prepend(form);
