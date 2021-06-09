@@ -1139,7 +1139,6 @@ function createTimeline () {
   while (idx > 0) {
     const monthClone = monthTemp.content.firstElementChild.cloneNode(true);
     monthClone.firstElementChild.innerText = allMonths[month];
-    // console.log(allMonths[month]);
 
     monthClone.id = month;
     // Get total days in the current month
@@ -1158,13 +1157,12 @@ function createTimeline () {
       listItem.addEventListener('click', event => {
         const entries = document.querySelectorAll('section');
         const checkDate = checkMonth + '/' + listItem.innerText + '/' + checkYear;
-        // console.log(checkDate);
+        
         for (let index = 0; index < entries.length; index++) {
           if (entries[index].className === checkDate) {
             entries[index].scrollIntoView({ behavior: 'smooth' });
             break;
           }
-          // console.log('nav');
         }
       });
       // End navigating to certain day function
@@ -1172,7 +1170,6 @@ function createTimeline () {
       monthClone.querySelector('ul').appendChild(listItem);
     }
 
-    // console.log(monthClone.querySelector('p').innerText);
     // Hides or displays list of days when month is clicked
     monthClone.querySelector('p').addEventListener('click', event => {
       if (monthClone.querySelector('div').style.display === 'none') {
@@ -1182,7 +1179,6 @@ function createTimeline () {
       }
     });
 
-    // console.log(timeClone.querySelector('ul'));
     timeClone.querySelector('ul').appendChild(monthClone);
     validBold[month + 1] = date.getFullYear();
     month = month - 1;
@@ -1196,7 +1192,7 @@ function createTimeline () {
   }
 
   document.querySelector('aside').appendChild(timeClone);
-  // console.log(validBold);
+
   // Scroll Event marking month position
   window.addEventListener('scroll', event => {
     const entries = document.querySelectorAll('section');
@@ -1209,7 +1205,7 @@ function createTimeline () {
 
       try {
         const monthText = document.getElementById(entries[i].className.substr(0, entries[i].className.indexOf('/')) - 1).querySelector('p'); // Month text on timeline
-        // console.log(entries[i].className.substring(entries[i].className.lastIndexOf('/') + 1, entries[i].className.length));
+        
         if ((validBold[entries[i].className.substring(0, entries[i].className.indexOf('/'))]) === Number(entries[i].className.substring(entries[i].className.lastIndexOf('/') + 1, entries[i].className.length))) {
           scrollCheck = true;
         } else {
@@ -1235,7 +1231,6 @@ function createTimeline () {
  * Lays out the timeline in terms of the next 6 months (starting from the current month) for the future log.
  */
 function createFutureTime () {
-  // console.log('running');
   const allMonths = { 0: 'Jan', 1: 'Feb', 2: 'Mar', 3: 'Apr', 4: 'May', 5: 'Jun', 6: 'Jul', 7: 'Aug', 8: 'Sep', 9: 'Oct', 10: 'Nov', 11: 'Dec' };
   const allMonthsRev = { January: 1, February: 2, March: 3, April: 4, May: 5, June: 6, July: 7, August: 8, September: 9, October: 10, November: 11, December: 12 };
   const date = new Date();
@@ -1258,7 +1253,6 @@ function createFutureTime () {
   while (idx > 0) {
     const monthClone = monthTemp.content.firstElementChild.cloneNode(true);
     monthClone.firstElementChild.innerText = allMonths[month];
-    // console.log(allMonths[month]);
 
     monthClone.id = month;
 
@@ -1268,13 +1262,12 @@ function createFutureTime () {
       const entries = document.querySelectorAll('section');
       const checkDate = checkMonth;
       const checkYear = date.getFullYear();
-      // console.log(checkDate);
+      
       for (let index = 0; index < entries.length; index++) {
         if (allMonthsRev[entries[index].className.substring(0, entries[index].className.indexOf(' '))] === checkDate && checkYear === Number(entries[index].className.substring(entries[index].className.indexOf(' ') + 1, entries[index].className.length))) {
           entries[index].scrollIntoView({ behavior: 'smooth' });
           break;
         }
-        // console.log('nav');
       }
     });
 
@@ -1316,8 +1309,7 @@ function createFutureTime () {
 
       try {
         const monthText = document.getElementById(allMonthsRev[entries[i].className.substring(0, entries[i].className.indexOf(' '))] - 1).querySelector('p'); // Month text on timeline
-        // console.log(typeof validBold[allMonthsRev[entries[i].className.substring(0, entries[i].className.indexOf(' '))]].toString());
-        // console.log(typeof (entries[i].className.substring(entries[i].className.indexOf(' ') + 1, entries[i].className.length)));
+       
         // Check if the year of that entry month is a valid month to highlight
         if ((validBold[allMonthsRev[entries[i].className.substring(0, entries[i].className.indexOf(' '))]]).toString() === (entries[i].className.substring(entries[i].className.indexOf(' ') + 1, entries[i].className.length))) {
           scrollCheck = true;
