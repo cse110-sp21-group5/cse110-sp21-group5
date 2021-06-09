@@ -213,6 +213,7 @@ section div {
     background-color: transparent;
     border:none;
 }
+
 button.addEntry:before {
     content:'\002B';
     font-size: 20px;
@@ -253,24 +254,6 @@ div:hover > .delete {
     display: inline;
     vertical-align: top;
     top: 0px;
-}
-
-/* flag button box style */
-.flag {
-    visibility: hidden;
-    appearance: none;
-    background-color: #fafafa;
-	border: 1px solid #cacece;
-    padding: 0px 0px 0px 7px;
-    min-width: 22px;
-    min-height: 22px;
-}
-section ~ div:hover > .flag {
-    visibility: visible;
-    position: relative;
-    display: inline;
-    vertical-align: middle;
-    top: 6px;
 }
 
 /* flag button */
