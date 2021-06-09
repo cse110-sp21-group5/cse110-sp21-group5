@@ -68,9 +68,8 @@ function clrActive () {
   }
 }
 
-/**
+/*
  * Adds event listeners to all elements of the navigation bar selected in dispBar
- * @function
  * dispBar EventListener
  */
 // create initial timeline
@@ -138,10 +137,8 @@ function clearPage () {
   });
 }
 
-/**
+/*
  * Appends the created form to 'main' when "New Entry" is clicked
- * @function
- * newEntry EventListener
  */
 newEntry.addEventListener('click', () => {
   if (document.querySelector('section') === null && db.name === 'daily') {
@@ -187,10 +184,8 @@ newEntry.addEventListener('click', () => {
   }
 });
 
-/**
+/*
  * Make a new bullet when enter is pressed (rather than newline)
- * @function
- * textArea Event Listener
  */
 textArea.addEventListener('keyup', function (event) {
   if (event.keyCode === 13) {
@@ -198,10 +193,8 @@ textArea.addEventListener('keyup', function (event) {
   }
 });
 
-/**
+/*
  * Changes the journal entries displayed based on the filter selection
- * @function
- * filter EventListener
  */
 filter.addEventListener('change', () => {
   clearPage();
