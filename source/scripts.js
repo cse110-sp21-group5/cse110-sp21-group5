@@ -363,17 +363,21 @@ function getAndShowEntries (database, tag) {
     if (cursor !== null) {
       if (cursor.value.content !== cursor.value.date) {
         filterPopulate(cursor.value.tags);
+        // add all tags of current entry to the filter
       }
       if (tag === 'date') {
         entries.push(cursor.value);
+        // if filter is date, push regardless of tags
       } else {
         if (cursor.value.content === cursor.value.date) {
           entries.push(cursor.value);
+          // if it is a date, push it regardless
         }
         if (cursor.value.tags) {
           for (let i = 0; i < cursor.value.tags.length; i++) {
             if ((cursor.value.tags[i] === tag) && (cursor.value.content !== cursor.value.date)) {
               entries.push(cursor.value);
+              // check if the entry has a tag equal to the current filter, push if so
             }
           }
         }
@@ -751,18 +755,6 @@ function updateFlag (event, fromDelete = false) {
   const tagList = tagGet(divElement.innerText);
   const content = divElement.querySelector('li').innerText;
   const day = divElement.className;
-  // const cursor = event.target.result;
-  //       if (cursor) {
-  //         if (isLaterThan(date, cursor.value.date) === -1) {
-  //           const newKey = lastKey + 0.000001;
-  //           objStore.add({ content: entryText, date: date, tags: tagList }, newKey);
-  //           return;
-  //         }
-  //         lastKey = cursor.key;
-  //         cursor.continue();
-  //       } else {
-  //         objStore.add({ content: entryText, date: date, tags: tagList });
-  //       }
   // update flag in DB
   let flag = false;
   if (checkbox.checked) {
@@ -884,6 +876,7 @@ function removeEntryFromDB (divElement, oldContent, newDB, callback = undefined)
       opt.innerHTML = 'Date (Default)';
       filter.appendChild(opt);
       existingOptions.add(opt.value);
+      // clears all tags from the filter and adds the default date only
       document.querySelectorAll('section').forEach(e => e.remove());
       if (newDB !== undefined) {
         // finished with the new db
@@ -1008,11 +1001,6 @@ function removeHeader (sectionParent, newDB = undefined, fullDate = '') {
     console.log('removing ' + sectionParent);
 
     const dateRemove = sectionParent.className;
-    /* if (db.name == 'daily') {
-      dateRemove = sectionParent.className;
-    } else if (db.name === 'future') {
-      dateRemove = extractMonthYear(sectionParent.className);
-    } */
 
     // Remove element from IndexedDB
     const transaction = db.transaction(['entries'], 'readwrite');
@@ -1076,7 +1064,7 @@ function updateDB (entry, oldContent, day, tagList, flag = false, newDB = undefi
 /**
  * Function to capitalize first letter in a string (for tags)
  * @param {string} str String to capitalize.
- * @return Capitlized string.
+ * @return {string} Capitlized string.
  */
 function capitalizeFirstLetter (str) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
@@ -1085,15 +1073,19 @@ function capitalizeFirstLetter (str) {
 /**
  * Function to get tags
  * @param {string} str String to get tags from
+ * @return {array} array of the tags.
  */
 function tagGet (str) {
   const separatedString = str.split('#')[1];
   if (separatedString === undefined) {
     return null;
+    // if the string has no tags then returns null array
   }
   const removedSpaces = separatedString.split(' ').join('');
   const removedEnter = removedSpaces.split('\n').join('');
+  // removes whitespace and the enter character at the end
   const listedTags = removedEnter.split(',');
+  // splits the tags into an array based on comma separation
   return listedTags;
 }
 
