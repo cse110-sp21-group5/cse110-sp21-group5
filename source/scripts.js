@@ -18,7 +18,7 @@ let tab;
 // assume indexedDB is defined/available
 /* global indexedDB */
 
-/**
+/*
  * define a dictionary for month names and numbers
  */
 const dict = [];
@@ -69,8 +69,9 @@ function clrActive () {
 }
 
 /**
- * @function
  * Adds event listeners to all elements of the navigation bar selected in dispBar
+ * @function
+ * dispBar EventListener
  */
 // create initial timeline
 createTimeline();
@@ -140,8 +141,8 @@ function clearPage () {
 /**
  * Appends the created form to 'main' when "New Entry" is clicked
  * @function
+ * newEntry EventListener
  */
-
 newEntry.addEventListener('click', () => {
   if (document.querySelector('section') === null && db.name === 'daily') {
     document.querySelector('main').append(form);
@@ -187,8 +188,9 @@ newEntry.addEventListener('click', () => {
 });
 
 /**
- * @function
  * Make a new bullet when enter is pressed (rather than newline)
+ * @function
+ * textArea Event Listener
  */
 textArea.addEventListener('keyup', function (event) {
   if (event.keyCode === 13) {
@@ -198,6 +200,8 @@ textArea.addEventListener('keyup', function (event) {
 
 /**
  * Changes the journal entries displayed based on the filter selection
+ * @function
+ * filter EventListener
  */
 filter.addEventListener('change', () => {
   clearPage();
@@ -331,8 +335,9 @@ function addEntry () {
 }
 
 /**
- * //parse dateInput (yyyy-mm-dd) to date (m/d/y)
+ * parse dateInput (yyyy-mm-dd) to date (m/d/y)
  * @param {string} date in string format from the input box
+ * @return {string} Returns a date string in the form of m/d/y
  */
 function parseDateInput (dateInput) {
   let date = dateInput.substring(dateInput.indexOf('-') + 1);
@@ -633,9 +638,10 @@ function addEntrytoDB (database, entry, day, tagList, flag = false, callback = u
 }
 
 /**
- * Checks to see if one date is later than another. Returns 1 if d1 is later, -1 if d2 is later, or 0 if they are equal.
+ * Checks to see if one date is later than another
  * @param {string} d1
  * @param {string} d2
+ * @return {number} 1 if d1 is later, -1 if d2 is later, or 0 if they are equal.
  */
 function isLaterThan (d1, d2) {
   if (d1 === d2) {
@@ -837,6 +843,12 @@ function updateFlag (event, fromDelete = false) {
   }
   updateDB(content, content, day, tagList, flag);
 }
+/**
+ * @param {HTMLDivElement} divElement The divElement that will be removed from the page
+ * @param {string} oldContent The content of the div that will be removed from the database
+ * @param  newDB The databse that the element will be removed from
+ * @param {function} callback Callback function
+ */
 
 function removeEntryFromDB (divElement, oldContent, newDB, callback = undefined) {
   // restrict db to this scope
@@ -894,8 +906,10 @@ function removeEntryFromDB (divElement, oldContent, newDB, callback = undefined)
 
 /**
  * Checks to see if delete button clicked. If so, removes appropriate entry.
- * Otherwise checks to see if an entry was clicked. If so allows editing entry.
+ * Checks to see if an entry was clicked. If so allows editing entry.
+ * Also checks to see if timeline is clicked on/away from after opening to close timeline
  * @function
+ * document EventListener
  */
 document.addEventListener('click', function (event) {
   const divElement = event.target.parentNode;
@@ -964,6 +978,9 @@ document.addEventListener('click', function (event) {
  * Checks to see if a header line needs to be removed from the database
  * and display and does so.
  * Any function calling this which passes in a defined newDB must close the newDB.
+ * @param {HTMLElement} sectionParent
+ * @param newDB
+ * @param {string} fullDate
  */
 function removeHeader (sectionParent, newDB = undefined, fullDate = '') {
   // remove header line from other database that is not being shown right now
@@ -1262,7 +1279,6 @@ function createFutureTime () {
       const entries = document.querySelectorAll('section');
       const checkDate = checkMonth;
       const checkYear = date.getFullYear();
-      
       for (let index = 0; index < entries.length; index++) {
         if (allMonthsRev[entries[index].className.substring(0, entries[index].className.indexOf(' '))] === checkDate && checkYear === Number(entries[index].className.substring(entries[index].className.indexOf(' ') + 1, entries[index].className.length))) {
           entries[index].scrollIntoView({ behavior: 'smooth' });
@@ -1308,8 +1324,7 @@ function createFutureTime () {
       const entryPos = entries[i].getBoundingClientRect();
 
       try {
-        const monthText = document.getElementById(allMonthsRev[entries[i].className.substring(0, entries[i].className.indexOf(' '))] - 1).querySelector('p'); // Month text on timeline
-       
+        const monthText = document.getElementById(allMonthsRev[entries[i].className.substring(0, entries[i].className.indexOf(' '))] - 1).querySelector('p'); // Month text on timeline      
         // Check if the year of that entry month is a valid month to highlight
         if ((validBold[allMonthsRev[entries[i].className.substring(0, entries[i].className.indexOf(' '))]]).toString() === (entries[i].className.substring(entries[i].className.indexOf(' ') + 1, entries[i].className.length))) {
           scrollCheck = true;
