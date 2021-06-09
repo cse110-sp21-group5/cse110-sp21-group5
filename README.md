@@ -18,3 +18,6 @@ See our code's documentation [here](https://cse110-sp21-group5.github.io/cse110-
   - Write unit tests to the testing file
   - Upon merging, review code with at least two other team members as you merge
   - Check that all tests pass and code quality standards are met using the automated tesing and quality checking tools
+
+## Meetings
+- We followed Agile methodology during the development of this project. You can find our meeting notes and sprint documentation [here](admin/meetings)
