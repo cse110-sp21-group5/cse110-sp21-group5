@@ -1,4 +1,4 @@
-# [Removal of Recap Tab]
+# Removal of Recap Tab
 
 * Deciders: Entire group. <!-- optional -->
 
