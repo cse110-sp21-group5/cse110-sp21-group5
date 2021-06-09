@@ -127,8 +127,8 @@ for (let i = 0; i < dispBar.length; i++) {
 }
 
 /**
- * @function
  * Clears the entries and header lines off of the page
+ * @function
  */
 function clearPage () {
   const sxn = document.querySelectorAll('section, hr, br');
@@ -742,9 +742,9 @@ function isLaterThan (d1, d2) {
   return 0;
 }
 
-/** Updates the flag of the entry in the DB. If flagged, adds entry to "Important" log.
+/** 
+ * Updates the flag of the entry in the DB. If flagged, adds entry to "Important" log.
  * Otherwise, removes entry from "Important" log.
- * @function
  */
 function updateFlag (event, fromDelete = false) {
   let checkbox = event.target;
@@ -849,7 +849,6 @@ function updateFlag (event, fromDelete = false) {
  * @param  newDB The databse that the element will be removed from
  * @param {function} callback Callback function
  */
-
 function removeEntryFromDB (divElement, oldContent, newDB, callback = undefined) {
   // restrict db to this scope
   let thisDB = db;
