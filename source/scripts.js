@@ -978,9 +978,9 @@ document.addEventListener('click', function (event) {
  * Checks to see if a header line needs to be removed from the database
  * and display and does so.
  * Any function calling this which passes in a defined newDB must close the newDB.
- * @param {HTMLElement} sectionParent
- * @param newDB
- * @param {string} fullDate
+ * @param {HTMLElement} sectionParent section element containing the element to be removed 
+ * @param {database} newDB the current database 
+ * @param {string} fullDate the date of the element
  */
 function removeHeader (sectionParent, newDB = undefined, fullDate = '') {
   // remove header line from other database that is not being shown right now
