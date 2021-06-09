@@ -100,6 +100,7 @@ test('Adding entry with date between the first and second should create an entry
   expect(entryContent).toBe('No');
 }, 20000);
 
+
 test('Going to daily log should have elements saved', async () => {
   await page.click('a');
   let entry = await page.$('div > li');
@@ -115,23 +116,3 @@ test('Going back to future log should have elements saved', async () => {
   const entryContent = await b.jsonValue();
   expect(entryContent).toBe('Hello');
 });
-test('Clicking delete button should delete entry from future log', async () => {
-  await page.hover('section > div');
-  await page.click('.delete');
-  await page.hover('section > div');
-  await page.click('.delete');
-  await page.hover('section > div');
-  await page.click('.delete');
-  let entry = await page.$('section > div');
-  entryDeleted = (entry === null);
-  expect(entryDeleted).toBeTruthy();
-}, 20000);
-
-test('Clicking delete button should delete entry from daily log', async () => {
-  await page.click('a');
-  await page.hover('section > div');
-  await page.click('.delete');
-  let entry = await page.$('section > div > li');
-  entryExists = (entry === null);
-  expect(entryExists).toBeTruthy();
-}, 10000);
