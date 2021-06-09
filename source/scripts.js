@@ -1142,7 +1142,6 @@ function createTimeline () {
     // console.log(allMonths[month]);
 
     monthClone.id = month;
-    // Demo of applying months
     // Get total days in the current month
     const daysInMonth = new Date(date.getFullYear(), (month + 1) % 12, 0).getDate();
 
@@ -1168,13 +1167,13 @@ function createTimeline () {
           // console.log('nav');
         }
       });
-
       // End navigating to certain day function
 
       monthClone.querySelector('ul').appendChild(listItem);
     }
 
     // console.log(monthClone.querySelector('p').innerText);
+    // Hides or displays list of days when month is clicked
     monthClone.querySelector('p').addEventListener('click', event => {
       if (monthClone.querySelector('div').style.display === 'none') {
         monthClone.querySelector('div').style.display = 'inline-block';
@@ -1182,7 +1181,6 @@ function createTimeline () {
         monthClone.querySelector('div').style.display = 'none';
       }
     });
-    // end of demo
 
     // console.log(timeClone.querySelector('ul'));
     timeClone.querySelector('ul').appendChild(monthClone);
