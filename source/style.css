@@ -7,21 +7,19 @@ body {
     background-size: cover;
     background-attachment: fixed;
 }
-
+  
 main {
     /*Code to center journal-entries*/
     margin-left: 20px;
-
     background-color: white;
     border-radius: 6px;
-    list-style-type: none;
     margin-bottom: 30px;
     max-width: 700px;
     padding: 20px;
     width: 70%;
     margin: 20px auto;
 }
-  
+
 .nav {
     z-index: 9999;
     display: flex;
@@ -125,7 +123,6 @@ ul.timeline {
     /* overflow-y: auto; */
 }
 
-
 ul.timeline:before {
     content: ' ';
     background: rgb(119, 183, 255);
@@ -140,6 +137,7 @@ ul.timeline > li {
     margin: 30px 0;
     padding-left: 10px;
 }
+
 ul.timeline > li:before {
     content: ' ';
     background: rgb(119, 183, 255);
@@ -178,35 +176,63 @@ h4.title {
     margin: 40px 30px;
 }
 
-/* For aligning the journal entry when navigating to certain day (header covers if not done) */
 section {
+    /* For aligning the journal entry when navigating to certain day (header covers if not done) */
     scroll-margin-top: 70px;
+    background-color: white;
 }
 
-/* need to add below style for smaller screens */
+/* should add all below style for smaller screens */
 
-section ~ li {
+/* entry text */
+section li {
     margin-left: 20px;
-}
-
-li {
-    margin-left: 30px;
+    position: relative;
     font-size: 20px;
 }
 
+/* month header for entry */
 section ~ h3 {
     margin-left: 20px;
 }
 
-textarea {
-    margin-left: 20px;
+/* general entry style */
+section div {
+    display: flex;
+    flex-flow: row nowrap;
+    align-content: flex-start;
+    align-items: baseline;
+    position: relative;
+    height: 40px;
+    left: -15px;
 }
 
-[class=addEntry] {
+/* add button */
+.addEntry {
     margin-left: 20px;
+    background-color: transparent;
+    border:none;
+}
+button.addEntry:before {
+    content:'\002B';
+    font-size: 20px;
+    color: blue;
+    cursor: pointer;
+    font-size: 30px;
 }
 
+/* text box while adding */
+section ~ div > textarea {
+    margin-left: 20px;
+    position: relative;
+    bottom: 15px;
+    font-family: Abel;
+    font-size: 20px;
+}
+
+/* delete button */
 div > .delete  {
+    visibility: hidden; 
     position: relative;
     top: 22px;
     cursor:pointer;
@@ -219,60 +245,6 @@ div > .delete  {
     content: '\2716';
     font-size: 15px;
     color: gray;
-}
-
-/* text inside flag button */
-.flag:before {
-    content: '';
-    font-size: 17px;
-    color: red;
-}
-
-.flag:checked:before {
-    content: '!';
-    align-self: flex-end;
-}
-
-/* flag button */
-.flag {
-    display: none;
-}
-
-.flag + .flagText {
-    visibility: hidden;
-    color: transparent;
-    background-color: #fafafa;
-	border: 1px solid #cacece;
-    padding: 0px 9px 0px 9px;
-}
-
-.flag:checked + .flagText {
-    visibility: visible;
-    color: black;
-}
-
-.addEntry {
-    background-color: transparent;
-    border:none;
-}
-button.addEntry:before {
-    content:'\002B';
-    font-size: 20px;
-    color: blue;
-    cursor: pointer;
-    font-size: 30px;
-
-}
-
-section ~ div > textarea {
-    position: relative;
-    bottom: 15px;
-    font-family: Abel;
-    font-size: 20px;
-}
-
-.delete {
-    visibility: hidden;
 }
 
 div:hover > .delete {
@@ -302,30 +274,34 @@ section ~ div:hover > .flag {
     top: 6px;
 }
 
+/* flag button */
+.flag {
+    display: none;
+}
+
+.flag + .flagText {
+    visibility: hidden;
+    color: transparent;
+    background-color: #fafafa;
+	border: 1px solid #cacece;
+    padding: 0px 9px 0px 9px;
+}
+
+.flag:checked + .flagText {
+    visibility: visible;
+    color: black;
+}
+
 div:hover .flagText {
     visibility: visible;
     position: relative;
     display: inline;
-    right: 20px;
-    top: 23px;
 }
 
-section ~ div:hover > li {
-    position: relative;
-}
-
-section ~ div {
-    display: flex;
-    flex-flow: row nowrap;
-    align-content: flex-start;
-    align-items: baseline;
-    position: relative;
-    /* height: 40px; */
-    left: -20px;
-}
-
-section {
-    background-color: white;
+hr {
+    border: 1px solid rgb(119, 183, 255);
+    width: 100%;
+    float: left;
 }
 
 /* screensize 500px */
