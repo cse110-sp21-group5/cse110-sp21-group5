@@ -136,11 +136,14 @@ function clearPage () {
  */
 
 newEntry.addEventListener('click', () => {
-  // add form for daily
   if (document.querySelector('section') === null && db.name === 'daily') {
     document.querySelector('main').append(form);
   } else if (db.name === 'daily') {
-    document.querySelector('section').append(form);
+    if (document.querySelector('h3').textContent === new Date().toLocaleDateString()) {
+      document.querySelector('section').append(form);
+    } else {
+      document.querySelector('section').prepend(form);
+    }
   }
 
   if (form.querySelector('input') != null) {
@@ -165,13 +168,13 @@ newEntry.addEventListener('click', () => {
     if (document.querySelector('section') === null) {
       document.querySelector('main').append(newEntry);
     } else {
-      // document.querySelector('section').append(newEntry);
+      document.querySelector('section').append(newEntry);
     }
   } else if (db.name === 'future') {
-    if (document.querySelector('section') !== null) {
-      document.querySelector('section').prepend(newEntry);
-    } else {
+    if (document.querySelector('section') === null) {
       document.querySelector('main').append(newEntry);
+    } else {
+      document.querySelector('section').prepend(newEntry);
     }
   }
 });
@@ -301,7 +304,6 @@ function addEntry () {
     }
     section.append(newEntryTitle);
     // document.querySelector('main').append(section);
-    console.log(listedTags);
     addEntrytoDB(db, newEntryTitle, newEntryTitle.innerText, listedTags);
   }
 
@@ -449,12 +451,12 @@ function showEntries (entries) {
           document.querySelector('main').append(section);
         } else {
           document.querySelector('main').insertBefore(section, sec);
-          document.querySelector('main').insertBefore(document.createElement('hr'), sec);
+          // document.querySelector('main').insertBefore(document.createElement('hr'), sec);
         }
       } else if (db.name === 'future' || db.name === 'important') {
         document.querySelector('main').append(section);
-        document.querySelector('main').append(document.createElement('hr'));
-        document.querySelector('main').appendChild(document.createElement('br'));
+        // document.querySelector('main').append(document.createElement('hr'));
+        // document.querySelector('main').appendChild(document.createElement('br'));
       }
     }
 
@@ -999,6 +1001,11 @@ function removeHeader (sectionParent, newDB = undefined, fullDate = '') {
     console.log('removing ' + sectionParent);
 
     const dateRemove = sectionParent.className;
+    /* if (db.name == 'daily') {
+      dateRemove = sectionParent.className;
+    } else if (db.name === 'future') {
+      dateRemove = extractMonthYear(sectionParent.className);
+    } */
 
     // Remove element from IndexedDB
     const transaction = db.transaction(['entries'], 'readwrite');

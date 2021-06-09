@@ -4,8 +4,8 @@
 * @param {string} x
 * @param {number} y
 * @returns {undefined}
-* 
+*
 */
-function hello (x,y) {
-  return;
+function hello (x, y) {
+
 }
