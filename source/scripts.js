@@ -88,8 +88,12 @@ for (let i = 0; i < dispBar.length; i++) {
 
     if (tab === 'daily') {
       createTimeline();
+      newEntry.style.display = 'inline';
     } else if (tab === 'future') {
       createFutureTime();
+      newEntry.style.display = 'inline';
+    } else if (tab === 'important') {
+      newEntry.style.display = 'none';
     }
 
     clearPage();
