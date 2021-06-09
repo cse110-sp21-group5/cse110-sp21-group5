@@ -462,12 +462,9 @@ function showEntries (entries) {
           document.querySelector('main').append(section);
         } else {
           document.querySelector('main').insertBefore(section, sec);
-          // document.querySelector('main').insertBefore(document.createElement('hr'), sec);
         }
       } else if (db.name === 'future' || db.name === 'important') {
         document.querySelector('main').append(section);
-        // document.querySelector('main').append(document.createElement('hr'));
-        // document.querySelector('main').appendChild(document.createElement('br'));
       }
     }
 
