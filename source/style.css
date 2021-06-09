@@ -252,8 +252,8 @@ div:hover > .delete {
     position: relative;
     display: inline;
     vertical-align: top;
-    top: 23px;
-    right: 20px;
+    top: 0px;
+    right: 0px;
 }
 
 /* flag button box style */
