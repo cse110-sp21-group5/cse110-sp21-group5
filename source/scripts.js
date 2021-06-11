@@ -1,4 +1,6 @@
 // This is where we will write our JS
+// Feature
+// IndexedDB code basis obtained from/inspired by https://medium.com/@AndyHaskell2013/build-a-basic-web-app-with-indexeddb-8ab4f83f8bda
 
 // select the <a> tags used for navigation at the top of the page
 const dispBar = document.querySelectorAll('.nav a');
@@ -18,7 +20,7 @@ let tab;
 // assume indexedDB is defined/available
 /* global indexedDB */
 
-/**
+/*
  * define a dictionary for month names and numbers
  */
 const dict = [];
@@ -69,8 +71,9 @@ function clrActive () {
 }
 
 /**
- * @function
  * Adds event listeners to all elements of the navigation bar selected in dispBar
+ * @function
+ * dispBar EventListener
  */
 // create initial timeline
 createTimeline();
@@ -88,8 +91,12 @@ for (let i = 0; i < dispBar.length; i++) {
 
     if (tab === 'daily') {
       createTimeline();
+      newEntry.style.display = 'inline';
     } else if (tab === 'future') {
       createFutureTime();
+      newEntry.style.display = 'inline';
+    } else if (tab === 'important') {
+      newEntry.style.display = 'none';
     }
 
     clearPage();
@@ -122,8 +129,8 @@ for (let i = 0; i < dispBar.length; i++) {
 }
 
 /**
- * @function
  * Clears the entries and header lines off of the page
+ * @function
  */
 function clearPage () {
   const sxn = document.querySelectorAll('section, hr, br');
@@ -133,11 +140,11 @@ function clearPage () {
   });
 }
 
-/**
+/*
  * Appends the created form to 'main' when "New Entry" is clicked
  * @function
+ * newEntry EventListener
  */
-
 newEntry.addEventListener('click', () => {
   if (document.querySelector('section') === null && db.name === 'daily') {
     document.querySelector('main').append(form);
@@ -156,7 +163,28 @@ newEntry.addEventListener('click', () => {
   // add form for future
   if (db.name === 'future') {
     const dateIn = document.createElement('input');
+    // convert current date to appropriate form
+    const date = new Date(new Date().toLocaleDateString());
+    const year = date.getFullYear();
+    // month is 0 indexed
+    let month = date.getMonth() + 1;
+    let maxMonth = (month + 5) % 12;
+    let day = date.getDay();
+
+    if (month < 10) {
+      month = '0' + month;
+    }
+    if (maxMonth < 10) {
+      maxMonth = '0' + maxMonth;
+    }
+    if (day < 10) {
+      day = '0' + day;
+    }
+    const dateYMD = year + '-' + month + '-' + day;
+    const maxDateYMD = year + '-' + maxMonth + '-' + day;
     dateIn.type = 'date';
+    dateIn.min = dateYMD;
+    dateIn.max = maxDateYMD;
     form.append(dateIn);
     if (document.querySelector('section') !== null) {
       document.querySelector('section').prepend(form);
@@ -182,9 +210,10 @@ newEntry.addEventListener('click', () => {
   }
 });
 
-/**
- * @function
+/*
  * Make a new bullet when enter is pressed (rather than newline)
+ * @function
+ * textArea EventListener
  */
 textArea.addEventListener('keyup', function (event) {
   if (event.keyCode === 13) {
@@ -192,8 +221,10 @@ textArea.addEventListener('keyup', function (event) {
   }
 });
 
-/**
+/*
  * Changes the journal entries displayed based on the filter selection
+ * @function
+ * filter EventListener
  */
 filter.addEventListener('change', () => {
   clearPage();
@@ -327,8 +358,9 @@ function addEntry () {
 }
 
 /**
- * //parse dateInput (yyyy-mm-dd) to date (m/d/y)
+ * parse dateInput (yyyy-mm-dd) to date (m/d/y)
  * @param {string} date in string format from the input box
+ * @return {string} Returns a date string in the form of m/d/y
  */
 function parseDateInput (dateInput) {
   let date = dateInput.substring(dateInput.indexOf('-') + 1);
@@ -359,17 +391,21 @@ function getAndShowEntries (database, tag) {
     if (cursor !== null) {
       if (cursor.value.content !== cursor.value.date) {
         filterPopulate(cursor.value.tags);
+        // add all tags of current entry to the filter
       }
       if (tag === 'date') {
         entries.push(cursor.value);
+        // if filter is date, push regardless of tags
       } else {
         if (cursor.value.content === cursor.value.date) {
           entries.push(cursor.value);
+          // if it is a date, push it regardless
         }
         if (cursor.value.tags) {
           for (let i = 0; i < cursor.value.tags.length; i++) {
             if ((cursor.value.tags[i] === tag) && (cursor.value.content !== cursor.value.date)) {
               entries.push(cursor.value);
+              // check if the entry has a tag equal to the current filter, push if so
             }
           }
         }
@@ -454,12 +490,9 @@ function showEntries (entries) {
           document.querySelector('main').append(section);
         } else {
           document.querySelector('main').insertBefore(section, sec);
-          // document.querySelector('main').insertBefore(document.createElement('hr'), sec);
         }
       } else if (db.name === 'future' || db.name === 'important') {
         document.querySelector('main').append(section);
-        // document.querySelector('main').append(document.createElement('hr'));
-        // document.querySelector('main').appendChild(document.createElement('br'));
       }
     }
 
@@ -628,9 +661,10 @@ function addEntrytoDB (database, entry, day, tagList, flag = false, callback = u
 }
 
 /**
- * Checks to see if one date is later than another. Returns 1 if d1 is later, -1 if d2 is later, or 0 if they are equal.
+ * Checks to see if one date is later than another
  * @param {string} d1
  * @param {string} d2
+ * @return {number} 1 if d1 is later, -1 if d2 is later, or 0 if they are equal.
  */
 function isLaterThan (d1, d2) {
   if (d1 === d2) {
@@ -731,9 +765,9 @@ function isLaterThan (d1, d2) {
   return 0;
 }
 
-/** Updates the flag of the entry in the DB. If flagged, adds entry to "Important" log.
+/**
+ * Updates the flag of the entry in the DB. If flagged, adds entry to "Important" log.
  * Otherwise, removes entry from "Important" log.
- * @function
  */
 function updateFlag (event, fromDelete = false) {
   let checkbox = event.target;
@@ -747,18 +781,6 @@ function updateFlag (event, fromDelete = false) {
   const tagList = tagGet(divElement.innerText);
   const content = divElement.querySelector('li').innerText;
   const day = divElement.className;
-  // const cursor = event.target.result;
-  //       if (cursor) {
-  //         if (isLaterThan(date, cursor.value.date) === -1) {
-  //           const newKey = lastKey + 0.000001;
-  //           objStore.add({ content: entryText, date: date, tags: tagList }, newKey);
-  //           return;
-  //         }
-  //         lastKey = cursor.key;
-  //         cursor.continue();
-  //       } else {
-  //         objStore.add({ content: entryText, date: date, tags: tagList });
-  //       }
   // update flag in DB
   let flag = false;
   if (checkbox.checked) {
@@ -844,7 +866,12 @@ function updateFlag (event, fromDelete = false) {
   }
   updateDB(content, content, day, tagList, flag);
 }
-
+/**
+ * @param {HTMLDivElement} divElement The divElement that will be removed from the page
+ * @param {string} oldContent The content of the div that will be removed from the database
+ * @param  newDB The databse that the element will be removed from
+ * @param {function} callback Callback function
+ */
 function removeEntryFromDB (divElement, oldContent, newDB, callback = undefined) {
   // restrict db to this scope
   let thisDB = db;
@@ -880,6 +907,7 @@ function removeEntryFromDB (divElement, oldContent, newDB, callback = undefined)
       opt.innerHTML = 'Date (Default)';
       filter.appendChild(opt);
       existingOptions.add(opt.value);
+      // clears all tags from the filter and adds the default date only
       document.querySelectorAll('section').forEach(e => e.remove());
       if (newDB !== undefined) {
         // finished with the new db
@@ -900,8 +928,10 @@ function removeEntryFromDB (divElement, oldContent, newDB, callback = undefined)
 
 /**
  * Checks to see if delete button clicked. If so, removes appropriate entry.
- * Otherwise checks to see if an entry was clicked. If so allows editing entry.
+ * Checks to see if an entry was clicked. If so allows editing entry.
+ * Also checks to see if timeline is clicked on/away from after opening to close timeline
  * @function
+ * document EventListener
  */
 document.addEventListener('click', function (event) {
   const divElement = event.target.parentNode;
@@ -970,6 +1000,9 @@ document.addEventListener('click', function (event) {
  * Checks to see if a header line needs to be removed from the database
  * and display and does so.
  * Any function calling this which passes in a defined newDB must close the newDB.
+ * @param {HTMLElement} sectionParent section element containing the element to be removed
+ * @param {database} newDB the current database
+ * @param {string} fullDate the date of the element
  */
 function removeHeader (sectionParent, newDB = undefined, fullDate = '') {
   // remove header line from other database that is not being shown right now
@@ -1004,11 +1037,6 @@ function removeHeader (sectionParent, newDB = undefined, fullDate = '') {
     console.log('removing ' + sectionParent);
 
     const dateRemove = sectionParent.className;
-    /* if (db.name == 'daily') {
-      dateRemove = sectionParent.className;
-    } else if (db.name === 'future') {
-      dateRemove = extractMonthYear(sectionParent.className);
-    } */
 
     // Remove element from IndexedDB
     const transaction = db.transaction(['entries'], 'readwrite');
@@ -1072,7 +1100,7 @@ function updateDB (entry, oldContent, day, tagList, flag = false, newDB = undefi
 /**
  * Function to capitalize first letter in a string (for tags)
  * @param {string} str String to capitalize.
- * @return Capitlized string.
+ * @return {string} Capitlized string.
  */
 function capitalizeFirstLetter (str) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
@@ -1081,15 +1109,19 @@ function capitalizeFirstLetter (str) {
 /**
  * Function to get tags
  * @param {string} str String to get tags from
+ * @return {array} array of the tags.
  */
 function tagGet (str) {
   const separatedString = str.split('#')[1];
   if (separatedString === undefined) {
     return null;
+    // if the string has no tags then returns null array
   }
   const removedSpaces = separatedString.split(' ').join('');
   const removedEnter = removedSpaces.split('\n').join('');
+  // removes whitespace and the enter character at the end
   const listedTags = removedEnter.split(',');
+  // splits the tags into an array based on comma separation
   return listedTags;
 }
 
@@ -1120,8 +1152,8 @@ function filterPopulate (tags) {
   }
 }
 
-/*
- * Begin process of laying out months (for daily log)
+/**
+ * Lays out the timeline in terms of the last 12 months (starting from the current month) for the daily log.
  */
 function createTimeline () {
   const allMonths = { 0: 'Jan', 1: 'Feb', 2: 'Mar', 3: 'Apr', 4: 'May', 5: 'Jun', 6: 'Jul', 7: 'Aug', 8: 'Sep', 9: 'Oct', 10: 'Nov', 11: 'Dec' };
@@ -1146,10 +1178,8 @@ function createTimeline () {
   while (idx > 0) {
     const monthClone = monthTemp.content.firstElementChild.cloneNode(true);
     monthClone.firstElementChild.innerText = allMonths[month];
-    // console.log(allMonths[month]);
 
     monthClone.id = month;
-    // Demo of applying months
     // Get total days in the current month
     const daysInMonth = new Date(date.getFullYear(), (month + 1) % 12, 0).getDate();
 
@@ -1166,22 +1196,20 @@ function createTimeline () {
       listItem.addEventListener('click', event => {
         const entries = document.querySelectorAll('section');
         const checkDate = checkMonth + '/' + listItem.innerText + '/' + checkYear;
-        // console.log(checkDate);
+
         for (let index = 0; index < entries.length; index++) {
           if (entries[index].className === checkDate) {
             entries[index].scrollIntoView({ behavior: 'smooth' });
             break;
           }
-          // console.log('nav');
         }
       });
-
       // End navigating to certain day function
 
       monthClone.querySelector('ul').appendChild(listItem);
     }
 
-    // console.log(monthClone.querySelector('p').innerText);
+    // Hides or displays list of days when month is clicked
     monthClone.querySelector('p').addEventListener('click', event => {
       if (monthClone.querySelector('div').style.display === 'none') {
         monthClone.querySelector('div').style.display = 'inline-block';
@@ -1189,9 +1217,7 @@ function createTimeline () {
         monthClone.querySelector('div').style.display = 'none';
       }
     });
-    // end of demo
 
-    // console.log(timeClone.querySelector('ul'));
     timeClone.querySelector('ul').appendChild(monthClone);
     validBold[month + 1] = date.getFullYear();
     month = month - 1;
@@ -1205,7 +1231,7 @@ function createTimeline () {
   }
 
   document.querySelector('aside').appendChild(timeClone);
-  // console.log(validBold);
+
   // Scroll Event marking month position
   window.addEventListener('scroll', event => {
     const entries = document.querySelectorAll('section');
@@ -1218,7 +1244,7 @@ function createTimeline () {
 
       try {
         const monthText = document.getElementById(entries[i].className.substr(0, entries[i].className.indexOf('/')) - 1).querySelector('p'); // Month text on timeline
-        // console.log(entries[i].className.substring(entries[i].className.lastIndexOf('/') + 1, entries[i].className.length));
+
         if ((validBold[entries[i].className.substring(0, entries[i].className.indexOf('/'))]) === Number(entries[i].className.substring(entries[i].className.lastIndexOf('/') + 1, entries[i].className.length))) {
           scrollCheck = true;
         } else {
@@ -1240,8 +1266,10 @@ function createTimeline () {
   });
 }
 
+/**
+ * Lays out the timeline in terms of the next 6 months (starting from the current month) for the future log.
+ */
 function createFutureTime () {
-  // console.log('running');
   const allMonths = { 0: 'Jan', 1: 'Feb', 2: 'Mar', 3: 'Apr', 4: 'May', 5: 'Jun', 6: 'Jul', 7: 'Aug', 8: 'Sep', 9: 'Oct', 10: 'Nov', 11: 'Dec' };
   const allMonthsRev = { January: 1, February: 2, March: 3, April: 4, May: 5, June: 6, July: 7, August: 8, September: 9, October: 10, November: 11, December: 12 };
   const date = new Date();
@@ -1264,7 +1292,6 @@ function createFutureTime () {
   while (idx > 0) {
     const monthClone = monthTemp.content.firstElementChild.cloneNode(true);
     monthClone.firstElementChild.innerText = allMonths[month];
-    // console.log(allMonths[month]);
 
     monthClone.id = month;
 
@@ -1274,13 +1301,11 @@ function createFutureTime () {
       const entries = document.querySelectorAll('section');
       const checkDate = checkMonth;
       const checkYear = date.getFullYear();
-      // console.log(checkDate);
       for (let index = 0; index < entries.length; index++) {
         if (allMonthsRev[entries[index].className.substring(0, entries[index].className.indexOf(' '))] === checkDate && checkYear === Number(entries[index].className.substring(entries[index].className.indexOf(' ') + 1, entries[index].className.length))) {
           entries[index].scrollIntoView({ behavior: 'smooth' });
           break;
         }
-        // console.log('nav');
       }
     });
 
@@ -1322,8 +1347,6 @@ function createFutureTime () {
 
       try {
         const monthText = document.getElementById(allMonthsRev[entries[i].className.substring(0, entries[i].className.indexOf(' '))] - 1).querySelector('p'); // Month text on timeline
-        // console.log(typeof validBold[allMonthsRev[entries[i].className.substring(0, entries[i].className.indexOf(' '))]].toString());
-        // console.log(typeof (entries[i].className.substring(entries[i].className.indexOf(' ') + 1, entries[i].className.length)));
         // Check if the year of that entry month is a valid month to highlight
         if ((validBold[allMonthsRev[entries[i].className.substring(0, entries[i].className.indexOf(' '))]]).toString() === (entries[i].className.substring(entries[i].className.indexOf(' ') + 1, entries[i].className.length))) {
           scrollCheck = true;
