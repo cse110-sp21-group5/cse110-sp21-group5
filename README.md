@@ -24,4 +24,4 @@ See our code's documentation [here](https://cse110-sp21-group5.github.io/cse110-
   - Watch a video about our roles on the project, our workflow, a tour of this repo and a tutorial on how to make a contribution to the project [here](https://www.youtube.com/watch?v=l0MP5LLaB3w).
 
 ## Public Video
-  - Watch our final presentation video [here](https://www.youtube.com/watch?v=g-w8wSoqPyE)
+  - Watch our final presentation video [here](https://www.youtube.com/watch?v=g-w8wSoqPyE).
