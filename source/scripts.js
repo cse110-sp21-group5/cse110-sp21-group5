@@ -34,7 +34,7 @@ dict[7] = 'July';
 dict[8] = 'August';
 dict[9] = 'September';
 dict[10] = 'October';
-dict[11] = 'November';
+dict[11] = 'November';  // Test comment
 dict[12] = 'December';
 
 for (const key in dict) {
